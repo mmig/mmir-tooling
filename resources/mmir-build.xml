@@ -410,6 +410,9 @@
                 	});
 					core.startModule = 'doStartBuildProc';
 					
+					//disable tracing in logger-module: (current library stacktrace.js does not support nodejs / TODO repl. with https://www.npmjs.com/package/stack-trace in nodejs env)
+					core.logTrace = false;
+					
 	                //configure replacement / build-stub implementations:
 	                var buildLibDir = '${buildDirLib}mmir-build/';
 	                
