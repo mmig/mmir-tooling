@@ -264,24 +264,27 @@
 		    		
 		    		var jqueryDeferred = requiren(buildLibDirRelativePath+'nodejs-jquery-deferred/index.js');
 		    		
-		    		require(['constants', 'jsonlint', 'jqueryajax', 'configurationManager'], function(constants, jsonlint, jquery, configurationManager){
-		    			
-		    			constants.init(theArguments[2] + 'www/');
-				
-			    		jsl = {
-			    			parser: require('jsonlint')
-			    		};
-			    		
-			    		jqueryDeferred.extend(jquery, jqueryDeferred);
-				
+		    		require(['constants'], function(constants){
 
-						//export public MMIR modules to "global" mmir variable:
-						mmir.Constants = constants;
-						mmir.ConfigurationManager = configurationManager;
+    					constants.init(theArguments[2] + 'www/');
+						
+						require(['jsonlint', 'jqueryajax', 'configurationManager'], function(jsonlint, jquery, configurationManager){
+					
+				    		jsl = {
+				    			parser: require('jsonlint')
+				    		};
+				    		
+				    		jqueryDeferred.extend(jquery, jqueryDeferred);
+					
+	
+							//export public MMIR modules to "global" mmir variable:
+							mmir.Constants = constants;
+							mmir.ConfigurationManager = configurationManager;
 		    		
 	    	</string>
 			<fileset dir="${jsBuildDirBase}ant"              includes="StandaloneTemplateParserExec.js" />
 			<string>
+			    		});
 	    			});
 	    			
 	    		}//END: doStartTemplateProcessing(){...
