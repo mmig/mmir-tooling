@@ -28,11 +28,10 @@
 		      (regardless whether or not the checkusm-files would indicate no changes or not).
 		
 	-->
-	<target name="createTemplateParserFile" depends="cleanTemplateFiles,generateFileListJSONFile">
+	<target name="createTemplateParserFile" depends="cleanTemplateFiles,generateFileListJSONFile,createTempCompileDir">
 	    <echo message="Building script file ${exec.js.compile.template.parser} for parsing templates (.ehtml)..." />
 	    <mkdir dir="${buildDir}" />
 	    <mkdir dir="${buildDirBin}" />
-	    <mkdir dir="${buildDirTempJS}" />
 	    <concat destfile="${exec.js.compile.template.parser}" fixlastline="true" overwrite="true">
 	    	<!-- TODO make generalized init-file for rhino (current file is really for creating GrammarParserGenerator) -->
 	    	<!--fileset dir="${jsBuildDirBase}rhino" includes="InitForAntRhinoScriptEnv.js" />
