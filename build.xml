@@ -17,7 +17,7 @@
 		<property location="${basedir}/../doc" name="target.doc.dir"/>
 		
 		<copy todir="${target.doc.dir}" preservelastmodified="true" overwrite="true">
-            <fileset dir="doc"/>
+            <fileset dir="doc" defaultexcludes="false"/>
         </copy>
         
 		<!-- initiate installation for doc-gen resources: -->
