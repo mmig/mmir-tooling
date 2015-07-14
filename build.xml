@@ -11,7 +11,17 @@
         <copy todir="../" preservelastmodified="true" overwrite="true">
             <fileset dir="resources"/>
         </copy>
+		
+		<!-- copy files for doc generation -->
+		<copy todir="../doc" preservelastmodified="true" overwrite="true">
+            <fileset dir="doc"/>
+        </copy>
         
+		<!-- print some information for doc generation -->
+		<echo>
+  For setting up doc generation, see README.md in [project root]/doc
+        </echo>
+		
         <!-- create settings-file from settingsDefault 
         	 (but only, if it is not exists yet)
         -->
@@ -27,8 +37,8 @@
   When updating files, mmir-build.xml and mmir-parse.xml may provide some new 
   (default) build options.
   
-  Check if mmir-build.settingsDefault has changed and see its comments for
-  setting specific build options.
+  Check, if mmir-build.settingsDefault (compared to mmir-build.settings) has
+  changed and see its comments for setting specific build options.
   
   NOTE for Windows 8: 
    if "cordova build" fails and continues to fail due to
