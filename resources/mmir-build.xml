@@ -148,21 +148,6 @@
 		<echo>Finished compile task (RHINO).</echo>
 	</target>
 	
-	    
-	<!--
-		Creates HTML documentation files for JavaScript code of the MMIR framework.
-		
-		Currently, this is only supported for Windows environment (see /doc/create_doc.bat).
-		
-		The documentation is generated using JSDoc v2.
-	 -->
-	<target name="doc" description="create HTML documenation for framework code">
-		<exec executable="${docExec}" dir="${docDir}" failonerror="true" resolveexecutable="true">
-			<arg value="${jsDocVersion}"/>
-		</exec>
-		<echo>Created HTML documentation files in ${docDir}api_jsdocX.</echo>
-    </target>
-	
 	<!-- ############# Test Targets ############# -->
     <target name="test" depends="" description="runs all tests specified in test/drivers">
         <ant antfile="test.xml" target="test-all"/>
