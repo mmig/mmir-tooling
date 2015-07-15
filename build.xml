@@ -13,6 +13,9 @@
         </copy>
 		
 		<!-- copy files for doc generation -->
+		<echo>
+  Preparing resources for jsdoc generation...
+		</echo>
 		
 		<property location="${basedir}/../doc" name="target.doc.dir"/>
 		
