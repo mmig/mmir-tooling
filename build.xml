@@ -23,19 +23,11 @@
             <fileset dir="doc" defaultexcludes="false"/>
         </copy>
         
-		<!-- initiate installation for doc-gen resources: -->
-		<exec executable="npm.cmd" dir="${target.doc.dir}" osfamily="windows">
-			<arg value="install"/>
-		</exec>
-		<exec executable="npm" dir="${target.doc.dir}" osfamily="unix">
-			<arg value="install"/>
-		</exec>
-		
 		
 		<!-- print some information for doc generation -->
 		<echo>
-  Use target doc for generating API docs:
-    ant -f mmir-build.xml doc
+  For generating API docs, see [project root]/doc:
+    ant [jsdoc2 | jsdoc3]
 	
   See README.md in [project root]/doc for more information
   on generating docs.

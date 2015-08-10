@@ -25,9 +25,31 @@
 		</condition>
 		<condition property="is.jsdoc.v3" else="false">
 		    <equals arg1="${jsDocEngine}" arg2="3" trim="true"/>
-			</condition>
-			<echo>Use only JSDoc v2? ${is.jsdoc.v2}</echo>
+		</condition>
+		<echo>Use only JSDoc v2? ${is.jsdoc.v2}</echo>
 		<echo>Use only JSDoc v3? ${is.jsdoc.v3}</echo>
+	</target>
+	
+	<target name="checkInit">
+		<condition property="is.jsdoc.installed" else="false">
+		    <available file="${dir.jsdoc.node.modules}"/>
+		</condition>
+		<echo>Are JSDoc Resources installed? ${is.jsdoc.installed}</echo>
+	</target>
+	
+	<!-- initiate installation for doc-gen resources: -->
+	<target name="init"  depends="checkInit" unless="${is.jsdoc.installed}" description="initialize and setup resources doc generation">
+		
+		<echo>Installing JSDoc Resources in ${dir.doc.base} ...</echo>
+		
+		<exec executable="npm.cmd" dir="${dir.doc.base}" osfamily="windows">
+			<arg value="install"/>
+		</exec>
+		
+		<exec executable="npm" dir="${dir.doc.base}" osfamily="unix">
+			<arg value="install"/>
+		</exec>
+		
 	</target>
     
 	<!-- ############# Clean Generated Files ############# -->
@@ -45,7 +67,7 @@
 	<!-- ############# Execute JSDoc ############# -->
 	
 	<target name="jsdoc2" 
-		depends="cleanDoc2" 
+		depends="init,cleanDoc2" 
 		description="Create API doc with jsdoc v2"
 		unless="${is.jsdoc.v3}">
 
@@ -62,7 +84,7 @@
 	</target>
 	
 	<target name="jsdoc3" 
-		depends="cleanDoc3" 
+		depends="init,cleanDoc3" 
 		description="Create API doc with jsdoc v3"
 		unless="${is.jsdoc.v2}">
 
