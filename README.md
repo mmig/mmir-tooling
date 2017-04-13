@@ -33,7 +33,7 @@ located at `www/` and the MMIR-library files at `www/mmirf/`:
 
 ### Installation
 
-Running the ANT task ```build.xml``` will copy the contents of directory 
+Running `npm install` and then `gulp` will copy the contents of directory 
 ```/resources``` into the parent directory, i.e. to ```../```.
 
 When the contents of this repository are located in the sub-directory
@@ -48,8 +48,6 @@ of this repository (within the sub-directory, i.e. `build/build.xml`) will set
     hooks/before_build/**
     mmir-build.properties
     mmir-build.settingsDefault
-    mmir-build.xml
-    mmir-parse.xml
 
 ### Development
 
@@ -76,7 +74,7 @@ have been placed in the directory `/build` and the mmir-library has been placed 
     /www/mmirf/<contents of mmir-library>
     ...
 
-and the ANT script `/build/build.xml` has been executed.
+and `gulp` has been executed in `/build/`.
 
 #### Adding New Libraries
 
