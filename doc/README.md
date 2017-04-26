@@ -2,23 +2,26 @@
 
 For the generating API documentation of the MMIR framework using jsdoc.
 
-The contents of this repository/directory should be placed in the `/doc`
+The contents of this repository/directory should be placed in the `build/doc`
 subdirectory of your project, where you use the MMIR framework. The 
 directory structure should look something like the following
 ```
     /                    the project root directory
-    doc/                 this directory/content
+    build/doc/           this directory/content
     www/                 the app/assests directory
     www/mmirf/           the MMIR framework directory
     ...
     mmir-build.setings	
 ```
 
+If the directory structure is different, variable `dir.src.in` in
+`doc.properties` needs to updated accordingly. 
+
 The ANT script creates doc either for jsdoc2 or jsdoc3 (or both)
 
 
-    PROJECT_PATH/doc/api_doc2		(for jsdoc2)
-    PROJECT_PATH/doc/api_doc3		(for jsdoc3)
+    PROJECT_PATH/build/doc/api_doc2		(for jsdoc2)
+    PROJECT_PATH/build/doc/api_doc3		(for jsdoc3)
   
 with targets `doc` (depends on settings), `jsdoc2`, or `jsdoc3`.
 
@@ -31,9 +34,9 @@ doc generation.
 
 If the directory
 
-`PROJECT_PATH/doc/node_modules`
+`PROJECT_PATH/build/doc/node_modules`
 
-is missing, you should run `npm install` in `PROJECT_PATH/doc` in order to install
+is missing, you should run `npm install` in `PROJECT_PATH/build/doc` in order to install
 
  * jsdoc3
  * jsdoc2 (node-jsdoc-toolkit)

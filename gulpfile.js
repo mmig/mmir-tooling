@@ -11,12 +11,12 @@ var chmod = require('gulp-chmod');
 var src_dir = './';
 
 var dest_dir = '../';
-var dest_doc_dir = dest_dir + 'doc/';
+//var dest_doc_dir = dest_dir + 'doc/';
 
 var new_hook_location = dest_dir + 'hooks/before_prepare/build-mmir.js';
 var old_hook_location = dest_dir + 'hooks/before_build/build-mmir.js';
 
-gulp.task('default', ['copy_resources', 'create_mmir_settings', 'copy_jsdoc']);
+gulp.task('default', ['copy_resources', 'create_mmir_settings', 'prepare_jsdoc']);
 
 gulp.task('copy_resources', gulpSequence('copy_build_resources', 'check_outdated_hooks'));
 
@@ -52,19 +52,33 @@ gulp.task('create_mmir_settings', function() {
 	
 });
 
-gulp.task('copy_jsdoc', function() {
+//gulp.task('copy_jsdoc', function() {
+//	
+//	console.log(jsdoc_message);
+//	
+//	var filter = gFilter(['*.js', '*.xml'], {restore: true});
+//	
+//	//copy all jsdoc resources from /doc
+//	return gulp.src(src_dir + 'doc/**/*')
+//		.pipe(filter)
+//		.pipe(chmod({owner: {execute: true}}))//<- set execute flag for scripts
+//		.pipe(filter.restore)
+//		.pipe(gulp.dest(dest_doc_dir))
+//		.pipe(preservetime());
+//	
+//});
+
+gulp.task('prepare_jsdoc', function() {
 	
 	console.log(jsdoc_message);
 	
 	var filter = gFilter(['*.js', '*.xml'], {restore: true});
 	
-	//copy all jsdoc resources from /doc
+	//chmod jsdoc resources to allow script execution
 	return gulp.src(src_dir + 'doc/**/*')
 		.pipe(filter)
 		.pipe(chmod({owner: {execute: true}}))//<- set execute flag for scripts
-		.pipe(filter.restore)
-		.pipe(gulp.dest(dest_doc_dir))
-		.pipe(preservetime());
+		.pipe(filter.restore);
 	
 });
 
