@@ -87,36 +87,15 @@ var resources_message = '\r\n\
   \r\n\
   Check, if mmir-build.settingsDefault (compared to mmir-build.settings) has\r\n\
   changed and see its comments for setting specific build options.\r\n\
-  \r\n\
-  NOTE for Windows 8: \r\n\
-   if "cordova build" fails and continues to fail due to\r\n\
-   failed compilation of the DialogEngine (or InputEngine)\r\n\
-   you can disable this compilation by setting/enabling\r\n\
-                 \r\n\
-    ignoreDialogEngineCompilation=true\r\n\
-    ignoreInputEngineCompilation=true\r\n\
-  \r\n\
-  in your mmir-build.settings file (in your project\'s root\r\n\
-  directory)\r\n\
-  \r\n\
-  Explanation:\r\n\
-   on some Windows 8 systems / Java installations, the \r\n\
-   compilation mechanism for the SCXML files seems to \r\n\
-   be broken.\r\n\
-   However, the compilation can be disabled without\r\n\
-   problems, since the generated JavaScript files\r\n\
-   are not used anymore (only for verifying correct\r\n\
-   SCXML syntax and generating detailed error \r\n\
-   information in case of syntax-errors).\r\n\
 \r\n\
 ';
 
 var jsdoc_message = '\r\n\
 \r\n\
-  INFO: For generating API docs, see [project root]/doc:\r\n\
+  INFO: For generating API docs, see [project root]/build/doc:\r\n\
     ant [jsdoc2 | jsdoc3]\r\n\
 	\r\n\
-  See README.md in [project root]/doc for more information\r\n\
+  See README.md in [project root]/build/doc for more information\r\n\
   on generating docs.\r\n\
 \r\n\
 ';
