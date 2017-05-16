@@ -13,10 +13,13 @@ var requirejs = require;
 var appSrcDir = '{jsSrcDirBase|s|url}';
 var reqInstance = require.config({
 	baseUrl: './' + appSrcDir,
-	paths: {'core': 'core'}
+	paths: {
+		'mmirf/core': 'core',
+		"mmirf/logger": "tools/logger"
+	}
 });
 
-require(['core'], function(core){
+require(['mmirf/core'], function(core){
 
 //	//define "auto-start" module for starting the template processing
 //	// (gets triggered after main-config for requirejs is was applied)
@@ -43,24 +46,12 @@ function doLoadAppConfig(){
 
 	require.config({_buildConfig|s});
 	
-	require(['core', 'logger'], function(core){
+	require(['mmirf/core', 'mmirf/logger'], function(core){
 //		require([core.startModule]);
 		doStartGrammarBuildEnv();
 	});
 
 }
-
-
-////setup and init Jison
-//var _bnf;
-//(function(){
-//	
-//{!jison|s!}
-//	
-//	_bnf = bnf;
-//	definejs('jison',  function(){ return Jison; });
-//						
-//})();
 
 //encapsule build-process (gets triggered after build-paths are configured; see above)
 function doStartGrammarBuildEnv(){
@@ -79,12 +70,12 @@ function doStartGrammarBuildEnv(){
 	// * load dependencies (SemanticInterpreter, jQuery) 
 	// * setup JSON parser (for creating detailed error messages)
 	// * initialize checksum-utils (with loaded dependencies)
-	require(['constants', 'jqueryajax'], function(constants){
+	require(['mmirf/constants', 'mmirf/build/jqueryajax'], function(constants){
 
 		//fix base-dir location (since we do not execute from the main web-directory)
 		constants.init('{appRootDir|s|url}');
 
-		require(['md5', 'jison', 'jsonlint', 'jquery', 'checksumUtils', 'pegjs', 'semanticInterpreter','configurationManager'], function(md5Impl, jison, jsonlint, jquery, checksumUtils){
+		require(['jsonlint', 'jquery', 'mmirf/md5', 'mmirf/jison', 'mmirf/checksumUtils', 'mmirf/pegjs', 'mmirf/semanticInterpreter','mmirf/configurationManager'], function(jsonlint, jquery, md5Impl, jison, checksumUtils){
 			
 			
 //			var bnf = _bnf;
@@ -100,7 +91,6 @@ function doStartGrammarBuildEnv(){
 			//attach deferred-impl. to jquery:
 			jqueryDeferred.extend(jquery, jqueryDeferred);
 			
-//			checksumUtils = require('checksumUtils');
 			checksumUtils.init( md5Impl );
 			
 			//start the standalone-grammar parser / generator: 
