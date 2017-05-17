@@ -1,4 +1,7 @@
 
+mmir-build (MIT License)
+* mmir-build/*
+
 ANTLR
 * antlr-3.3-complete.jar
 
