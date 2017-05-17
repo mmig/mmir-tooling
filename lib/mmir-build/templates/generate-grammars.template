@@ -12,10 +12,10 @@ var requirejs = require;
 //  (may be different than the default value in mainConfig.js)
 var appSrcDir = '{jsSrcDirBase|s|url}';
 var reqInstance = require.config({
-	baseUrl: './' + appSrcDir,
+	baseUrl: './' + appSrcDir.replace(/mmirf\/$/, '/'),
 	paths: {
-		'mmirf/core': 'core',
-		"mmirf/logger": "tools/logger"
+		'mmirf/core': 'mmirf/core',
+		"mmirf/logger": "mmirf/tools/logger"
 	}
 });
 
@@ -31,6 +31,9 @@ require(['mmirf/core'], function(core){
 	
 	//disable tracing in logger-module: (current library stacktrace.js does not support nodejs / TODO repl. with https://www.npmjs.com/package/stack-trace in nodejs env)
 	core.logTrace = false;
+	
+	//set dummy renderer/viewEngine
+	core.viewEngine = 'mmirf/build/viewEngine';
 	
 	core.require = reqInstance;
 	//core._define = define;
