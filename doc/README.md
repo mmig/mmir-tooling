@@ -14,23 +14,41 @@ directory structure should look something like the following
     mmir-build.setings	
 ```
 
-If the directory structure is different, variable `dir.src.in` in
+If the directory structure is different, variable `dir.project.root` in
 `doc.properties` needs to updated accordingly. 
 
-The ANT script creates doc either for jsdoc2 or jsdoc3 (or both)
+The `gulp` script creates docs either for jsdoc2 or jsdoc3 (or a dependency graph)
 
 
-    PROJECT_PATH/build/doc/api_doc2		(for jsdoc2)
-    PROJECT_PATH/build/doc/api_doc3		(for jsdoc3)
+    PROJECT_PATH/build/doc/api_doc2       (for jsdoc2)
+    PROJECT_PATH/build/doc/api_doc3       (for jsdoc3)
+    PROJECT_PATH/mmirf-dependencies.html  (for depDoc)
   
-with targets `doc` (depends on settings), `jsdoc2`, or `jsdoc3`.
+with targets (depends on settings) `gulp jsdoc2`, or `gulp jsdoc3`.
+
+In addition, a dependency graph for the mmir-lib modules can be generated using target `gulp depDoc`.
+
+
+The default target is `jsdoc3`, i.e. this target is selected when running `gulp` without arguments.
 
 
 See `doc.properties` for more properties/options concerning the 
 doc generation.
 
 
-## Requirements
+## Prerequisites
+
+
+These prerequisites are required for automatically generating the doc-files
+
+ * Node.js
+ * Gulp CLI (command line interface)  
+   `npm install -g gulp-cli`
+
+Then, for installing the depedencies, run the following command  
+`npm install`
+
+### Installation and Configuration Details
 
 If the directory
 
@@ -38,14 +56,17 @@ If the directory
 
 is missing, you should run `npm install` in `PROJECT_PATH/build/doc` in order to install
 
+ * gulp
  * jsdoc3
  * jsdoc2 (node-jsdoc-toolkit)
  * template docstrap for jsdoc3
  * template jaguarjs for jsdoc3
+ * dependo
+ * esprima
 
 
 Ideally, you should use the latest jsdoc3 version >= v3.4.0-dev;
-The `npm install` command will take current jsdoc3 repository.
+The `npm install` command will use the current jsdoc3 repository.
 
 
 jsdoc3 is set to use the [docstrap][1] template by default, which is
