@@ -12,25 +12,10 @@ var requirejs = require;
 //  (may be different than the default value in mainConfig.js)
 var appSrcDir = '{jsSrcDirBase|s|url}';
 var reqInstance = require.config({
-	baseUrl: './' + appSrcDir.replace(/mmirf\/$/, '/'),
-	paths: {
-		'mmirf/core': 'mmirf/core',
-		"mmirf/logger": "mmirf/tools/logger"
-	}
+	baseUrl: './' + appSrcDir.replace(/mmirf\/$/, '/')
 });
 
 require(['mmirf/core'], function(core){
-
-//	//define "auto-start" module for starting the template processing
-//	// (gets triggered after main-config for requirejs is was applied)
-//	definejs('doStartBuildProc', function(){
-//		//now: do start the build process:
-//		doStartGrammarBuildEnv();
-//	});
-//	core.startModule = 'doStartBuildProc';
-	
-	//disable tracing in logger-module: (current library stacktrace.js does not support nodejs / TODO repl. with https://www.npmjs.com/package/stack-trace in nodejs env)
-	core.logTrace = false;
 	
 	//set dummy renderer/viewEngine
 	core.viewEngine = 'mmirf/build/viewEngine';
@@ -50,7 +35,6 @@ function doLoadAppConfig(){
 	require.config({_buildConfig|s});
 	
 	require(['mmirf/core', 'mmirf/logger'], function(core){
-//		require([core.startModule]);
 		doStartGrammarBuildEnv();
 	});
 
