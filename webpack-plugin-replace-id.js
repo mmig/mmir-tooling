@@ -2,6 +2,8 @@
 var path = require('path');
 var fs = require('fs');
 
+var dir = __dirname;
+
 var reNormalize = path.sep !== '/'? new RegExp(path.sep.replace(/\\/g, '\\\\'), 'g') : null;
 var idFromPath = function(path){
   if(reNormalize){
@@ -10,11 +12,10 @@ var idFromPath = function(path){
   return path;
 }
 
-// function isDir(path){
-// 	return fs.existsSync(path) && fs.lstatSync(path).isDirectory();
-// }
-
 function getModId(_modPaths, path) {
+	if(!path){
+		return '';
+	}
 	var clpath = path.replace(/\.js$/i, '');
 	clpath = clpath === path? null : clpath;
 	var val;
@@ -29,7 +30,24 @@ function getModId(_modPaths, path) {
 	}
 }
 
-//from https://stackoverflow.com/a/34637718/4278324
+function doGetAbsolutePath(ctxPath, list, id) {
+	var fullpath = path.resolve(ctxPath, id);
+	if(fs.existsSync(fullpath)){
+		return fullpath;
+	}
+	for(var i = 0, size = list.length - 1; i < size; ++i){
+		fullpath = path.resolve(list[i], id);
+		if(fs.existsSync(fullpath)){
+			return fullpath;
+		}
+	}
+}
+
+function getAbsolutePath(compiler, mmirDir, id) {
+	return doGetAbsolutePath(compiler.options.context, [process.cwd(), dir, mmirDir], id);
+}
+
+//based on https://stackoverflow.com/a/34637718/4278324
 
 class ReplaceModuleIdPlugin {
 	constructor(alias, mmirLibDir) {
@@ -43,9 +61,9 @@ class ReplaceModuleIdPlugin {
 			// console.log('ReplaceModuleIdPlugin.beforeModuleIds: ', modules);
 
 			var aliasLookup = this.alias;
-			var dir = __dirname;
+			var cwd = process.cwd();
 
-			// console.log('ReplaceModuleIdPlugin.beforeModuleIds: current dir "'+dir+'", mmir-lib dir "'+this.mmirDir+'", checking '+JSON.stringify(aliasLookup)); //DEBUG
+			// console.log('ReplaceModuleIdPlugin.beforeModuleIds: current dir "'+__dirname+'", mmir-lib dir "'+this.mmirDir+'", checking '+JSON.stringify(aliasLookup)); //DEBUG
 
 			var fix_index;
 
@@ -54,40 +72,26 @@ class ReplaceModuleIdPlugin {
 					var id = path.normalize( module.libIdent({
 						context: compiler.options.context
 					}));
-					var fullpath = path.resolve(dir, id);
-					if(!fs.existsSync(fullpath)){
-						fullpath = path.resolve(this.mmirDir, id);
-					}
+					var fullpath = getAbsolutePath(compiler, this.mmirDir, id);
 
-					// console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ', id, ', fullpath ', path.resolve(targetDir, id)); //, ', module ', module);//DEBUG
+					// console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ', id, ', fullpath ', fullpath); //, ', module ', module);//DEBUG
 
-					// if (fs.existsSync(fullpath)) {
+					var lookUpId = getModId(aliasLookup, fullpath);
 
-						// console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ', id, ', fullpath ', fullpath); //, ', module ', module);//DEBUG
+					// console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
 
-						var lookUpId = getModId(aliasLookup, fullpath);
+					if (lookUpId) {
 
-						// //FIXME
-						// if(!lookUpId && (fix_index = fullpath.indexOf('tools'+path.sep+'util_purejs'))!==-1){
-						// 	lookUpId = 'mmirf/util/' + fullpath.substring(fix_index + ('tools'+path.sep+'util_purejs').length + 1).replace(/\.js/i, '');
-						// 	// console.log('  FIX id -> ', lookUpId);//DEBUG
-						// }
+						// console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ' -> ', lookUpId,', fullpath ', fullpath);//, ', module ', module);//DEBUG
 
-						// console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
+						id = lookUpId;
 
-						if (lookUpId) {
-
-							// console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ' -> ', lookUpId,', fullpath ', fullpath);//, ', module ', module);//DEBUG
-
-							id = lookUpId;
-
-							module.libIdent = function() {
-								return id;
-							}
-
-							module.id = id;
+						module.libIdent = function() {
+							return id;
 						}
-					// }
+
+						module.id = id;
+					}
 				}
 			}, this);
 		};
