@@ -1,10 +1,15 @@
 const path = require('path');
+const process = require('process');
+const _ = require('lodash');
 
 var fileUtils = require('./webpack-filepath-utils.js');
 var appConfigUtils = require('./webpack-app-module-config-utils.js');
+var directoriesJsonUtils = require('./mmir-directories-util.js');
 
 
 var ReplaceModuleIdPlugin = require('./webpack-plugin-replace-id.js');
+
+var VirtualModulePlugin = require('virtual-module-webpack-plugin');
 
 var isDisableLogging = false;
 
@@ -45,7 +50,138 @@ var createResolveAlias = function(mmirAppConfig){
 
 var createModuleRules = function(mmirAppConfig){
 
+	var appRootDir = mmirAppConfig.rootPath || process.cwd();
+
+	var directories = directoriesJsonUtils.createDirectoriesJson();
+
+	//FIXME merge with (optional) configuration from mmirAppConfig
+	var runtimeConfig = {language: 'de'};//FIXME TEST get from & merge with mmirAppConfig
+
+	//FIXME TEST
+	var settingsUtil = require('./settings-utils.js');
+	var settings = settingsUtil.jsonSettingsFromDir({
+		directory: path.resolve('./config'),
+		// configuration: false,
+		// speech: false,
+		//TODO support "gobal" options for exclude, include:'file' (exepting grammars)
+		grammar: {
+			ja: {exclude: true}
+		},
+		// dictionary: true,
+		speech: {
+			de: {exclude: true},
+			en: {include: 'file'}
+		},
+		dictionary: {
+			ja: {include: 'file'}
+		}
+	}, appRootDir);
+	// console.log('JSON settings: ', settings);
+	console.log('JSON configuration setting: ', settingsUtil.getConfiguration(settings));
+
+	//FIXME test multiple configurations:
+	console.log('JSON configuration setting (merge test): adding & merging mmirAppConfig.confiuration ', runtimeConfig);
+	settings.push({type: 'configuration', file: 'dummy_file_path', value: runtimeConfig});//<- push "mmirAppConfig.confiuration" into the end of parsed settings files
+	settingsUtil.normalizeConfigurations(settings);
+	console.log('JSON configuration setting (merge test): ', settingsUtil.getConfiguration(settings));
+	runtimeConfig = settingsUtil.getConfiguration(settings).value;
+
+
+	var grammarUtils = require('./grammar-utils.js');
+	var grammarOptions = mmirAppConfig.grammars;
+	//exmaple:
+	// var grammarOptions = {
+	// 	directory: './config/languages',
+	// 	engine: 'pegjs',
+	// 	grammars: {
+	// 		ja: {ignore: true},
+	// 		de: {exclude: true},
+	// 		en: {engine: 'jison', async: true},
+	//
+	// 		//specifying JSON grammar files directly
+	// 		testing: {engine: 'jscc', file: path.resolve('./config/languages/de/grammar.json')},
+	// 		testing2: {id: '!id warning!', engine: 'jison', file: path.resolve('./config/languages/de/grammar.json_large-example')}
+	// 		// testing_id_collision TODO : {engine: 'jison', file: path.resolve('./config/languages/de/grammar.json_large-example')}
+	//
+	// 	}
+	// };
+
+	//TODO(?):
+			// mmir.semantic = semanticInterpreter;
+			// /** set synchronous/asynchronous compile-mode for grammar compilation
+			//  * @see mmir.SemanticInterpreter#setEngineCompileMode
+			//  * @type Boolean
+			//  * @memberOf main */
+			// var grammarCompileMode = configurationManager.get('grammarAsyncCompileMode');
+			// if(typeof grammarCompileMode !== 'undefined'){
+			// 	semanticInterpreter.setEngineCompileMode(grammarCompileMode);
+			// }
+
+	var grammars = [];
+	if(grammarOptions && grammarOptions.directory){
+		grammarUtils.jsonGrammarsFromDir(grammarOptions, appRootDir, grammars);
+	}
+	if(grammarOptions && grammarOptions.grammars){
+		grammarUtils.jsonGrammarsFromOptions(grammarOptions, appRootDir, grammars);
+	}
+
+	// console.log('JSON grammars: ', grammars, grammarOptions);
+
+	grammarUtils.addGrammarsToAppConfig(grammars, mmirAppConfig, directories, runtimeConfig);
+
+
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	//FIXME include controllers!
+
+	var viewUtils = require('./view-utils.js');
+
+	var viewOptions = mmirAppConfig.views;
+	//exmaple:
+	// var viewOptions = {
+	// 	directory: './views',
+	// }
+
+	var views = [];
+	if(viewOptions && viewOptions.directory){
+		views = viewUtils.viewTemplatesFromDir(viewOptions.directory, appRootDir);
+	}
+
+	//TODO impl./support loading indivual views similar to grammars
+
+	// console.log('view templates: ', views);
+
+	viewUtils.addViewsToAppConfig(views, mmirAppConfig, directories, runtimeConfig);
+
+	//FIXME TEST adding dummy controllers -> TODO load real ones, only create dummy ones if real one is missing
+	var ctrlImpls = viewUtils.getCtrlImpl();
+	// console.log('ctrl-code for view templates: ', ctrlImpls);
+	if(!mmirAppConfig.webpackPlugins){
+		mmirAppConfig.webpackPlugins = [];
+	}
+	ctrlImpls.forEach(function(impl){
+		directoriesJsonUtils.addCtrl(directories, impl.moduleName);
+		mmirAppConfig.webpackPlugins.push(new VirtualModulePlugin(impl));
+	});
+
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	console.log(' configuration.json -> ', JSON.stringify(runtimeConfig));//DEBUG
+	// appConfigUtils.addAppSettings(mmirAppConfig, 'mmirf/settings/configuration', runtimeConfig);
+
+	settingsUtil.addSettingsToAppConfig(settings, mmirAppConfig, directories, runtimeConfig);//, /configuration/i);
+
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	//FIXME TEST
+	// directoriesJsonUtils.addDictionary(directories, 'mmirf/settings/dictionary/en');
+	// console.log(' directories.json -> ', JSON.stringify(directories));//DEBU
+	appConfigUtils.addAppSettings(mmirAppConfig, 'mmirf/settings/directories', directories);
+
+	// console.log('###### mmirAppConfig: '+ JSON.stringify(mmirAppConfig));
+
 	var mmirAppConfigContent = appConfigUtils.generateModuleCode(mmirAppConfig);
+	var appConfigModulePath = fileUtils.normalizePath(path.join(webpackRootDir, 'webpack-app-module-config.js'));
 
 	// console.log('###### creating module webpack-app-module-config.js with contents: '+ JSON.stringify(mmirAppConfigContent));
 
@@ -57,13 +193,11 @@ var createModuleRules = function(mmirAppConfig){
 		return fileUtils.normalizePath(path.join(rootDir, val));
 	});
 
-	var appConfigModulePath = fileUtils.normalizePath(path.join(webpackRootDir, 'webpack-app-module-config.js'));
-
 	var moduleRules = [
 
 		// handle binary files (e.g. *.mp3):
 		{
-			test: fileUtils.createFileTestFunc(binFilePaths, ' for [bin file]'),
+			test: fileUtils.createFileTestFunc(binFilePaths, ' for [raw file]'),
 			use: {
 				loader: 'file-loader',
 				options: {
@@ -72,7 +206,6 @@ var createModuleRules = function(mmirAppConfig){
 						if(file.indexOf(rootDir) === 0){
 							file = file.substring(rootDir.length).replace(/^(\\|\/)/, '');
 						}
-						// console.log('file-loader -> ',file);
 						return file;
 					}
 				}
@@ -96,13 +229,90 @@ var createModuleRules = function(mmirAppConfig){
 			use: {
 				loader: 'raw-loader'
 			}
+		},
+
+		// compile JSON grammars & include executables if necessary:
+		{
+			test: fileUtils.createFileTestFunc(grammars.map(function(g){return g.file;}), ' for [grammar] files]'),
+			use: {
+				loader: './mmir-grammar-loader.js',
+				options: {mapping: grammars, config: grammarOptions},
+			},
+			type: 'javascript/auto'
+		},
+
+		// compile view templates & include if necessary:
+		{
+			test: fileUtils.createFileTestFunc(views.map(function(v){return v.file;}), ' for [view] files]'),
+			use: {
+				loader: './mmir-view-loader.js',
+				options: {mapping: views},
+			},
+			type: 'javascript/auto'
 		}
 
 	];
+
+	var settingsFiles = settings.filter(function(s){return s.include === 'file';});
+	if(settingsFiles && settingsFiles.length > 0){
+
+
+		mmirAppConfig.webpackPlugins.push(function(webpackInstance, alias, mmirAppConfig){
+			return new webpackInstance.NormalModuleReplacementPlugin(
+				/mmirf\/settings\/(configuration|dictionary|grammar|speech)\//i,
+				function(resource) {
+					if(alias[resource.request]){
+
+						console.log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', alias[resource.request]);
+
+						// resource.request = alias[resource.request];//DISABLED hard-rewire request ... instead, add an alias resolver (see below)
+
+						var ca = {};
+						ca[resource.request] = alias[resource.request];
+						resource.resolveOptions = {alias: ca};
+
+						// resource.resource = alias[resource.request];//resource.request;
+						// resource.path = alias[resource.request];//resource.request;
+
+						// var id = resource.request;
+						// resource.libIdent = function() {
+						// 	return id;
+						// }
+					}
+				}
+		)});
+
+		moduleRules.push({
+			test: fileUtils.createFileTestFunc(settings.filter(function(s){return !_.isArray(s.file) && s.type !== 'grammar';}).map(function(s){return s.file;}), ' for [dictionary] files]'),
+			use: {
+				loader: 'file-loader',
+				options: {
+					name: function(file) {
+
+						var ofile = file;//DEBUG
+						var root = __dirname;//webpackRootDir;FIXME
+
+						//use relative path path (from root) in target/output directory for the resouce:
+						if(file.indexOf(root) === 0){
+							file = file.substring(root.length).replace(/^(\\|\/)/, '');
+						}
+						console.log('including [from '+root+'] dictionary file ', ofile , ' -> ', file)//DEBUG
+						return file;
+					}
+				}
+			},
+			type: 'javascript/auto'
+		});
+	}
+
 	return moduleRules;
 }
 
-var createPlugins = function(webpackInstance, alias){
+var createPlugins = function(webpackInstance, alias, mmirAppConfig){
+
+	// var CResolver = require('./webpack-plugin-custom-resolver.js');
+
+	var EncodingPlugin = require('webpack-encoding-plugin');
 
 	var plugins = [
 
@@ -117,7 +327,9 @@ var createPlugins = function(webpackInstance, alias){
 		new webpackInstance.IgnorePlugin(/^xmlhttprequest$/),
 
 		// set custom module-IDs from alias-definitions for mmir-modules (enables mmir.require(<moduleId>))
-		new ReplaceModuleIdPlugin(alias, rootDir),
+		new ReplaceModuleIdPlugin(alias, rootDir, /\.((ehtml)|(js(on)?))$/i),
+
+		// new CResolver(alias),//FIXME TEST
 
 		// set environment variable WEBPACK_BUILD for enabling webpack-specific code
 		new webpackInstance.DefinePlugin({
@@ -137,8 +349,83 @@ var createPlugins = function(webpackInstance, alias){
 				// 	console.log('ingnoring module replacement for ', resource.request);
 				// }
 			}
-		)
+		),
+
+		// // redirect 'mmirf/util/fileLoader'
+		new webpackInstance.NormalModuleReplacementPlugin(
+			/^mmirf\/util\/loadFile(__webpack_proxied)?$/,
+			function(resource) {
+				if(/__webpack_proxied$/.test(resource.request)){
+					var modPath = path.resolve(alias['mmirf/util'], 'loadFile.js');
+					// console.log('------------- replacing module ', resource.request, ' -> ', modPath);
+					resource.request = modPath;
+				} else {
+					// console.log('############# replacing module ', resource.request, ' -> ', path.join(webpackRootDir, 'webpack-loadFile.js'));
+					resource.request = path.join(webpackRootDir, 'webpack-loadFile.js');
+				}
+			}
+		),
+
+		// // FIXME somehow require-ing .ehtml resources (i.e. "mmirf/view/...") is not processed as module-request, so neither normal alias-resolving nor the replace-id plugin is triggered...
+		// //       ... hard-rewire the requires view-IDs to the
+		// new webpackInstance.NormalModuleReplacementPlugin(
+		// 	/mmirf\/view\//i,
+		// 	function(resource) {
+		// 		if(alias[resource.request]){
+		// 			// console.log('NormalModuleReplacementPlugin: redirecting resource -> ', resource);
+		// 			resource.request = alias[resource.request];
+		// 			resource.resource = resource.request;
+		// 		}
+		// 	}
+		// ),
+
+		// FIXME somehow require-ing .ehtml resources (i.e. "mmirf/view/...") is not processed as module-request, so neither normal alias-resolving nor the replace-id plugin is triggered...
+		//       ... hard-rewire the requires view-IDs to the
+		new webpackInstance.NormalModuleReplacementPlugin(
+			/mmirf\/(view|controller|grammar|scxml)\//i,
+			function(resource) {
+				if(alias[resource.request]){
+
+					// console.log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', alias[resource.request]);
+
+					// resource.request = alias[resource.request];//DISABLED hard-rewire request ... instead, add an alias resolver (see below)
+
+					var ca = {};
+					ca[resource.request] = alias[resource.request];
+					resource.resolveOptions = {alias: ca};
+
+					// resource.resource = alias[resource.request];//resource.request;
+					// resource.path = alias[resource.request];//resource.request;
+
+					// var id = resource.request;
+					// resource.libIdent = function() {
+					// 	return id;
+					// }
+				}
+			}
+		),
+
+		// //TEST try to limit/tell webpack the restrictions of require() calls in order to avoid compilation warnings
+		// new webpack.ContextReplacementPlugin(/^mmirf\/()/, (context) => {
+		//   if ( !/\/moment\//.test(context.context) ) return;
+		//
+		//   Object.assign(context, {
+		//     regExp: /^\.\/\w+/,
+		//     request: '../../locale' // resolved relatively
+		//   });
+		// })
+
+		// new EncodingPlugin({
+    //   encoding: 'utf16le'
+    // }),
+
 	];
+
+	if(mmirAppConfig.webpackPlugins){
+		mmirAppConfig.webpackPlugins.forEach(function(p){
+			plugins.push(typeof p === 'function'? p(webpackInstance, alias, mmirAppConfig) : p);
+		})
+	}
 
 	return plugins;
 };
@@ -160,11 +447,29 @@ module.exports = {
 	apply: function(webpackInstance, webpackConfig, mmirAppConfig){
 
 		// console.log('############################## webpack-version: ', JSON.stringify(webpackInstance.version))
+		// console.log('############################## webpack instance: ', webpackInstance)
 
 		var useRulesForLoaders = webpackInstance.version && parseFloat(webpackInstance.version) >= 4? true : false;
 
 		if(typeof mmirAppConfig === 'string'){
 			mmirAppConfig = JSON.parse(mmirAppConfig);
+		} else if(!mmirAppConfig){
+			mmirAppConfig = {};
+		}
+
+		//add loader configurations:
+		// (NOTE must do this before creating alias definition as some loaders may add alias mappings to mmirAppConfig)
+		var moduleRules = createModuleRules(mmirAppConfig);
+		if(!webpackConfig.module){
+			webpackConfig.module = {};
+		}
+		var targetList = webpackConfig.module.rules || (useRulesForLoaders? null : webpackConfig.module.loaders);
+		if(!targetList){
+			targetList = [];
+			webpackConfig.module[useRulesForLoaders? 'rules': 'loaders'] = targetList;
+		}
+		for(var i = 0, size = moduleRules.length; i < size; ++i){
+			targetList.push(moduleRules[i]);
 		}
 
 		//add alias resolving:
@@ -179,22 +484,11 @@ module.exports = {
 			}
 		}
 
-		//add loader configurations:
-		var moduleRules = createModuleRules(mmirAppConfig);
-		if(!webpackConfig.module){
-			webpackConfig.module = {};
-		}
-		var targetList = webpackConfig.module.rules || (useRulesForLoaders? null : webpackConfig.module.loaders);
-		if(!targetList){
-			targetList = [];
-			webpackConfig.module[useRulesForLoaders? 'rules': 'loaders'] = targetList;
-		}
-		for(var i = 0, size = moduleRules.length; i < size; ++i){
-			targetList.push(moduleRules[i]);
-		}
+		// console.log('webpackConfig.resolve.alias: ', JSON.stringify(webpackConfig.resolve.alias));
+
 
 		//add plugins
-		var plugins = createPlugins(webpackInstance, alias);// mmirAppConfig);
+		var plugins = createPlugins(webpackInstance, alias, mmirAppConfig);
 		if(!webpackConfig.plugins){
 			webpackConfig.plugins = plugins;
 		} else {

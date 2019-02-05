@@ -1,3 +1,4 @@
+var _fs = require('fs');
 var _path = require('path');
 var reNormalize = _path.sep !== '/' ? new RegExp(_path.sep.replace(/\\/g, '\\\\'), 'g') : null;
 
@@ -29,7 +30,12 @@ var createFileTestFunc = function(absolutePaths, debugStr){
 	};
 }
 
+var isDirectory = function(path){
+	return _fs.lstatSync(path).isDirectory();
+}
+
 module.exports = {
 	normalizePath: normalizePath,
-	createFileTestFunc: createFileTestFunc
+	createFileTestFunc: createFileTestFunc,
+	isDirectory: isDirectory
 };

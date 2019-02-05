@@ -61,8 +61,22 @@ module.exports = {
 
 		core.applyConfig(defaultConfig);
 
-		core.require = function(module){
-			return __webpack_require__(module);
+		var isArray = require('mmirf/util/isArray');
+
+		core.require = function(deps, onSuccess){
+			var result;
+			if(isArray(deps)){
+				result = deps.map(function(dep){ return __webpack_require__(deps); });
+				if(onSuccess){
+					//simulate async callback invocation
+					setTimeout(function(){
+						onSuccess.apply(null, result);
+					}, 4);
+				}
+			} else {
+			 	result = __webpack_require__(deps);
+			}
+			return result;
 		};
 	}
 };

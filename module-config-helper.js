@@ -1,32 +1,29 @@
 
-// var _modPaths = require('./webpack-resources-paths.js').paths;
+/**
+ * Helper module for adding requirejs' module.config() functionality to webpack-modules:
+ *
+ * this module be injected via ProvidePlugin, so that webpack replaces calls
+ *
+ * module.config(module);
+ *
+ *  -> to something like:
+ *
+ * __webpack_provided_module_dot_config(module);
+ *
+ * NOTE: if webpack cannot statically infer the type as Module, this helper must be invoked explicitly like:
+ *
+ * if(typeof WEBPACK_BUILD !== 'undefined' && WEBPACK_BUILD){
+ * 	require('build-tool/module-config-helper').config(module);
+ * }
+ *
+ */
 
 var _conf = {};
-
-//DISABLED: using webpack-plugin-replace-id.js instead for setting custom/own module IDs during compile time
-// var _cleanStart = /^\.\//;
-// var _cleanEnd = /\.js$/i;
-//
-// function normalizePath(mod){
-// 	return ((mod.i || mod.id) + '').replace(_cleanStart, '').replace(_cleanEnd, '');
-// }
-//
-// function getModId(path){
-// 	if(_modPaths[path]){
-// 		return path;
-// 	}
-// 	for(var p in _modPaths){
-// 		if(_modPaths[p] === path){
-// 			return p;
-// 		}
-// 	}
-// }
 
 module.exports = {
 	config: function(mod){
 		if(mod) {
-			// var path = normalizePath(mod);
-			var id = mod.i || mod.id;// getModId(path);
+			var id = mod.i || mod.id;
 			if(_conf.config && _conf.config[id]){
 				return _conf.config[id];
 			}

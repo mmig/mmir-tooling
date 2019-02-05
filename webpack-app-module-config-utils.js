@@ -5,6 +5,7 @@
  */
 
 var path = require('path');
+var fs = require('fs');
 
 /**
  * [description]
@@ -32,13 +33,50 @@ var generateFromAppConfig = function(mmirAppConfig){
 			var rePrefix = /^mmirf\//;
 			moduleImplStr += 'var doIncludeModules = function(){\n' +
 						mmirAppConfig.includeModules.map(function(incl){
-							incl = rePrefix.test(incl)? incl : 'mmirf/' + incl;
+							incl = rePrefix.test(incl) || fs.existsSync(incl)? incl : 'mmirf/' + incl;
 							return '  require.resolve("'+incl+'");'
 						}).join('\n') +
 				'\n};\n';
 
 			moduleExports.push(['applyIncludes', 'doIncludeModules']);
 			// console.log('app config module -> includeModules: ', moduleImplStr);
+		}
+
+		if(mmirAppConfig.autoLoadModules) {
+			// ['grammar/de'] -> 'var doAutoLoadModules = function(){\n  require("mmirf/grammar/de");\n};\n';
+
+			var rePrefix = /^mmirf\//;
+			moduleImplStr += 'var doAutoLoadModules = function(){\n' +
+						mmirAppConfig.autoLoadModules.map(function(incl){
+							incl = rePrefix.test(incl) || fs.existsSync(incl)? incl : 'mmirf/' + incl;
+							return '  require("'+incl+'");'
+						}).join('\n') +
+				'\n};\n';
+
+			moduleExports.push(['applyAutoLoads', 'doAutoLoadModules']);
+			// console.log('app config module -> doAutoLoadModules: ', moduleImplStr);
+		}
+
+		//DISABLED now supplied via directories.json
+		// if(mmirAppConfig.genViews) {
+		// 	// ['application/login'] -> 'var doGetViews = function(){\n  return ["mmirf/view/application/login"];\n};\n';
+		//
+		// 	var rePrefix = /^mmirf\/view\//;
+		// 	moduleImplStr += 'var doGetViews = function(){\n return [\n' +
+		// 				mmirAppConfig.genViews.map(function(incl){
+		// 					incl = rePrefix.test(incl)? incl : 'mmirf/view/' + incl;
+		// 					return '  "'+incl+'"'
+		// 				}).join(',\n') +
+		// 		'\n];};\n';
+		//
+		// 	moduleExports.push(['getViewModuleIds', 'doGetViews']);
+		// 	// console.log('app config module -> doGetViews: ', moduleImplStr);
+		// }
+
+		if(mmirAppConfig.runtimeSettings) {
+			moduleImplStr += 'var appSettings = ' + JSON.stringify(mmirAppConfig.runtimeSettings, null, 2) + ';\n';
+			moduleExports.push(['settings', 'appSettings']);
+			// console.log('app config module -> settings: ', moduleImplStr);
 		}
 
 		moduleExportsStr = moduleExports.length > 0?
@@ -54,6 +92,7 @@ var generateFromAppConfig = function(mmirAppConfig){
 	}
 
 	// console.log('app config module exports: ', moduleExportsStr);
+	// // console.log('app config module impl.: ', moduleImplStr);
 
 	return moduleImplStr + '\nmodule.exports=' + moduleExportsStr;
 }
@@ -79,9 +118,72 @@ var addAliasFrom = function(mmirAppConfig, alias){
 		// console.log('set paths to -> ', alias);
 	}
 
+	//DISABLED redirection must be handled by NormalModuleReplacementPlugin, because loadFile is not directly require'ed, but vie package (sub) path 'mmirf/util'
+	// //add "proxy" for mmirf/util/loadFile, so that inlined resouces get returned directly:
+	// alias['mmirf/util/loadFile'] = path.resolve('./webpack-loadFile.js');
+	// var origLoadFile = path.resolve(alias['mmirf/util'], 'loadFile.js');
+	// alias['mmirf/util/loadFile__raw'] = origLoadFile;
+
+}
+
+
+function toAliasPath(moduleFilePath){
+	return path.normalize(moduleFilePath);
+}
+
+function addAutoLoadModule(appConfig, id, file){
+	doAddModule(appConfig, 'autoLoadModules', id, file);
+}
+
+function addIncludeModule(appConfig, id, file){
+	doAddModule(appConfig, 'includeModules', id, file);
+}
+
+function doAddModule(appConfig, includeType, id, file){
+
+	if(!appConfig.paths){
+		appConfig.paths = {};
+	}
+
+	if(!appConfig[includeType]){
+		appConfig[includeType] = [];
+	}
+
+	var id = id;
+	appConfig.paths[id] = toAliasPath(file);
+	appConfig[includeType].push(id);
+}
+
+function addAppSettings(appConfig, id, settings){
+
+	if(!appConfig.runtimeSettings){
+		appConfig.runtimeSettings = {};
+	}
+	appConfig.runtimeSettings[id] = settings;
 }
 
 module.exports = {
+	addModulePaths: function(userConfig, mmirAppConfig){
+		if(userConfig.modulePaths){
+			for(var p in userConfig.modulePaths){
+				mmirAppConfig.paths[p] = userConfig.modulePaths[p];
+			}
+		}
+	},
+	addModuleConfigs: function(userConfig, mmirAppConfig){
+		if(userConfig.moduleConfigs){
+			if(!mmirAppConfig.config){
+				mmirAppConfig.config = {};
+			}
+			for(var c in userConfig.moduleConfigs){
+				mmirAppConfig.config[c] = userConfig.moduleConfigs[c];
+			}
+		}
+	},
 	generateModuleCode: generateFromAppConfig,
-	addAliasFrom: addAliasFrom
+	addAliasFrom: addAliasFrom,
+
+	addIncludeModule: addIncludeModule,
+	addAutoLoadModule: addAutoLoadModule,
+	addAppSettings: addAppSettings
 }

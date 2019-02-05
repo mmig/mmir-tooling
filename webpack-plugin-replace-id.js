@@ -12,11 +12,23 @@ var idFromPath = function(path){
   return path;
 }
 
-function getModId(_modPaths, path) {
+function getModId(_modPaths, path, fileExtensions, originalId) {
 	if(!path){
+		// console.log(' ReplaceModuleIdPlugin: handle empty path for (original) ID '+originalId+' -> alias: ', _modPaths[originalId], _modPaths);//DEBUG
+		if(originalId){
+			if(_modPaths[originalId]){
+				// console.log(' ReplaceModuleIdPlugin: handle empty path, but original ID '+originalId+' has module ID entry, using the orginial ID...');//DEBUG
+				return originalId;
+			}
+			var normalizedOrigId = idFromPath(originalId);
+			if(_modPaths[normalizedOrigId]){
+				// console.log(' ReplaceModuleIdPlugin: handle empty path, but normalized original ID '+normalizedOrigId+' has module ID entry, using the normalized ID...');//DEBUG
+				return normalizedOrigId;
+			}
+		}
 		return '';
 	}
-	var clpath = path.replace(/\.js$/i, '');
+	var clpath = path.replace(fileExtensions, '');
 	clpath = clpath === path? null : clpath;
 	var val;
 	for (var p in _modPaths) {
@@ -50,17 +62,19 @@ function getAbsolutePath(compiler, mmirDir, id) {
 //based on https://stackoverflow.com/a/34637718/4278324
 
 class ReplaceModuleIdPlugin {
-	constructor(alias, mmirLibDir) {
+	constructor(alias, mmirLibDir, fileExtensions) {
 		this.alias = alias || {};
 		this.mmirDir = mmirLibDir;
+		this.fileExtensions = fileExtensions;
 	}
 
 	apply(compiler) {
 
 		var processModules = (modules) => {
-			// console.log('ReplaceModuleIdPlugin.beforeModuleIds: ', modules);
+			// console.log('ReplaceModuleIdPlugin.beforeModuleIds: ', modules.filter(function(mod){return /parsingResult/.test(mod.rawRequest)}));
 
 			var aliasLookup = this.alias;
+			var fileExtensions = this.fileExtensions;
 			var cwd = process.cwd();
 
 			// console.log('ReplaceModuleIdPlugin.beforeModuleIds: current dir "'+__dirname+'", mmir-lib dir "'+this.mmirDir+'", checking '+JSON.stringify(aliasLookup)); //DEBUG
@@ -76,13 +90,14 @@ class ReplaceModuleIdPlugin {
 
 					// console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ', id, ', fullpath ', fullpath); //, ', module ', module);//DEBUG
 
-					var lookUpId = getModId(aliasLookup, fullpath);
+					var lookUpId = getModId(aliasLookup, fullpath, fileExtensions, id);
 
-					// console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
+					// if(/application/.test(fullpath)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
+					// if(/application/.test(id)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
 
 					if (lookUpId) {
 
-						// console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ' -> ', lookUpId,', fullpath ', fullpath);//, ', module ', module);//DEBUG
+						// if(/controller/.test(lookUpId)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ' -> ', lookUpId,', fullpath ', fullpath);//, ', module ', module);//DEBUG
 
 						id = lookUpId;
 
@@ -92,6 +107,8 @@ class ReplaceModuleIdPlugin {
 
 						module.id = id;
 					}
+				} else {
+					console.log('[WARN] ReplaceModuleIdPlugin.beforeModuleIds: cannot process module ', module);
 				}
 			}, this);
 		};
