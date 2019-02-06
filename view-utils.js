@@ -26,7 +26,7 @@ function readDir(dir, list, options){
 			}
 			dirs.push({dir: absPath, ctrlName: name, isLayout: isLayout});
 		} else {
-			console.error('unknow file in view root path: ', absPath)
+			console.log('view-utils.addFromDirectory(): unknow file in view root path: ', absPath);
 		}
 	});
 
@@ -48,7 +48,7 @@ function readSubDir(dirs, list, options){
 	files.forEach(function(p){
 		var absPath = path.join(dir, p);
 		if(fileUtils.isDirectory(absPath)){
-			console.error('invalid sub-directory in view-directory: ', absPath);
+			console.log('view-utils.addFromDirectory(): invalid sub-directory in view-directory: ', absPath);
 		} else if(regExprFileExt.test(absPath)) {
 
 			var normalized = fileUtils.normalizePath(absPath);
@@ -80,7 +80,7 @@ function readSubDir(dirs, list, options){
 			});
 
 		} else {
-			console.error('unknown view template file: ', absPath);
+			console.log('view-utils.addFromDirectory(): unknown view template file: ', absPath);
 		}
 	});
 	// console.log('results for dir "'+dir+'" -> ', ids, views);
@@ -224,12 +224,5 @@ module.exports = {
 			list.push(ctrl)
 		});
 		return list;
-	}//,
-
-	// addDirectoriesEntries(directories, views){
-	// 	views.forEach(function(v){
-	// 		directoriesUtil.addView(directories, 'mmirf/view/' + v.id);
-	// 	});
-	// 	// console.log('  viewUtils: directories.json -> ', directories));
-	// }
+	}
 };
