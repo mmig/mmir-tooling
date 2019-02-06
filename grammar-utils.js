@@ -18,15 +18,15 @@ function readDir(dir, list, options){
 		if(fileUtils.isDirectory(absPath)){
 			dirs.push(absPath);
 			return false;
-		} else if(/grammar.json$/i.test(p)){
+		} else if(/grammar\.json$/i.test(p)){
 			var normalized = fileUtils.normalizePath(absPath);
-			var m = /\/([^/]+)\/grammar.json$/i.exec(normalized);
+			var m = /\/([^/]+)\/grammar\.json$/i.exec(normalized);
 			var id = m[1];
 
 			var opt = options && options[id];
-			if(opt && opt.exclude){
+			if(opt && (opt.exclude || opt.file)){
 				//-> ignore/exclude this grammar!
-				console.log('excluding grammar '+id+' at "'+normalized+'"!');//DEBUG
+				console.log('grammar-utils.addFromDirectory(): excluding grammar '+id+' at "'+normalized+'"!');//DEBUG
 				return;//////////////////// EARLY EXIT //////////////////
 			}
 
@@ -72,15 +72,15 @@ function addFromOptions(grammars, list, appRootDir){
 			//TODO verify existence of entry.file?
 
 			if(!contains(list, id)){
-				console.log('grammar-utils.addFromOptions(): adding ', entry);//DEBUG
+				// console.log('grammar-utils.addFromOptions(): adding ', entry);//DEBU
 				list.push(entry)
 			} else {
 				console.error('grammar-utils.addFromOptions(): entry from grammarOptions for ID '+id+' already exists in grammar-list, ignoring entry!');//FIXME proper webpack error/warning
 			}
 		}
-		else {//DEBUG
-			console.log('grammar-utils.addFromOptions(): entry for '+id+' has no file set -> ignore ', g);//DEBUG
-		}
+		// else {//DEBU
+		// 	console.log('grammar-utils.addFromOptions(): entry for '+id+' has no file set -> ignore ', g);//DEBU
+		// }
 	}
 }
 
@@ -197,17 +197,12 @@ module.exports = {
 
 			if(g.async){
 				//TODO support for async execution & configuration
-				console.log('#### grammar-utils: TODO set grammar "'+g.id+'" to async exeution mode');
+				console.log('  #### grammar-utils.addGrammarsToAppConfig(): TODO set grammar "'+g.id+'" to async exeution mode');
 			}
 
 			appConfigUtils.addIncludeModule(appConfig, toAliasId(g), toAliasPath(g));
 
 			directoriesUtil.addGrammar(directories, toAliasId(g));
 		});
-	}//,
-	// addDirectoriesEntries(directories, grammars){
-	// 	grammars.forEach(function(g){
-	// 		directoriesUtil.addGrammar(directories, 'mmirf/grammar/'+g.id);
-	// 	});
-	// }
+	}
 };
