@@ -33,7 +33,7 @@ function readDir(dir, list, options){
 			dirs.push(absPath);
 			return false;
 
-		} else if(/(configuration|dictionary|grammar|speech).json$/i.test(absPath)){
+		} else if(/(configuration|dictionary|grammar|speech)\.json$/i.test(absPath)){
 
 			var id, type;
 			if(isSettingsType('configuration', absPath)){
@@ -183,7 +183,7 @@ function normalizeConfigurations(settingsList){
 		if(c.type === 'configuration'){
 			if(conf){
 
-				console.log("INFO settings-utils: encountered multiple configuration.json definition: merging configuration, some value may get overwritten");
+				// console.log("INFO settings-utils: encountered multiple configuration.json definition: merging configuration, some values may get overwritten");//DEBU
 
 				//if "include" was set to "file", the file contents have not been loaded yet
 				if(!conf.value){
@@ -313,7 +313,7 @@ module.exports = {
 			if(s.type === 'configuration'){
 
 				if(!_.isEqual(s.value, runtimeConfig)){
-					console.log("WARN settings-utils: encountered multiple configuration.json definitions when applying to app-config: merging configuration, some value may get overwritten...");
+					console.log("WARN settings-utils: encountered multiple configuration.json definitions when applying to app-config: merging configuration, some values may get overwritten...");
 					_.merge(s.value, runtimeConfig);
 				}
 				//NOTE configuration.json entry is mandatory, i.e. already set in directories
