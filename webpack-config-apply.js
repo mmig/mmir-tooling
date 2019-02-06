@@ -54,36 +54,22 @@ var createModuleRules = function(mmirAppConfig){
 
 	var directories = directoriesJsonUtils.createDirectoriesJson();
 
-	//FIXME merge with (optional) configuration from mmirAppConfig
-	var runtimeConfig = {language: 'de'};//FIXME TEST get from & merge with mmirAppConfig
+	//get (optional) configuration from mmirAppConfig
+	var runtimeConfig = mmirAppConfig.configuration;//{language: 'de'};
 
-	//FIXME TEST
 	var settingsUtil = require('./settings-utils.js');
-	var settings = settingsUtil.jsonSettingsFromDir({
-		directory: path.resolve('./config'),
-		// configuration: false,
-		// speech: false,
-		//TODO support "gobal" options for exclude, include:'file' (exepting grammars)
-		grammar: {
-			ja: {exclude: true}
-		},
-		// dictionary: true,
-		speech: {
-			de: {exclude: true},
-			en: {include: 'file'}
-		},
-		dictionary: {
-			ja: {include: 'file'}
-		}
-	}, appRootDir);
+	var settingsOptions = mmirAppConfig.settings;
+	var settings = settingsUtil.jsonSettingsFromDir(settingsOptions, appRootDir);
 	// console.log('JSON settings: ', settings);
-	console.log('JSON configuration setting: ', settingsUtil.getConfiguration(settings));
+	// console.log('JSON configuration setting: ', settingsUtil.getConfiguration(settings));
 
-	//FIXME test multiple configurations:
-	console.log('JSON configuration setting (merge test): adding & merging mmirAppConfig.confiuration ', runtimeConfig);
-	settings.push({type: 'configuration', file: 'dummy_file_path', value: runtimeConfig});//<- push "mmirAppConfig.confiuration" into the end of parsed settings files
+	//add configuration from mmirAppConfig for merging, if necessary
+	if(runtimeConfig){
+		// console.log('JSON configuration settings: adding & merging mmirAppConfig.configuration ', runtimeConfig);//DEBU
+		settings.push({type: 'configuration', file: 'configuration://options', value: runtimeConfig});//<- push "mmirAppConfig.confiuration" into the end of parsed settings files
+	}
 	settingsUtil.normalizeConfigurations(settings);
-	console.log('JSON configuration setting (merge test): ', settingsUtil.getConfiguration(settings));
+	// console.log('JSON configuration setting (merge test): ', settingsUtil.getConfiguration(settings));//DEBU
 	runtimeConfig = settingsUtil.getConfiguration(settings).value;
 
 
@@ -132,6 +118,37 @@ var createModuleRules = function(mmirAppConfig){
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
+	var scxmlUtils = require('./scxml-utils.js');
+	var scxmlOptions = mmirAppConfig.stateMachines;
+	//exmaple:
+	// {
+	// 	directory: './config/statedef_large',
+	// 	models: {
+	// 		input: {
+	// 			mode: 'simple',
+	// 			file: './config/statedef_minimal/inputDescriptionSCXML.xml'
+	// 		},
+	// 		dialog: {
+	// 			mode: 'extended'
+	// 		}
+	// 	}
+	// }
+	var scxmlModels = [];
+	if(scxmlOptions && scxmlOptions.directory){
+		// console.log('including SCXML models from directory ', scxmlOptions.directory);//DEBU
+		scxmlUtils.scxmlFromDir(scxmlOptions, appRootDir, scxmlModels);
+	}
+	if(scxmlOptions && scxmlOptions.models){
+		// console.log('including SCXML models from options ', scxmlOptions.models);//DEBU
+		scxmlUtils.scxmlFromOptions(scxmlOptions, appRootDir, scxmlModels);
+	}
+	// console.log('SCXML models: ', scxmlModels, scxmlOptions);//DEBUG
+
+	scxmlUtils.addScxmlToAppConfig(scxmlModels, mmirAppConfig, directories, runtimeConfig);
+
+
+	/////////////////////////////////////////////////////////////////////////////////////
+
 	//FIXME include controllers!
 
 	var viewUtils = require('./view-utils.js');
@@ -166,7 +183,7 @@ var createModuleRules = function(mmirAppConfig){
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	console.log(' configuration.json -> ', JSON.stringify(runtimeConfig));//DEBUG
+	// console.log(' configuration.json -> ', JSON.stringify(runtimeConfig));//DEBU
 	// appConfigUtils.addAppSettings(mmirAppConfig, 'mmirf/settings/configuration', runtimeConfig);
 
 	settingsUtil.addSettingsToAppConfig(settings, mmirAppConfig, directories, runtimeConfig);//, /configuration/i);
@@ -233,7 +250,7 @@ var createModuleRules = function(mmirAppConfig){
 
 		// compile JSON grammars & include executables if necessary:
 		{
-			test: fileUtils.createFileTestFunc(grammars.map(function(g){return g.file;}), ' for [grammar] files]'),
+			test: fileUtils.createFileTestFunc(grammars.map(function(g){return g.file;}), ' for [grammar] files'),
 			use: {
 				loader: './mmir-grammar-loader.js',
 				options: {mapping: grammars, config: grammarOptions},
@@ -243,10 +260,20 @@ var createModuleRules = function(mmirAppConfig){
 
 		// compile view templates & include if necessary:
 		{
-			test: fileUtils.createFileTestFunc(views.map(function(v){return v.file;}), ' for [view] files]'),
+			test: fileUtils.createFileTestFunc(views.map(function(v){return v.file;}), ' for [view] files'),
 			use: {
 				loader: './mmir-view-loader.js',
 				options: {mapping: views},
+			},
+			type: 'javascript/auto'
+		},
+
+		// compile SCXML models & include if necessary:
+		{
+			test: fileUtils.createFileTestFunc(scxmlModels.map(function(s){return s.file;}), ' for [scxml] files'),
+			use: {
+				loader: './mmir-scxml-loader.js',
+				options: {mapping: scxmlModels},
 			},
 			type: 'javascript/auto'
 		}
@@ -263,40 +290,32 @@ var createModuleRules = function(mmirAppConfig){
 				function(resource) {
 					if(alias[resource.request]){
 
-						console.log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', alias[resource.request]);
+						// console.log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', alias[resource.request]);//DEBU
 
 						// resource.request = alias[resource.request];//DISABLED hard-rewire request ... instead, add an alias resolver (see below)
 
 						var ca = {};
 						ca[resource.request] = alias[resource.request];
 						resource.resolveOptions = {alias: ca};
-
-						// resource.resource = alias[resource.request];//resource.request;
-						// resource.path = alias[resource.request];//resource.request;
-
-						// var id = resource.request;
-						// resource.libIdent = function() {
-						// 	return id;
-						// }
 					}
 				}
 		)});
 
 		moduleRules.push({
-			test: fileUtils.createFileTestFunc(settings.filter(function(s){return !_.isArray(s.file) && s.type !== 'grammar';}).map(function(s){return s.file;}), ' for [dictionary] files]'),
+			test: fileUtils.createFileTestFunc(settings.filter(function(s){return !_.isArray(s.file) && s.type !== 'grammar';}).map(function(s){return s.file;}), ' for [language resource] files'),
 			use: {
 				loader: 'file-loader',
 				options: {
 					name: function(file) {
 
-						var ofile = file;//DEBUG
-						var root = __dirname;//webpackRootDir;FIXME
+						// var ofile = file;//DEBU
 
+						var root = appRootDir;
 						//use relative path path (from root) in target/output directory for the resouce:
 						if(file.indexOf(root) === 0){
 							file = file.substring(root.length).replace(/^(\\|\/)/, '');
 						}
-						console.log('including [from '+root+'] dictionary file ', ofile , ' -> ', file)//DEBUG
+						// console.log('including [from '+root+'] dictionary file ', ofile , ' -> ', file)//DEBU
 						return file;
 					}
 				}

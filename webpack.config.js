@@ -39,11 +39,64 @@ var viewOptions = {
 	directory: './views',
 }
 
+//FIXME TEST settings options:
+var settingOptions = {
+	directory: path.resolve('./config'),
+	// configuration: false,
+	// speech: false,
+	//TODO support "gobal" options for exclude, include:'file' (exepting grammars)
+	grammar: {
+		ja: {exclude: true}
+	},
+	// dictionary: true,
+	speech: {
+		de: {exclude: true},
+		en: {include: 'file'}
+	},
+	dictionary: {
+		ja: {include: 'file'}
+	}
+};
+
+//FIXME TEST scxml options
+var stateMachineOptions = {
+	directory: './config/statedef_large',
+	models: {
+		input: {
+			mode: 'simple',
+			file: './config/statedef_minimal/inputDescriptionSCXML.xml'
+		},
+		dialog: {
+			mode: 'extended'
+		}
+	}
+};
+
 //FIXME TEST app-configuratin
 const mmirAppConfig = {
 	grammars: grammarOptions,
 	views: viewOptions,
-	// includeModules: ['mmirf/jsccGen']
+	settings: settingOptions,
+	stateMachines: stateMachineOptions,
+	configuration: {language: 'en'},
+	// includeModules: ['mmirf/jsccGen'],
+
+// 	config: {
+// 		'mmirf/inputManager': {
+// 				scxmlDoc: 'mmirf/scxml/input',//'config/statedef/inputDescriptionSCXML.xml'
+// 				// simple | mode
+// 				mode: 'extended',
+// 				//EXAMPLE: set module-specific log-level to 'info'
+// //		  logLevel: 'info'
+// 		},
+// 		'mmirf/dialogManager': {
+// 				scxmlDoc: 'mmirf/scxml/dialog',//'config/statedef/dialogDescriptionSCXML.xml'
+// 				// simple | mode
+// 				mode: 'extended',
+// 				//EXAMPLE: set module-specific log-level to 'verbose'
+// //		  logLevel: 'verbose'
+// 		}
+// 	}
 };
 
 // require('./webpack-worker-loader-config').apply(webpackConfig);

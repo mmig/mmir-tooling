@@ -107,6 +107,10 @@ function addSpeechConfig(json, reqId){
 	_addPath(json, lpath + '/'  + lang, 'speech.json');
 }
 
+function addScxml(scxml, reqId){
+	_addPath(scxml, spath, reqId + '.js');
+}
+
 module.exports = {
 	addCtrl: addCtrl,
 	addView: addView,
@@ -115,6 +119,7 @@ module.exports = {
 	addJsonGrammar: addJsonGrammar,
 	addDictionary: addDictionary,
 	addSpeechConfig: addSpeechConfig,
+	addScxml: addScxml,
 	createDirectoriesJson: createDirectoriesJson
 	// reset: function(){
 	// 	_json = null;

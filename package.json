@@ -29,6 +29,7 @@
     "build": "webpack"
   },
   "dependencies": {
+    "@scion-scxml/core": "^2.6.22",
     "file-loader": "^2.0.0",
     "iconv-lite": "^0.4.24",
     "lodash": "^4.17.11",
@@ -38,5 +39,9 @@
     "virtual-module-webpack-plugin": "^0.4.1",
     "webpack-encoding-plugin": "^0.2.1",
     "worker-loader": "^2.0.0"
+  },
+  "optionalDependencies": {
+    "iconv-lite": "^0.4.24",
+    "webpack-encoding-plugin": "^0.2.1"
   }
 }
