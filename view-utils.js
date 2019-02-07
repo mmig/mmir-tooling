@@ -105,7 +105,10 @@ function addCtrl(view){//FIXME TEST
 		// ctrl = 'define("mmirf/controller/'+view.ctrlName.toLowerCase()+'", function(){ return function '+view.ctrlName+'(){console.log("creating Controller '+view.ctrlName+'")};})';
 		ctrl = {
 			moduleName: 'mmirf/controller/'+view.ctrlName.toLowerCase(),
-			contents: 'function '+view.ctrlName+'(){console.log("created '+view.ctrlName+'")}; window.'+view.ctrlName+' = '+view.ctrlName+'; module.exports = '+view.ctrlName+';'
+			contents: 'function '+view.ctrlName+'(){console.log("created stub controller '+view.ctrlName+'");}; ' +
+									view.ctrlName + '.prototype.on_page_load = function(){console.log("invoked on_page_load() on stub controller '+view.ctrlName+'")};' +
+									'window.'+view.ctrlName+' = '+view.ctrlName+';' +
+									'module.exports = '+view.ctrlName+';'
 		};
 		controllers.set(view.ctrlName, ctrl);
 	}
@@ -178,40 +181,40 @@ module.exports = {
 			addCtrl(v);//FIXME TEST
 		});
 
-		if(views.length > 0){
+		// if(!appConfig.includeModules){
+		// 	appConfig.includeModules = [];
+		// }
 
-			if(!appConfig.includeModules){
-				appConfig.includeModules = [];
-			}
+		// include dependencies for loading & rendering views:
+		appConfig.includeModules.push('mmirf/storageUtils', 'mmirf/renderUtils');
+		appConfig.includeModules.push('mmirf/yield', 'mmirf/layout', 'mmirf/view', 'mmirf/partial');//TODO only include types that were actually parsed
 
-			// include dependencies for loading & rendering views:
-			appConfig.includeModules.push('mmirf/storageUtils', 'mmirf/renderUtils');
-			appConfig.includeModules.push('mmirf/yield', 'mmirf/layout', 'mmirf/view', 'mmirf/partial');//TODO only include types that were actually parsed
+		//FIXME set simpleViewEngine TODO support setting engine via appConfig
+		require('./webpack-resources-paths.js').paths['mmirf/simpleViewEngine'] = 'env/view/simpleViewEngine'
 
-			if(!appConfig.paths){
-				appConfig.paths = {};
-			}
+		if(!appConfig.paths){
+			appConfig.paths = {};
+		}
 
-			// replace default viewLoader with webpack-viewLoader:
-			appConfig.paths['mmirf/viewLoader'] = path.resolve('viewParser/webpackViewLoader.js');
+		// replace default viewLoader with webpack-viewLoader:
+		appConfig.paths['mmirf/viewLoader'] = path.resolve('viewParser/webpackViewLoader.js');
 
-			// appConfig.paths['mmirf/controllerManager'] = path.resolve('viewParser/webpackCtlrManager.js');
-			// appConfig.paths['mmirf/viewLoader'] = path.join(path.dirname(require.resolve('mmir-lib')), 'env/view/viewLoader');
+		// appConfig.paths['mmirf/controllerManager'] = path.resolve('viewParser/webpackCtlrManager.js');
+		// appConfig.paths['mmirf/viewLoader'] = path.join(path.dirname(require.resolve('mmir-lib')), 'env/view/viewLoader');
 
-			//FIXME TEST:
-			if(controllers.size > 0){
+		//FIXME TEST add generated stub controllers:
+		if(controllers.size > 0){
 
-				controllers.forEach(function(code, name){
-					var id = 'mmirf/controller/'+name.toLowerCase();
-					console.log('adding view controller: ', id);
-					// appConfig.paths[id] = id;// path.resolve('./viewParser/webpackGenCtrl.js');
-					// appConfig.includeModules.push(id);
-					appConfigUtils.addIncludeModule(appConfig, id, id);
-				});
+			controllers.forEach(function(code, name){
+				var id = 'mmirf/controller/'+name.toLowerCase();
+				console.log('adding view controller: ', id);//DEBUG
+				// appConfig.paths[id] = id;// path.resolve('./viewParser/webpackGenCtrl.js');
+				// appConfig.includeModules.push(id);
+				appConfigUtils.addIncludeModule(appConfig, id, id);
+			});
 
-				// var id = 'mmirf/build-tool/gen-controllers';
-				// appConfigUtils.addAutoLoadModule(appConfig, id, path.resolve('./viewParser/webpackGenCtrl.js'));
-			}
+			// var id = 'mmirf/build-tool/gen-controllers';
+			// appConfigUtils.addAutoLoadModule(appConfig, id, path.resolve('./viewParser/webpackGenCtrl.js'));
 		}
 	},
 

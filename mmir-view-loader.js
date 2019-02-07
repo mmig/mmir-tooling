@@ -9,14 +9,20 @@ var Controller = mmir.require('mmirf/controller');
 
 function getCtrl(viewInfo){
 	var name = viewInfo.ctrlName;
-	var ctx = {};
-	ctx[name] = function(){};
+	var constr = function(){};
 	var def = {
 		views: [],
 		partials: [],
 		layout: null
 	};
-	return new Controller(name, def, ctx);
+	try {
+		return new Controller(name, def, constr);
+	} catch(err) {
+		console.log('WARN: deprecated Controller implementation, using context (ctx) instead of instance constructor...');
+		var ctx = {};
+		ctx[name] = constr;
+		return new Controller(name, def, ctx);
+	}
 }
 ///////////////////////////////////////////////////////////////////////////////
 

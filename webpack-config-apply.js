@@ -168,18 +168,41 @@ var createModuleRules = function(mmirAppConfig){
 
 	// console.log('view templates: ', views);
 
+
 	viewUtils.addViewsToAppConfig(views, mmirAppConfig, directories, runtimeConfig);
 
-	//FIXME TEST adding dummy controllers -> TODO load real ones, only create dummy ones if real one is missing
-	var ctrlImpls = viewUtils.getCtrlImpl();
-	// console.log('ctrl-code for view templates: ', ctrlImpls);
-	if(!mmirAppConfig.webpackPlugins){
-		mmirAppConfig.webpackPlugins = [];
-	}
-	ctrlImpls.forEach(function(impl){
-		directoriesJsonUtils.addCtrl(directories, impl.moduleName);
-		mmirAppConfig.webpackPlugins.push(new VirtualModulePlugin(impl));
-	});
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	var implUtils = require('./impl-utils.js');
+
+	var ctrlOptions = mmirAppConfig.controllers;
+	var ctrlList = [];
+	implUtils.implFromDir('controller', ctrlOptions, appRootDir, ctrlList);
+	console.log('controllers: ', ctrlList, ctrlOptions);
+	implUtils.addImplementationsToAppConfig(ctrlList, mmirAppConfig, directories, runtimeConfig);
+
+	var helperOptions = mmirAppConfig.helpers;
+	var helperList = [];
+	implUtils.implFromDir('helper', helperOptions, appRootDir, helperList);
+	console.log('helpers: ', helperList, helperOptions);
+	implUtils.addImplementationsToAppConfig(helperList, mmirAppConfig, directories, runtimeConfig);
+
+	var modelOptions = mmirAppConfig.models;
+	var modelList = [];
+	implUtils.implFromDir('model', modelOptions, appRootDir, modelList);
+	console.log('models: ', modelList, modelOptions);
+	implUtils.addImplementationsToAppConfig(modelList, mmirAppConfig, directories, runtimeConfig);
+
+	// //FIXME TEST adding dummy controllers -> TODO load real ones, only create dummy ones if real one is missing
+	// var ctrlImpls = viewUtils.getCtrlImpl();
+	// // console.log('ctrl-code for view templates: ', ctrlImpls);
+	// if(!mmirAppConfig.webpackPlugins){
+	// 	mmirAppConfig.webpackPlugins = [];
+	// }
+	// ctrlImpls.forEach(function(impl){
+	// 	directoriesJsonUtils.addCtrl(directories, impl.moduleName);
+	// 	mmirAppConfig.webpackPlugins.push(new VirtualModulePlugin(impl));
+	// });
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
@@ -283,6 +306,9 @@ var createModuleRules = function(mmirAppConfig){
 	var settingsFiles = settings.filter(function(s){return s.include === 'file';});
 	if(settingsFiles && settingsFiles.length > 0){
 
+		if(!mmirAppConfig.webpackPlugins){
+			mmirAppConfig.webpackPlugins = [];
+		}
 
 		mmirAppConfig.webpackPlugins.push(function(webpackInstance, alias, mmirAppConfig){
 			return new webpackInstance.NormalModuleReplacementPlugin(
@@ -401,7 +427,7 @@ var createPlugins = function(webpackInstance, alias, mmirAppConfig){
 		// FIXME somehow require-ing .ehtml resources (i.e. "mmirf/view/...") is not processed as module-request, so neither normal alias-resolving nor the replace-id plugin is triggered...
 		//       ... hard-rewire the requires view-IDs to the
 		new webpackInstance.NormalModuleReplacementPlugin(
-			/mmirf\/(view|controller|grammar|scxml)\//i,
+			/mmirf\/(view|controller|grammar|helper|model|scxml)\//i,
 			function(resource) {
 				if(alias[resource.request]){
 

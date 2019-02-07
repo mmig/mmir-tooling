@@ -4,13 +4,10 @@ const webpack = require('webpack');
 var webpackConfig = {
 	mode: 'none',
 	entry: './webpack-main.js', //'./main.js',
-	// resolve: {
-	// 	alias: alias
-	// },
 	output: {
 		filename: 'main.js',
 		path: path.resolve(__dirname, 'dist'),
-		library: "mmir-lib",
+		library: "mmir",
 		libraryTarget: "umd"
 	}
 };
@@ -38,7 +35,6 @@ var grammarOptions = {
 var viewOptions = {
 	directory: './views',
 }
-
 //FIXME TEST settings options:
 var settingOptions = {
 	directory: path.resolve('./config'),
@@ -57,7 +53,6 @@ var settingOptions = {
 		ja: {include: 'file'}
 	}
 };
-
 //FIXME TEST scxml options
 var stateMachineOptions = {
 	directory: './config/statedef_large',
@@ -71,6 +66,30 @@ var stateMachineOptions = {
 		}
 	}
 };
+//FIXME TEST controller options
+var ctrlOptions = {
+	directory: './implementations/controllers',
+	addModuleExprot: true,//TODO
+	controllers: {//TODO
+
+	}
+}
+//FIXME TEST controller options
+var helperOptions = {
+	directory: './implementations/helpers',
+	addModuleExprot: true,//TODO
+	helpers: {//TODO
+
+	}
+}
+//FIXME TEST controller options
+var modelOptions = {
+	directory: './implementations/models',
+	addModuleExprot: true,//TODO
+	model: {//TODO
+
+	}
+}
 
 //FIXME TEST app-configuratin
 const mmirAppConfig = {
@@ -79,6 +98,10 @@ const mmirAppConfig = {
 	settings: settingOptions,
 	stateMachines: stateMachineOptions,
 	configuration: {language: 'en'},
+
+	controllers: ctrlOptions,
+	helpers: helperOptions,
+	models: modelOptions,
 	// includeModules: ['mmirf/jsccGen'],
 
 // 	config: {

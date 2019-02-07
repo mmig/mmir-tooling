@@ -51,6 +51,10 @@ function addCtrl(json, reqId){
 	// console.log('added '+reqId+' to ['+cpath+']: ', json[cpath], ', existing: ', json[cpath].find(function(item){return item === reqId+'.js'}), ' in -> ', json);
 }
 
+function addHelper(json, reqId){
+	_addPath(json, hpath, reqId + '.js');
+}
+
 function addModel(json, reqId){
 	_addPath(json, mpath, reqId + '.js');
 }
@@ -114,6 +118,7 @@ function addScxml(scxml, reqId){
 module.exports = {
 	addCtrl: addCtrl,
 	addView: addView,
+	addHelper: addHelper,
 	addModel: addModel,
 	addGrammar: addGrammar,
 	addJsonGrammar: addJsonGrammar,
