@@ -177,21 +177,37 @@ var createModuleRules = function(mmirAppConfig){
 
 	var ctrlOptions = mmirAppConfig.controllers;
 	var ctrlList = [];
-	implUtils.implFromDir('controller', ctrlOptions, appRootDir, ctrlList);
-	console.log('controllers: ', ctrlList, ctrlOptions);
+	if(ctrlOptions.directory){
+		implUtils.implFromDir('controller', ctrlOptions, appRootDir, ctrlList);
+	}
+	if(ctrlOptions.controllers){
+		implUtils.implFromOptions('controller', ctrlOptions, appRootDir, ctrlList);
+	}
+	console.log('controllers: ', ctrlList, ctrlOptions);//DEBUG
 	implUtils.addImplementationsToAppConfig(ctrlList, mmirAppConfig, directories, runtimeConfig);
 
 	var helperOptions = mmirAppConfig.helpers;
 	var helperList = [];
-	implUtils.implFromDir('helper', helperOptions, appRootDir, helperList);
-	console.log('helpers: ', helperList, helperOptions);
+	if(helperOptions.directory){
+		implUtils.implFromDir('helper', helperOptions, appRootDir, helperList);
+	}
+	if(helperOptions.helpers){
+		implUtils.implFromOptions('helper', helperOptions, appRootDir, helperList);
+	}
+	console.log('helpers: ', helperList, helperOptions);//DEBUG
 	implUtils.addImplementationsToAppConfig(helperList, mmirAppConfig, directories, runtimeConfig);
 
 	var modelOptions = mmirAppConfig.models;
 	var modelList = [];
-	implUtils.implFromDir('model', modelOptions, appRootDir, modelList);
+	if(modelOptions.directory){
+		implUtils.implFromDir('model', modelOptions, appRootDir, modelList);
+	}
+	if(modelOptions.models){
+		implUtils.implFromOptions('model', modelOptions, appRootDir, modelList);
+	}
 	console.log('models: ', modelList, modelOptions);
 	implUtils.addImplementationsToAppConfig(modelList, mmirAppConfig, directories, runtimeConfig);
+	var implList = ctrlList.concat(helperList, modelList);
 
 	// //FIXME TEST adding dummy controllers -> TODO load real ones, only create dummy ones if real one is missing
 	// var ctrlImpls = viewUtils.getCtrlImpl();
@@ -297,6 +313,16 @@ var createModuleRules = function(mmirAppConfig){
 			use: {
 				loader: './mmir-scxml-loader.js',
 				options: {mapping: scxmlModels},
+			},
+			type: 'javascript/auto'
+		},
+
+		// load & pre-process implemetation files if necessary
+		{
+			test: fileUtils.createFileTestFunc(implList.map(function(s){return s.file;}), ' for [controller | helper | model] files'),
+			use: {
+				loader: './mmir-impl-loader.js',
+				options: {mapping: implList},
 			},
 			type: 'javascript/auto'
 		}

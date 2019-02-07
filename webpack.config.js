@@ -68,26 +68,34 @@ var stateMachineOptions = {
 };
 //FIXME TEST controller options
 var ctrlOptions = {
-	directory: './implementations/controllers',
-	addModuleExprot: true,//TODO
+	directory: './implementations_rm-bom/controllers',
+	// addModuleExport: true,//TODO
 	controllers: {//TODO
-
+		application: {
+			addModuleExport: true
+		},
+		calendar: {
+			file: path.resolve('./implementations/controllers/calendar.js')
+		},
+		application2: false,
+		application3: {exclude: true},
 	}
 }
 //FIXME TEST controller options
 var helperOptions = {
-	directory: './implementations/helpers',
-	addModuleExprot: true,//TODO
+	directory: './implementations_rm-bom/helpers',
+	addModuleExport: true,//TODO
 	helpers: {//TODO
-
+		calendarHelper: {exclude: false}
 	}
 }
 //FIXME TEST controller options
 var modelOptions = {
-	directory: './implementations/models',
-	addModuleExprot: true,//TODO
-	model: {//TODO
-
+	directory: './implementations_rm-bom/models',
+	// addModuleExport: true,//TODO
+	models: {//TODO
+		user: {addModuleExport: 'mmir.User'},
+		calendarModel: {addModuleExport: 'mmir.CalendarModel'}
 	}
 }
 

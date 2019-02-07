@@ -7,7 +7,8 @@ var appConfigUtils = require('./webpack-app-module-config-utils.js');
 var directoriesUtil = require('./mmir-directories-util.js');
 var configurationUtil = require('./settings-utils.js');
 
-function readDir(mode, dir, list, options){//mode: 'controller' | 'helper' | 'model'
+//mode: 'controller' | 'helper' | 'model'
+function readDir(mode, dir, list, options, generalOptions){
 
 	var files = fs.readdirSync(dir);
 	var dirs = [];
@@ -41,68 +42,86 @@ function readDir(mode, dir, list, options){//mode: 'controller' | 'helper' | 'mo
 			console.log('impl-utils.addFromDirectory(): parsing '+mode+' implemenation '+id+' at "'+normalized+'"');//DEBUG
 
 			var opt = options && options[id];
-			if(opt && (opt.exclude || opt.file)){
+			if((opt && (opt.exclude || opt.file) || opt === false)){
 				//-> ignore/exclude this impl. file!
 				console.log('impl-utils.addFromDirectory(): excluding '+mode+' implemenation '+id+' at "'+normalized+'"!');
 				return;//////////////////// EARLY EXIT //////////////////
+			}
+
+			var modExport = opt && opt.addModuleExport;
+			if(typeof modExport === 'undefined'){
+				modExport = generalOptions.addModuleExport || false;
 			}
 
 			list.push({
 				id: id,
 				name: toImplName(id),
 				type: mode,
-				file: normalized
+				file: normalized,
+				addModuleExport: modExport
 			});
 		}
 	});
-	// console.log('results for dir "'+dir+'" -> ', ids, grammars);
 
 	// console.log('read sub-dirs -> ', dirs);
 	var size = dirs.length;
 	if(size > 0){
 		for(var i = 0; i < size; ++i){
-			readDir(mode, dirs[i], list, options);
+			readDir(mode, dirs[i], list, options, generalOptions);
 		}
 	}
 }
 
-// function addFromOptions(grammars, list, appRootDir){
-//
-// 	var g, entry;
-// 	for(var id in grammars){
-//
-// 		g = grammars[id];
-// 		if(g && g.file && !g.exclude){
-//
-// 			entry = _.cloneDeep(g);
-// 			if(!path.isAbsolute(entry.file)){
-// 				entry.file = path.resolve(appRootDir, entry.file);
-// 			}
-// 			entry.file = fileUtils.normalizePath(entry.file);
-//
-// 			if(entry.id && entry.id !== id){
-// 				console.error('impl-utils.addFromOptions(): entry from grammarOptions for ID "'+id+'" has differing field id with value "'+entry.id+'", overwritting the id field with "'+id+'"!');//FIXME proper webpack error/warning
-// 			}
-// 			entry.id = id;
-//
-// 			//TODO verify existence of entry.file?
-//
-// 			if(!contains(list, id)){
-// 				// console.log('impl-utils.addFromOptions(): adding ', entry);//DEBU
-// 				list.push(entry)
-// 			} else {
-// 				console.error('impl-utils.addFromOptions(): entry from grammarOptions for ID '+id+' already exists in grammar-list, ignoring entry!');//FIXME proper webpack error/warning
-// 			}
-// 		}
-// 		// else {//DEBU
-// 		// 	console.log('impl-utils.addFromOptions(): entry for '+id+' has no file set -> ignore ', g);//DEBU
-// 		// }
-// 	}
-// }
+function addFromOptions(implMap, list, appRootDir, generalOptions){
 
-function contains(implList, id){
+	var impl, entry;
+	for(var id in implMap){
+
+		impl = implMap[id];
+		if(impl && impl.file && !impl.exclude){
+
+			entry = _.cloneDeep(impl);
+			if(!path.isAbsolute(entry.file)){
+				entry.file = path.resolve(appRootDir, entry.file);
+			}
+			entry.file = fileUtils.normalizePath(entry.file);
+
+			if(entry.id && entry.id !== id){
+				console.error('impl-utils.addFromOptions(): entry from implOptions for ID "'+id+'" has differing field id with value "'+entry.id+'", overwritting the id field with "'+id+'"!');//FIXME proper webpack error/warning
+			}
+			entry.id = id;
+
+			if(!entry.name){
+				entry.name = toImplName(id);
+			}
+
+			if(!/^(controller|helper|model)$/.test(entry.type)){
+				console.error('impl-utils.addFromOptions(): entry from implOptions for ID "'+id+'" has invalid type '+JSON.stringify(entry.type)+', overwritting the type field with "controller"!');//FIXME proper webpack error/warning
+				entry.type = 'controller';
+			}
+
+			if(typeof entry.addModuleExport === 'undefined'){
+				entry.addModuleExport = generalOptions.addModuleExport || false;
+			}
+
+			//TODO verify existence of entry.file?
+
+			if(!contains(list, id, entry.type)){
+				console.log('impl-utils.addFromOptions(): adding ', entry);//DEBUG
+				list.push(entry)
+			} else {
+				console.error('impl-utils.addFromOptions(): entry from implOptions for ID '+id+' already exists in implementation-list, ignoring entry!');//FIXME proper webpack error/warning
+			}
+		}
+		else {//DEBUG
+			console.log('impl-utils.addFromOptions(): entry for '+id+' has no file set -> ignore ', impl);//DEBU
+		}
+	}
+}
+
+function contains(implList, id, type){
 	return implList.findIndex(function(item){
-		return item.id === id;
+		return item.id === id && item.type === type;
 	}) !== -1;
 }
 
@@ -123,40 +142,27 @@ module.exports = {
 	/**
 	 * [description]
 	 * @param  {"controller" | "helper" | "model"} mode the kind of implementation (modules) that the directory contains
-	 * @param  {GrammarOptions} options the grammar options where
+	 * @param  {ImplOptions} options the implementation options where
 	 * 										options.directory: REQUIRED the directory from which to add the implementations, and has the following structure:
 	 * 																				<directory>/<module-id-1>.js
 	 * 																				<directory>/<module-id-2>.js
 	 * 																				...
-	 * 										options.grammars: OPTIONAL a map of grammar IDs, i.e. {[grammarID: string]: GrammarOption} with specific options for compiling the corresponding JSON grammar:
-	 *														options.grammars[id].engine {"jscc" | "jison" | "pegjs"}: OPTIONAL the Grammar engine that will be used to compile the executable grammar.
-	 *																																									DEFAULT: "jscc"
-	 *														options.grammars[id].async {Boolean}: OPTIONAL if <code>true</code>, and the execution environment supports Workers, then the grammar will be loaded
-	 *																																			in a Worker on app start-up, i.e. execution will be asynchronously in a worker-thread
-	 *																																			TODO impl. mechanism
-	 *														options.grammars[id].exclude {Boolean}: OPTIONAL if <code>true</code>, the corresponding grammar will be completely excluded, i.e. no executable grammar will be compiled
-	 *																																				from the corresponding JSON grammar
-	 *														options.grammars[id].ignore {Boolean}: OPTIONAL if <code>true</code>, the grammar will not be loaded
-	 *														                                   (and registered) when the the app is initialized, i.e. needs to be
-	 *														                                   "manually" loaded/initialized by app implementation and/or other mechanisms.
-	 *														                                   If omitted or <code>false</code>, the grammar will be loaded on start-up of the app,
-	 *														                                   and then will be available e.g. via <code>mmir.semantic.interprest(<input phrase string>, <grammar-id>)</code>.
+	 * 										options["controllers" | "helpers" | "models"]: OPTIONAL a map of impl. IDs, i.e. {[implID: string]: ImplOption} with specific options for processing the corresponding implementation:
+	 *														options[types][id].exclude {Boolean}: OPTIONAL if <code>true</code>, the corresponding implementation will be excluded
+	 *														options[types][id].addModuleExport {Boolean|String}: OPTIONAL if <code>true</code>, the implementation will be exported,
+	 *																																				i.e. will be made a "requireable module"; the exported variable will be the impl. name,
+	 *																																				or, if addModuleExport is a String, this String will be used.
 	 * @param {String} appRootDir the root directory of the app (against which relative paths will be resolved)
-	 * @param {Array<GrammarEntry>} [implList] OPTIONAL list of GrammarEntry objects, to which the new entries (read from the options.directory) will be added
+	 * @param {Array<ImplEntry>} [implList] OPTIONAL list of ImplEntry objects, to which the new entries (read from the options.directory) will be added
 	 * 																					if omitted, a new list will be created and returned.
-	 * 										GrammarEntry.id {String}: the grammar id (usually the language code, e.g. "en" or "de")
-	 * 										GrammarEntry.file {String}: the path to the JSON grammar (from which the executable grammar will be created)
-	 * 										GrammarEntry.engine {"jscc" | "jison" | "pegjs"}: OPTIONAL the Grammar engine that will be used to compile the executable grammar.
-	 * 																												DEFAULT: "jscc"
-	 * 										GrammarEntry.ignore {Boolean}: OPTIONAL if <code>true</code>, the grammar will not be loaded
-	 * 										                                   (and registered) when the the app is initialized, i.e. needs to be
-	 * 										                                   "manually" loaded/initialized by app implementation and/or other mechanisms.
-	 * 										                                   If omitted or <code>false</code>, the grammar will be loaded on start-up of the app,
-	 * 										                                   and then will be available e.g. via <code>mmir.semantic.interprest(<input phrase string>, <grammar-id>)</code>.
-	 * 										GrammarEntry.async {Boolean}: OPTIONAL if <code>true</code>, and the execution environment supports Workers, then the grammar will be loaded
-	 * 																												in a Worker on app start-up, i.e. execution will be asynchronously in a worker-thread
-	 * 																												TODO impl. mechanism
-	 * @return {Array<GrammarEntry>} the list of GrammarEntry objects
+	 * 										ImplEntry.id {String}: the implementation ID
+	 * 										ImplEntry.name {String}: the implementation's name (usually the ID with capitalized first letter)
+	 * 										ImplEntry.type {"controller" | "helper" | "model"}: the implementation's type
+	 * 										ImplEntry.file {String}: the path to the implementation's file
+	 *										ImplEntry.addModuleExport {Boolean|String}: OPTIONAL if <code>true</code>, the implementation will be exported,
+	 *																																				i.e. will be made a "requireable module"; the exported variable will be the impl. name,
+	 *																																				or, if addModuleExport is a String, this String will be used.
+	 * @return {Array<ImplEntry>} the list of ImplEntry objects
 	 */
 	implFromDir: function(mode, options, appRootDir, implList){
 
@@ -166,39 +172,33 @@ module.exports = {
 		}
 
 		var list = implList || [];
-		readDir(mode, dir, list, options[mode + 's']);
+		readDir(mode, dir, list, options[mode + 's'], options);
 
 		return list;
 	},
-	// /**
-	//  * add grammars form options.grammar map {[grammarID: string]: GrammarOption}, if the GrammarOption has a <code>file</code> field set.
-	//  * @param  {GrammarOptions} options the grammar options with field options.grammars
-	//  * @param {String} appRootDir the root directory of the app (against which relative paths will be resolved)
-	//  * @param  {{Array<GrammarEntry>}} [implList] OPTIONAL
-	//  * @return {{Array<GrammarEntry>}}
-	//  */
-	// jsonGrammarsFromOptions: function(options, appRootDir, implList){
-	//
-	// 	var grammars = options.grammars;
-	//
-	// 	var list = implList || [];
-	// 	addFromOptions(grammars, list, appRootDir);
-	//
-	// 	return list;
-	// },
+	/**
+	 * add implementations form options[mode+'s'] map {[implID: string]: ImplOption}, if the ImplOption has a <code>file</code> field set.
+	 * @param  {"controller" | "helper" | "model"} mode the kind of implementation (modules) that the directory contains
+	 * @param  {ImplOptions} options the implementation options with field options[mode+'s'], e.g. option.controllers for mode "controller"
+	 * @param {String} appRootDir the root directory of the app (against which relative paths will be resolved)
+	 * @param  {{Array<ImplEntry>}} [implList] OPTIONAL
+	 * @return {{Array<ImplEntry>}}
+	 */
+	implFromOptions: function(mode, options, appRootDir, implList){
+
+		var list = implList || [];
+		addFromOptions(options[mode + 's'], list, appRootDir, options);
+
+		return list;
+	},
 
 	/**
-	 * add grammars to (webpack) app build configuration
+	 * add implementations to (webpack) app build configuration
 	 *
-	 * @param  {Array<GrammarEntry>} grammars list of GrammarEntry objects:
-	 * 										grammar.id {String}: the grammar id (usually the language code, e.g. "en" or "de")
-	 * 										grammar.file {String}: the path to the JSON grammar (from which the executable grammar will be created)
-	 * 										grammar.ignore {Boolean}: OPTIONAL if <code>true</code>, the grammar will not be loaded
-	 * 										                                   (and registered) when the the app is initialized, i.e. needs to be
-	 * 										                                   "manually" loaded/initialized by app implementation and/or other mechanisms.
-	 * 										                                   If omitted or <code>false</code>, the grammar will be loaded on start-up of the app,
-	 * 										                                   and then will be available e.g. via <code>mmir.semantic.interprest(<input phrase string>, <grammar-id>)</code>.
-	 * @param  {[type]} appConfig the app configuration to which the grammars will be added
+	 * @param  {Array<ImplEntry>} implList list of ImplEntry objects:
+	 * 										impl.id {String}: the impl id (usually the language code, e.g. "en" or "de")
+	 * 										impl.file {String}: the path to the JSON impl (from which the executable impl will be created)
+	 * @param  {[type]} appConfig the app configuration to which the implementations will be added
 	 * @param  {[type]} directories the directories.json representation
 	 * @param  {[type]} runtimeConfiguration the configuration.json representation
 	 */
