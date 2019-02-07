@@ -69,8 +69,8 @@ var stateMachineOptions = {
 //FIXME TEST controller options
 var ctrlOptions = {
 	directory: './implementations_rm-bom/controllers',
-	// addModuleExport: true,//TODO
-	controllers: {//TODO
+	// addModuleExport: true,
+	controllers: {
 		application: {
 			addModuleExport: true
 		},
@@ -84,16 +84,16 @@ var ctrlOptions = {
 //FIXME TEST controller options
 var helperOptions = {
 	directory: './implementations_rm-bom/helpers',
-	addModuleExport: true,//TODO
-	helpers: {//TODO
+	addModuleExport: true,
+	helpers: {
 		calendarHelper: {exclude: false}
 	}
 }
 //FIXME TEST controller options
 var modelOptions = {
 	directory: './implementations_rm-bom/models',
-	// addModuleExport: true,//TODO
-	models: {//TODO
+	// addModuleExport: true,
+	models: {
 		user: {addModuleExport: 'mmir.User'},
 		calendarModel: {addModuleExport: 'mmir.CalendarModel'}
 	}
