@@ -95,16 +95,24 @@ module.exports.pitch = function(remainingRequest, precedingRequest, data) {
 	// console.log('mmir-grammer-loader: PITCHing | remaining: ', remainingRequest, ' | preceding: ', precedingRequest, ' | data: ', data);//DEBUG
 	// console.log('mmir-grammer-loader: PITCHing options -> ',loaderUtils.getOptions(this));//DEBUG
 
-	if(!jsonLoaderPath){
-		jsonLoaderPath = fileUtils.normalizePath(require.resolve('json-loader'));
-	}
-
 	//HACK for webpack < 4.x the Rule.type property for indicating the conversion JSON -> javascript is not allowed
 	//     -> for webpack >= 2.x the json-loader may register itself for the JSON grammar which would produce errors
 	//        since it will receive the javascript code emitted by the grammar-loader
 	//     WORKAROUND/HACK: try to detect json-loader, and remove it if present:
 	var options = loaderUtils.getOptions(this);
 	if(options && options.isRuleTypeDisabled){//<- this will be set, if Rule.type had to be removed due to webpack version < 4.x
+
+		if(!jsonLoaderPath){
+			try{
+				jsonLoaderPath = fileUtils.normalizePath(require.resolve('json-loader'));
+			} catch(err){
+				//-> json-loader is not available
+				console.log('mmir-grammer-loader: PITCHing phase, [WARN] json-loader prevention WORKAROUND - options.isRuleTypeDisabled is set, but json-loader module cannot be resolved, arguments: | remainingRequest: ', remainingRequest, ' | precedingRequest: ', precedingRequest, ' | data: ', data);
+				//-> ignore: no use trying to remove json-loader from this.loaders...
+				return;////////////// EARLY EXIT /////////////////////////
+			}
+		}
+
 		for(var i=this.loaders.length-1; i >= 0; --i){
 			// console.log('mmir-grammer-loader: checking loaders at ', i, ' -> ', this.loaders[i]);//DEBUG
 			// for(var n in this.loaders[i]) console.log('mmir-grammer-loader: loaders ', i, '['+n+'] -> ', this.loaders[i][n])//DEBUG
