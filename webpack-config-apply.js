@@ -78,7 +78,7 @@ var createModuleRules = function(mmirAppConfig){
 	var grammarOptions = mmirAppConfig.grammars;
 	//exmaple:
 	// var grammarOptions = {
-	// 	directory: './config/languages',
+	// 	path: './config/languages',
 	// 	engine: 'pegjs',
 	// 	grammars: {
 	// 		ja: {ignore: true},
@@ -105,7 +105,7 @@ var createModuleRules = function(mmirAppConfig){
 			// }
 
 	var grammars = [];
-	if(grammarOptions && grammarOptions.directory){
+	if(grammarOptions && grammarOptions.path){
 		grammarUtils.jsonGrammarsFromDir(grammarOptions, appRootDir, grammars);
 	}
 	if(grammarOptions && grammarOptions.grammars){
@@ -123,7 +123,7 @@ var createModuleRules = function(mmirAppConfig){
 	var scxmlOptions = mmirAppConfig.stateMachines;
 	//exmaple:
 	// {
-	// 	directory: './config/statedef_large',
+	// 	path: './config/statedef_large',
 	// 	models: {
 	// 		input: {
 	// 			mode: 'simple',
@@ -135,8 +135,8 @@ var createModuleRules = function(mmirAppConfig){
 	// 	}
 	// }
 	var scxmlModels = [];
-	if(scxmlOptions && scxmlOptions.directory){
-		// console.log('including SCXML models from directory ', scxmlOptions.directory);//DEBU
+	if(scxmlOptions && scxmlOptions.path){
+		// console.log('including SCXML models from directory ', scxmlOptions.path);//DEBU
 		scxmlUtils.scxmlFromDir(scxmlOptions, appRootDir, scxmlModels);
 	}
 	if(scxmlOptions && scxmlOptions.models){
@@ -157,12 +157,12 @@ var createModuleRules = function(mmirAppConfig){
 	var viewOptions = mmirAppConfig.views;
 	//exmaple:
 	// var viewOptions = {
-	// 	directory: './views',
+	// 	path: './views',
 	// }
 
 	var views = [];
-	if(viewOptions && viewOptions.directory){
-		views = viewUtils.viewTemplatesFromDir(viewOptions.directory, appRootDir);
+	if(viewOptions && viewOptions.path){
+		views = viewUtils.viewTemplatesFromDir(viewOptions.path, appRootDir);
 	}
 
 	//TODO impl./support loading indivual views similar to grammars
@@ -178,7 +178,7 @@ var createModuleRules = function(mmirAppConfig){
 
 	var ctrlOptions = mmirAppConfig.controllers;
 	var ctrlList = [];
-	if(ctrlOptions && ctrlOptions.directory){
+	if(ctrlOptions && ctrlOptions.path){
 		implUtils.implFromDir('controller', ctrlOptions, appRootDir, ctrlList);
 	}
 	if(ctrlOptions && ctrlOptions.controllers){
@@ -189,7 +189,7 @@ var createModuleRules = function(mmirAppConfig){
 
 	var helperOptions = mmirAppConfig.helpers;
 	var helperList = [];
-	if(helperOptions && helperOptions.directory){
+	if(helperOptions && helperOptions.path){
 		implUtils.implFromDir('helper', helperOptions, appRootDir, helperList);
 	}
 	if(helperOptions && helperOptions.helpers){
@@ -200,7 +200,7 @@ var createModuleRules = function(mmirAppConfig){
 
 	var modelOptions = mmirAppConfig.models;
 	var modelList = [];
-	if(modelOptions && modelOptions.directory){
+	if(modelOptions && modelOptions.path){
 		implUtils.implFromDir('model', modelOptions, appRootDir, modelList);
 	}
 	if(modelOptions && modelOptions.models){

@@ -104,7 +104,7 @@ module.exports = {
 	/**
 	 * [description]
 	 * @param  {GrammarOptions} options the grammar options where
-	 * 										options.directory: REQUIRED the directory from which to add the grammars, and has the following structure:
+	 * 										options.path: REQUIRED the directory from which to add the grammars, and has the following structure:
 	 * 																				<directory>/<grammar-id-1>/grammar.json
 	 * 																				<directory>/<grammar-id-2>/grammar.json
 	 * 																				...
@@ -140,7 +140,7 @@ module.exports = {
 	 */
 	jsonGrammarsFromDir: function(options, appRootDir, grammarList){
 
-		var dir = options.directory;
+		var dir = options.path;
 		if(!path.isAbsolute(dir)){
 			dir = path.resolve(appRootDir, dir);
 		}

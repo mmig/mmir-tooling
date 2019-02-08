@@ -17,7 +17,7 @@ var webpackConfig = {
 
 //FIXME TEST grammar options
 var grammarOptions = {
-	directory: './config/languages',
+	path: './config/languages',
 	engine: 'pegjs',
 	grammars: {
 		ja: {ignore: true},
@@ -33,11 +33,11 @@ var grammarOptions = {
 };
 //FIXME TEST view options
 var viewOptions = {
-	directory: './views',
+	path: './views',
 }
 //FIXME TEST settings options:
 var settingOptions = {
-	directory: path.resolve('./config'),
+	path: path.resolve('./config'),
 	// configuration: false,
 	// speech: false,
 	//TODO support "gobal" options for exclude, include:'file' (exepting grammars)
@@ -55,7 +55,7 @@ var settingOptions = {
 };
 //FIXME TEST scxml options
 var stateMachineOptions = {
-	directory: './config/statedef_large',
+	path: './config/statedef_large',
 	models: {
 		input: {
 			mode: 'simple',
@@ -68,7 +68,7 @@ var stateMachineOptions = {
 };
 //FIXME TEST controller options
 var ctrlOptions = {
-	directory: './implementations_rm-bom/controllers',
+	path: './implementations_rm-bom/controllers',
 	// addModuleExport: true,
 	controllers: {
 		application: {
@@ -83,7 +83,7 @@ var ctrlOptions = {
 }
 //FIXME TEST controller options
 var helperOptions = {
-	directory: './implementations_rm-bom/helpers',
+	path: './implementations_ORIG/helpers',
 	addModuleExport: true,
 	helpers: {
 		calendarHelper: {exclude: false}
@@ -91,7 +91,7 @@ var helperOptions = {
 }
 //FIXME TEST controller options
 var modelOptions = {
-	directory: './implementations_rm-bom/models',
+	path: './implementations_ORIG/models',
 	// addModuleExport: true,
 	models: {
 		user: {addModuleExport: 'mmir.User'},

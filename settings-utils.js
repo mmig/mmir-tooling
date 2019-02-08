@@ -241,8 +241,8 @@ module.exports = {
 	/**
 	 * parse for JSON settings files
 	 *
-	 * @param  {SetttingsOptions} options the settings-options with field options.directory:
-	 *                                  options.directory: {String} the directory to parse for JSON settings
+	 * @param  {SetttingsOptions} options the settings-options with field options.path:
+	 *                                  options.path: {String} the directory to parse for JSON settings
 	 *                                  opionts.configuration: {Boolean | SettingsEntryOptions} options for the configuration.json entry
 	 *                                  opionts.dictionary: {Boolean | {[id: String: SettingsEntryOptions}} options-map for the dictionary.json entries where id is (usually) the language code
 	 *                                  opionts.grammar: {Boolean | {[id: String: SettingsEntryOptions}} options-map for the grammar.json entries where id is (usually) the language code
@@ -262,7 +262,7 @@ module.exports = {
 	 */
 	jsonSettingsFromDir: function(options, appRootDir, settingsList){
 
-		var dir = options.directory;
+		var dir = options.path;
 		if(!path.isAbsolute(dir)){
 			dir = path.resolve(appRootDir, dir);
 		}

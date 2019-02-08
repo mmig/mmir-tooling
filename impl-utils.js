@@ -143,7 +143,7 @@ module.exports = {
 	 * [description]
 	 * @param  {"controller" | "helper" | "model"} mode the kind of implementation (modules) that the directory contains
 	 * @param  {ImplOptions} options the implementation options where
-	 * 										options.directory: REQUIRED the directory from which to add the implementations, and has the following structure:
+	 * 										options.path: REQUIRED the directory from which to add the implementations, and has the following structure:
 	 * 																				<directory>/<module-id-1>.js
 	 * 																				<directory>/<module-id-2>.js
 	 * 																				...
@@ -166,7 +166,7 @@ module.exports = {
 	 */
 	implFromDir: function(mode, options, appRootDir, implList){
 
-		var dir = options.directory;
+		var dir = options.path;
 		if(!path.isAbsolute(dir)){
 			dir = path.resolve(appRootDir, dir);
 		}

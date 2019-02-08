@@ -103,7 +103,7 @@ module.exports = {
 	/**
 	 * [description]
 	 * @param  {ScxmlOptions} options the SCXML model options where
-	 * 										options.directory: REQUIRED the directory from which to add the scxmlModels, and has the following structure:
+	 * 										options.path: REQUIRED the directory from which to add the scxmlModels, and has the following structure:
 	 * 																				<directory>/../dialogDescriptionSCXML.xml
 	 * 																				<directory>/../inputDescriptionSCXML.xml
 	 * 																				...
@@ -122,7 +122,7 @@ module.exports = {
 	 */
 	scxmlFromDir: function(options, appRootDir, scxmlModels){
 
-		var dir = options.directory;
+		var dir = options.path;
 		if(!path.isAbsolute(dir)){
 			dir = path.resolve(appRootDir, dir);
 		}
