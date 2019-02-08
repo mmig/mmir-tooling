@@ -21,6 +21,8 @@ var webpackDefaultPaths = {
 	'mmirf/templateLexer':  path.resolve(__dirname, 'viewParser/MmirTemplateLexer_amd'),
 	'mmirf/templateParser': path.resolve(__dirname, 'viewParser/MmirTemplateParser_amd'),
 
+	'mmirf/util/resourceLoader': path.resolve(__dirname, 'webpack-loadFile'),
+
 	'build-tool/module-config-helper':         path.resolve(__dirname, 'module-config-helper'),
 	'build-tool/webpack-helper-module-config': path.resolve(__dirname, 'webpack-helper-module-config'),
 	'build-tool/webpack-app-config':           path.resolve(__dirname, 'webpack-app-module-config')
