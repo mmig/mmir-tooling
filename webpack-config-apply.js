@@ -57,6 +57,15 @@ var createModuleRules = function(mmirAppConfig){
 	//get (optional) configuration from mmirAppConfig
 	var runtimeConfig = mmirAppConfig.configuration;//{language: 'de'};
 
+	//parse resources directory (if specified) for detecting default mmir resouce structrue/resource options:
+	var resourceUtils = require('./resources-config-utils.js');
+	if(mmirAppConfig.resourcesPath){
+		console.log('parsing resources directory: ', mmirAppConfig.resourcesPath, ', current app-config: ', mmirAppConfig);//DEBUG
+		var genAppConfig = resourceUtils.resourcePathsFrom(mmirAppConfig.resourcesPath, mmirAppConfig.resourcesPathOptions);
+		resourceUtils.mergeResourceConfigs(mmirAppConfig, genAppConfig);
+		console.log('adding results from parsing resources directory: ', genAppConfig, ' -> ', mmirAppConfig);//DEBUG
+	}
+
 	var settingsUtil = require('./settings-utils.js');
 	var settingsOptions = mmirAppConfig.settings;
 	var settings = settingsUtil.jsonSettingsFromDir(settingsOptions, appRootDir);

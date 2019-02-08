@@ -102,14 +102,34 @@ var modelOptions = {
 //FIXME TEST app-configuratin
 const mmirAppConfig = {
 	grammars: grammarOptions,
-	views: viewOptions,
-	settings: settingOptions,
-	stateMachines: stateMachineOptions,
-	configuration: {language: 'en'},
+	// views: viewOptions,
+	// settings: settingOptions,
+	// stateMachines: stateMachineOptions,
+	// configuration: {language: 'en'},
+	//
+	// controllers: ctrlOptions,
+	// helpers: helperOptions,
+	// models: modelOptions,
 
-	controllers: ctrlOptions,
-	helpers: helperOptions,
-	models: modelOptions,
+
+	resourcesPath: 'test-www',
+	resourcesPathOptions: {
+		addModuleExport: true,
+		// exclude: ['models', 'settings/grammar']
+	},
+	// models: false,
+	controllers: {
+		path: false,
+		controllers: {
+			application: {
+				addModuleExport: true
+			},
+			calendar: {
+				file: path.resolve('./implementations/controllers/calendar.js')
+			}
+		}
+	},
+
 	// includeModules: ['mmirf/jsccGen'],
 
 // 	config: {
