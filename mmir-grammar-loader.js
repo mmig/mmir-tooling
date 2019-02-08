@@ -113,8 +113,8 @@ module.exports = function(content, map, meta) {
 	// var async = grammarInfo.async || (options.config && options.config.async) || /*default: */ false;
 	// async = true;//FIXME currently WebWorker library does not handle relative paths for importScripts() correctly -> DISABLE async mode
 
-	var async = asyncSupport;
-  // console.log('mmir-grammer-loader: using '+(async? 'async' : 'SYNC')+' mode ('+engine+') for grammar "'+grammarInfo.id+'" ...');//DEBUG
+	var async = asyncSupport && (!options.config || options.config.asyncCompile !== false);
+  console.log('mmir-grammer-loader: using '+(async? 'async' : 'SYNC')+' mode ('+engine+') for grammar "'+grammarInfo.id+'" ...');//DEBUG
 
   semantic.setGrammarEngine(engine, async);
 
