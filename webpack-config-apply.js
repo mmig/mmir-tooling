@@ -282,49 +282,59 @@ var createModuleRules = function(mmirAppConfig){
 			use: {
 				loader: 'raw-loader'
 			}
-		},
+		}
 
+	];
+
+	if(grammars.length > 0){
 		// compile JSON grammars & include executables if necessary:
-		{
+		moduleRules.push({
 			test: fileUtils.createFileTestFunc(grammars.map(function(g){return g.file;}), ' for [grammar] files'),
 			use: {
-				loader: path.resolve(webpackRootDir, 'mmir-grammar-loader.js'),
+				loader: path.resolve(webpackRootDir, 'mmir-grammar-loader.js'),
 				options: {mapping: grammars, config: grammarOptions},
-			},
+			},
 			type: 'javascript/auto'
-		},
+		});
+	}
 
+
+	if(views.length > 0){
 		// compile view templates & include if necessary:
-		{
+		moduleRules.push({
 			test: fileUtils.createFileTestFunc(views.map(function(v){return v.file;}), ' for [view] files'),
 			use: {
 				loader: path.resolve(webpackRootDir, 'mmir-view-loader.js'),
 				options: {mapping: views},
 			},
 			type: 'javascript/auto'
-		},
+		});
+	}
 
+	if(scxmlModels.length > 0){
 		// compile SCXML models & include if necessary:
-		{
+		moduleRules.push({
 			test: fileUtils.createFileTestFunc(scxmlModels.map(function(s){return s.file;}), ' for [scxml] files'),
 			use: {
 				loader: path.resolve(webpackRootDir, 'mmir-scxml-loader.js'),
 				options: {mapping: scxmlModels},
 			},
 			type: 'javascript/auto'
-		},
+		});
+	}
+	//FIXME TODO: else include default/minimal state engines
 
+	if(implList.length > 0){
 		// load & pre-process implemetation files if necessary
-		{
+		moduleRules.push({
 			test: fileUtils.createFileTestFunc(implList.map(function(s){return s.file;}), ' for [controller | helper | model] files'),
 			use: {
 				loader: path.resolve(webpackRootDir, 'mmir-impl-loader.js'),
 				options: {mapping: implList},
 			},
 			type: 'javascript/auto'
-		}
-
-	];
+		});
+	}
 
 	var settingsFiles = settings.filter(function(s){return s.include === 'file';});
 	if(settingsFiles && settingsFiles.length > 0){
@@ -456,19 +466,9 @@ var createPlugins = function(webpackInstance, alias, mmirAppConfig){
 
 					// console.log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', alias[resource.request]);
 
-					// resource.request = alias[resource.request];//DISABLED hard-rewire request ... instead, add an alias resolver (see below)
-
 					var ca = {};
 					ca[resource.request] = alias[resource.request];
 					resource.resolveOptions = {alias: ca};
-
-					// resource.resource = alias[resource.request];//resource.request;
-					// resource.path = alias[resource.request];//resource.request;
-
-					// var id = resource.request;
-					// resource.libIdent = function() {
-					// 	return id;
-					// }
 				}
 			}
 		),
