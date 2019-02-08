@@ -5,7 +5,45 @@ var fileUtils = require('./webpack-filepath-utils.js');
 var mmir = require('./mmir-init.js');
 var semantic = mmir.require('mmirf/semanticInterpreter');
 
-var idGenCounter = 0;
+//////// async / threaded grammar compiler support: ////////////////
+var asyncSupport = false;
+try {
+	// console.log('#################### start detecting async grammar support...')
+	var Threads = require('webworker-threads');
+	var thread = Threads.create();
+	thread.eval(function testAsync(){return true;}).eval('testAsync()', function(err, result){
+		// console.log('#################### detected async grammar support -> ', result, ', error? -> ', err);
+		thread.destroy();
+	});
+
+	//if we are here, assume that webworker-threads has been properly installed & compiled (i.e. is available)
+	asyncSupport = true;
+
+} catch(err){
+	// console.log('#################### no support for async grammar generation');//DEBUG
+}
+
+//helpers for keeping track of pending grammar-compile tasks when in async compile mode
+// -> will not try to destroy the compiler thread as long as there a still tasks for that compiler engine
+function createPendingAsyncGrammarsInfo(){
+	return {
+		jison: 0,
+		jscc: 0,
+		pegjs: 0,
+		reset: function(){
+			this.jison = 0;
+			this.jscc = 0;
+			this.pegjs = 0;
+		}
+	};
+}
+var pendingAsyncGrammars;
+//////// END: async / threaded grammar compiler ////////////////
+
+
+function getEngine(grammarInfo, options){
+	return grammarInfo.engine || (options.config && options.config.engine) || /*default: */ 'jscc';
+}
 
 module.exports = function(content, map, meta) {
 	var callback = this.async();
@@ -22,6 +60,10 @@ module.exports = function(content, map, meta) {
 		return;/////////////// EARLY EXIT /////////////////
   }
   // console.log('mmir-grammer-loader: ', JSON.stringify(grammar));
+
+
+	// var loaderData = this.data;
+	// console.log('mmir-grammer-loader: this.data -> ', this.data);
 
 	var options = loaderUtils.getOptions(this) || {};
 	// console.log('mmir-grammer-loader: options -> ', options);//DEBUG
@@ -65,12 +107,14 @@ module.exports = function(content, map, meta) {
 			// TODO add ignored (and excluded) grammars to ignore-list of mmir.conf
 			// var ignoreGrammarIds = configurationManager.get('ignoreGrammarFiles', void(0));
 
-	var engine = grammarInfo.engine || (options.config && options.config.engine) || /*default: */ 'jscc';
+	var engine = getEngine(grammarInfo, options);
   // console.log('mmir-grammer-loader: setting compiler "'+engine+'" for grammar "'+grammarInfo.id+'"...');//DEBUG
 
-	var async = grammarInfo.async || (options.config && options.config.async) || /*default: */ false;
-	async = false;//FIXME currently WebWorker library does not handle relative paths for importScripts() correctly -> DISABLE async mode
-  // console.log('mmir-grammer-loader: setting async mode to '+async+' for grammar "'+grammarInfo.id+'"...');//DEBUG
+	// var async = grammarInfo.async || (options.config && options.config.async) || /*default: */ false;
+	// async = true;//FIXME currently WebWorker library does not handle relative paths for importScripts() correctly -> DISABLE async mode
+
+	var async = asyncSupport;
+  // console.log('mmir-grammer-loader: using '+(async? 'async' : 'SYNC')+' mode ('+engine+') for grammar "'+grammarInfo.id+'" ...');//DEBUG
 
   semantic.setGrammarEngine(engine, async);
 
@@ -82,8 +126,24 @@ module.exports = function(content, map, meta) {
 		var grammarCode = ';' + result.js_grammar_definition;
     // console.log('mmir-grammer-loader: grammar code size ', grammarCode.length);//DEBUG
 
+		// try{
+			if(async){
+				var pending = pendingAsyncGrammars;
+				--pending[engine];
+				// console.log('mmir-grammer-loader: updated pending async grammar ('+engine+') for grammar "'+grammarInfo.id+'": ', pending);//DEBUG
+				if(pending[engine] <= 0){
+					// console.log('mmir-grammer-loader: stopping grammer generator for '+engine+'...');//DEBUG
+					mmir.require('mmirf/'+engine+'AsyncGen').destroy();
+				}
+			}
+		// } catch(err){
+		// 	console.log('could not destroy async grammar engine '+engine, err);//DEBUG
+		// }
+
+		// console.log('mmir-grammer-loader: emitting grammar code for ('+engine+') for grammar "'+grammarInfo.id+'"...');//DEBUG
+
     callback(null, grammarCode, map, meta);
-  })
+  });
 
   return;
 };
@@ -94,6 +154,21 @@ module.exports.pitch = function(remainingRequest, precedingRequest, data) {
 
 	// console.log('mmir-grammer-loader: PITCHing | remaining: ', remainingRequest, ' | preceding: ', precedingRequest, ' | data: ', data);//DEBUG
 	// console.log('mmir-grammer-loader: PITCHing options -> ',loaderUtils.getOptions(this));//DEBUG
+
+	if(asyncSupport && !pendingAsyncGrammars){
+		var options = loaderUtils.getOptions(this);
+		// console.log('mmir-grammer-loader: PITCHing [ASYNC PREPARATION] options -> ', options);//DEBUG
+		var pending = createPendingAsyncGrammarsInfo();
+		if(options && options.mapping){
+			options.mapping.forEach(function(g){
+				var engine = getEngine(g, options);
+				++pending[engine];
+			});
+			// data.pendingAsyncGrammars = pending;
+			pendingAsyncGrammars = pending;//NOTE: store into "global"/module var, since this should keep trac of all ALL pending grammar jobs, not just the current one
+			// console.log('mmir-grammer-loader: PITCHing [ASYNC PREPARATION] pending grammars -> ', pendingAsyncGrammars, data);//DEBUG
+		}
+	}
 
 	//HACK for webpack < 4.x the Rule.type property for indicating the conversion JSON -> javascript is not allowed
 	//     -> for webpack >= 2.x the json-loader may register itself for the JSON grammar which would produce errors
@@ -107,7 +182,7 @@ module.exports.pitch = function(remainingRequest, precedingRequest, data) {
 				jsonLoaderPath = fileUtils.normalizePath(require.resolve('json-loader'));
 			} catch(err){
 				//-> json-loader is not available
-				console.log('mmir-grammer-loader: PITCHing phase, [WARN] json-loader prevention WORKAROUND - options.isRuleTypeDisabled is set, but json-loader module cannot be resolved, arguments: | remainingRequest: ', remainingRequest, ' | precedingRequest: ', precedingRequest, ' | data: ', data);
+				// console.log('mmir-grammer-loader: PITCHing phase, [WARN] json-loader prevention WORKAROUND - options.isRuleTypeDisabled is set, but json-loader module cannot be resolved, arguments: | remainingRequest: ', remainingRequest, ' | precedingRequest: ', precedingRequest, ' | data: ', data);
 				//-> ignore: no use trying to remove json-loader from this.loaders...
 				return;////////////// EARLY EXIT /////////////////////////
 			}
