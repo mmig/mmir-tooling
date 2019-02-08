@@ -39,7 +39,6 @@ function readDir(dir, list, options){
 			});
 		}
 	});
-	// console.log('results for dir "'+dir+'" -> ', ids, grammars);
 
 	// console.log('read sub-dirs -> ', dirs);
 	var size = dirs.length;
