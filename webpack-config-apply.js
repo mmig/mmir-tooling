@@ -9,7 +9,6 @@ var directoriesJsonUtils = require('./mmir-directories-util.js');
 
 var ReplaceModuleIdPlugin = require('./webpack-plugin-replace-id.js');
 
-var VirtualModulePlugin = require('virtual-module-webpack-plugin');
 
 var isDisableLogging = false;
 
@@ -150,30 +149,6 @@ var createModuleRules = function(mmirAppConfig){
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	//FIXME include controllers!
-
-	var viewUtils = require('./view-utils.js');
-
-	var viewOptions = mmirAppConfig.views;
-	//exmaple:
-	// var viewOptions = {
-	// 	path: './views',
-	// }
-
-	var views = [];
-	if(viewOptions && viewOptions.path){
-		views = viewUtils.viewTemplatesFromDir(viewOptions.path, appRootDir);
-	}
-
-	//TODO impl./support loading indivual views similar to grammars
-
-	// console.log('view templates: ', views);
-
-
-	viewUtils.addViewsToAppConfig(views, mmirAppConfig, directories, runtimeConfig);
-
-	/////////////////////////////////////////////////////////////////////////////////////
-
 	var implUtils = require('./impl-utils.js');
 
 	var ctrlOptions = mmirAppConfig.controllers;
@@ -210,16 +185,28 @@ var createModuleRules = function(mmirAppConfig){
 	implUtils.addImplementationsToAppConfig(modelList, mmirAppConfig, directories, runtimeConfig);
 	var implList = ctrlList.concat(helperList, modelList);
 
-	// //FIXME TEST adding dummy controllers -> TODO load real ones, only create dummy ones if real one is missing
-	// var ctrlImpls = viewUtils.getCtrlImpl();
-	// // console.log('ctrl-code for view templates: ', ctrlImpls);
-	// if(!mmirAppConfig.webpackPlugins){
-	// 	mmirAppConfig.webpackPlugins = [];
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	//FIXME include controllers!
+
+	var viewUtils = require('./view-utils.js');
+
+	var viewOptions = mmirAppConfig.views;
+	//exmaple:
+	// var viewOptions = {
+	// 	path: './views',
 	// }
-	// ctrlImpls.forEach(function(impl){
-	// 	directoriesJsonUtils.addCtrl(directories, impl.moduleName);
-	// 	mmirAppConfig.webpackPlugins.push(new VirtualModulePlugin(impl));
-	// });
+
+	var views = [];
+	if(viewOptions && viewOptions.path){
+		views = viewUtils.viewTemplatesFromDir(viewOptions.path, appRootDir);
+	}
+
+	//TODO impl./support loading indivual views similar to grammars
+
+	// console.log('view templates: ', views);
+
+	viewUtils.addViewsToAppConfig(views, ctrlList, mmirAppConfig, directories, runtimeConfig);
 
 	/////////////////////////////////////////////////////////////////////////////////////
 

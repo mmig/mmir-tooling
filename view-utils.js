@@ -5,6 +5,13 @@ var fileUtils = require('./webpack-filepath-utils.js');
 var appConfigUtils = require('./webpack-app-module-config-utils.js');
 var directoriesUtil = require('./mmir-directories-util.js');
 
+var VirtualModulePlugin;
+function initVirtualModulePlugin(){
+	if(!VirtualModulePlugin){
+		VirtualModulePlugin = require('virtual-module-webpack-plugin');
+	}
+}
+
 var isPartialView = function(name){
 	return name.charAt(0) == '~';
 };
@@ -94,23 +101,33 @@ function toAliasId(view){
 	return 'mmirf/view/' + view.id;//FIXME formalize IDs for loading views in webpack (?)
 }
 
+function containsCtrl(ctrlName, ctrlList){
+	return ctrlList.findIndex(function(c){
+		return c.name === ctrlName;
+	}) !== -1;
+}
 
-var controllers = new Map();//FIXME TEST
-function addCtrl(view){//FIXME TEST
+function addCtrlStub(view, ctrlList, ctrlMap){
+
 	if(view.isLayout){
 		return;
 	}
-	var ctrl = controllers.get(view.ctrlName);
+
+	if(containsCtrl(view.ctrlName, ctrlList)){
+		return;
+	}
+
+	var ctrl = ctrlMap.get(view.ctrlName);
+	var isDebug = true;//DEBUG TODO make configurable/settable via options
 	if(!ctrl){
-		// ctrl = 'define("mmirf/controller/'+view.ctrlName.toLowerCase()+'", function(){ return function '+view.ctrlName+'(){console.log("creating Controller '+view.ctrlName+'")};})';
 		ctrl = {
-			moduleName: 'mmirf/controller/'+view.ctrlName.toLowerCase(),
-			contents: 'function '+view.ctrlName+'(){console.log("created stub controller '+view.ctrlName+'");}; ' +
-									view.ctrlName + '.prototype.on_page_load = function(){console.log("invoked on_page_load() on stub controller '+view.ctrlName+'")};' +
-									'window.'+view.ctrlName+' = '+view.ctrlName+';' +
+			moduleName: 'mmirf/controller/'+view.ctrlName[0].toLowerCase()+view.ctrlName.substring(1),
+			contents: 'function '+view.ctrlName+'(){'+(isDebug? 'console.log("created stub controller '+view.ctrlName+'");' : '')+'}; ' +
+									view.ctrlName + '.prototype.on_page_load = function(){'+(isDebug? 'console.log("invoked on_page_load() on stub controller '+view.ctrlName+'");' : '')+'};' +
+									// 'window.'+view.ctrlName+' = '+view.ctrlName+';' +
 									'module.exports = '+view.ctrlName+';'
 		};
-		controllers.set(view.ctrlName, ctrl);
+		ctrlMap.set(view.ctrlName, ctrl);
 	}
 }
 
@@ -161,29 +178,30 @@ module.exports = {
 	 * add views to (webpack) app build configuration
 	 *
 	 * @param  {Array<ViewEntry>} view list of ViewEntry objects:
-	 * 										view.id {String}: the grammar id (usually the language code, e.g. "en" or "de")
-	 * 										view.file {String}: the path to the JSON grammar (from which the executable grammar will be created)
-	 * @param  {[type]} appConfig the app configuration to which the grammars will be added
+	 * 										view.id {String}: the view id
+	 * 										view.file {String}: the path to the eHTML view template (from which the executable view will be created)
+	 * @param  {Array<ControllerEntry>} ctrls list of ControllerEntry objects:
+	 * 										ctrl.id {String}: the controller id
+	 * @param  {[type]} appConfig the app configuration to which the views will be added
 	 * @param  {[type]} directories the directories.json representation
 	 * @param  {[type]} runtimeConfiguration the configuration.json representation
 	 */
-	addViewsToAppConfig: function(views, appConfig, directories, runtimeConfiguration){
+	addViewsToAppConfig: function(views, ctrls, appConfig, directories, runtimeConfiguration){
 
 		if(!views || views.length < 1){
 			return;
 		}
 
+		var stubCtrlMap = new Map();
+
 		views.forEach(function(v){
 
-			appConfigUtils.addIncludeModule(appConfig, toAliasId(v), toAliasPath(v));
-			directoriesUtil.addView(directories, toAliasId(v));
+			var aliasId = toAliasId(v);
+			appConfigUtils.addIncludeModule(appConfig, aliasId, toAliasPath(v));
+			directoriesUtil.addView(directories, aliasId);
 
-			addCtrl(v);//FIXME TEST
+			addCtrlStub(v, ctrls, stubCtrlMap);
 		});
-
-		// if(!appConfig.includeModules){
-		// 	appConfig.includeModules = [];
-		// }
 
 		// include dependencies for loading & rendering views:
 		appConfig.includeModules.push('mmirf/storageUtils', 'mmirf/renderUtils');
@@ -202,19 +220,25 @@ module.exports = {
 		// appConfig.paths['mmirf/controllerManager'] = path.resolve('viewParser/webpackCtlrManager.js');
 		// appConfig.paths['mmirf/viewLoader'] = path.join(path.dirname(require.resolve('mmir-lib')), 'env/view/viewLoader');
 
-		//FIXME TEST add generated stub controllers:
-		if(controllers.size > 0){
+		//add generated stub controllers if necessary:
+		if(stubCtrlMap.size > 0){
 
-			controllers.forEach(function(code, name){
-				var id = 'mmirf/controller/'+name.toLowerCase();
-				console.log('adding view controller: ', id);//DEBUG
+			initVirtualModulePlugin();
+
+			if(!appConfig.webpackPlugins){
+				appConfig.webpackPlugins = [];
+			}
+
+			stubCtrlMap.forEach(function(ctrl, name){
+				var id = ctrl.moduleName;
+				console.log('adding view controller stub "'+name+'": ', id, ' -> ', ctrl);//DEBUG
 				// appConfig.paths[id] = id;// path.resolve('./viewParser/webpackGenCtrl.js');
 				// appConfig.includeModules.push(id);
 				appConfigUtils.addIncludeModule(appConfig, id, id);
-			});
 
-			// var id = 'mmirf/build-tool/gen-controllers';
-			// appConfigUtils.addAutoLoadModule(appConfig, id, path.resolve('./viewParser/webpackGenCtrl.js'));
+				directoriesUtil.addCtrl(directories, ctrl.moduleName);
+				appConfig.webpackPlugins.push(new VirtualModulePlugin(ctrl));
+			});
 		}
 	},
 
