@@ -30,12 +30,13 @@ var createResolveAlias = function(mmirAppConfig){
 
 	var paths = require('./webpack-resources-paths.js').paths;
 
-	var alias = {};
+	var alias = {}, p;
 	for (var n in paths) {
+		p = paths[n];
 		if(/^build-tool\//.test(n)){
-			alias[n] = path.join(webpackRootDir, paths[n]);
+			alias[n] = path.isAbsolute(p)? p : path.join(webpackRootDir, p);
 		} else {
-			alias[n] = path.join(rootDir, paths[n]);
+			alias[n] = path.isAbsolute(p)? p : path.join(rootDir, p);
 		}
 	}
 
@@ -177,10 +178,10 @@ var createModuleRules = function(mmirAppConfig){
 
 	var ctrlOptions = mmirAppConfig.controllers;
 	var ctrlList = [];
-	if(ctrlOptions.directory){
+	if(ctrlOptions && ctrlOptions.directory){
 		implUtils.implFromDir('controller', ctrlOptions, appRootDir, ctrlList);
 	}
-	if(ctrlOptions.controllers){
+	if(ctrlOptions && ctrlOptions.controllers){
 		implUtils.implFromOptions('controller', ctrlOptions, appRootDir, ctrlList);
 	}
 	console.log('controllers: ', ctrlList, ctrlOptions);//DEBUG
@@ -188,10 +189,10 @@ var createModuleRules = function(mmirAppConfig){
 
 	var helperOptions = mmirAppConfig.helpers;
 	var helperList = [];
-	if(helperOptions.directory){
+	if(helperOptions && helperOptions.directory){
 		implUtils.implFromDir('helper', helperOptions, appRootDir, helperList);
 	}
-	if(helperOptions.helpers){
+	if(helperOptions && helperOptions.helpers){
 		implUtils.implFromOptions('helper', helperOptions, appRootDir, helperList);
 	}
 	console.log('helpers: ', helperList, helperOptions);//DEBUG
@@ -199,10 +200,10 @@ var createModuleRules = function(mmirAppConfig){
 
 	var modelOptions = mmirAppConfig.models;
 	var modelList = [];
-	if(modelOptions.directory){
+	if(modelOptions && modelOptions.directory){
 		implUtils.implFromDir('model', modelOptions, appRootDir, modelList);
 	}
-	if(modelOptions.models){
+	if(modelOptions && modelOptions.models){
 		implUtils.implFromOptions('model', modelOptions, appRootDir, modelList);
 	}
 	console.log('models: ', modelList, modelOptions);
@@ -291,7 +292,7 @@ var createModuleRules = function(mmirAppConfig){
 		{
 			test: fileUtils.createFileTestFunc(grammars.map(function(g){return g.file;}), ' for [grammar] files'),
 			use: {
-				loader: './mmir-grammar-loader.js',
+				loader: path.resolve(webpackRootDir, 'mmir-grammar-loader.js'),
 				options: {mapping: grammars, config: grammarOptions},
 			},
 			type: 'javascript/auto'
@@ -301,7 +302,7 @@ var createModuleRules = function(mmirAppConfig){
 		{
 			test: fileUtils.createFileTestFunc(views.map(function(v){return v.file;}), ' for [view] files'),
 			use: {
-				loader: './mmir-view-loader.js',
+				loader: path.resolve(webpackRootDir, 'mmir-view-loader.js'),
 				options: {mapping: views},
 			},
 			type: 'javascript/auto'
@@ -311,7 +312,7 @@ var createModuleRules = function(mmirAppConfig){
 		{
 			test: fileUtils.createFileTestFunc(scxmlModels.map(function(s){return s.file;}), ' for [scxml] files'),
 			use: {
-				loader: './mmir-scxml-loader.js',
+				loader: path.resolve(webpackRootDir, 'mmir-scxml-loader.js'),
 				options: {mapping: scxmlModels},
 			},
 			type: 'javascript/auto'
@@ -321,7 +322,7 @@ var createModuleRules = function(mmirAppConfig){
 		{
 			test: fileUtils.createFileTestFunc(implList.map(function(s){return s.file;}), ' for [controller | helper | model] files'),
 			use: {
-				loader: './mmir-impl-loader.js',
+				loader: path.resolve(webpackRootDir, 'mmir-impl-loader.js'),
 				options: {mapping: implList},
 			},
 			type: 'javascript/auto'
@@ -383,7 +384,7 @@ var createPlugins = function(webpackInstance, alias, mmirAppConfig){
 
 	// var CResolver = require('./webpack-plugin-custom-resolver.js');
 
-	var EncodingPlugin = require('webpack-encoding-plugin');
+	// var EncodingPlugin = require('webpack-encoding-plugin');
 
 	var plugins = [
 
@@ -531,6 +532,16 @@ module.exports = {
 		//add loader configurations:
 		// (NOTE must do this before creating alias definition as some loaders may add alias mappings to mmirAppConfig)
 		var moduleRules = createModuleRules(mmirAppConfig);
+		if(!useRulesForLoaders){
+			moduleRules.forEach(function(rule){
+				if(rule.type){
+					if(rule.use && rule.use.options){
+						rule.use.options.isRuleTypeDisabled = true;
+					}
+					delete rule.type;
+				}
+			});
+		}
 		if(!webpackConfig.module){
 			webpackConfig.module = {};
 		}

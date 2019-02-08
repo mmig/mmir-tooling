@@ -11,19 +11,19 @@ var webpackDefaultPaths = {
 	'mmirf/util': 'tools/util_purejs',
 
 	//FIXME replace in mmir-lib?
-	'mmirf/antlr3':         path.resolve('viewParser/antlr3-all_amd'),
-	'mmirf/ES3Lexer':       path.resolve('viewParser/ES3Lexer_amd'),
-	'mmirf/ES3Parser':      path.resolve('viewParser/ES3Parser_amd'),
-	'mmirf/scriptLexer':    path.resolve('viewParser/MmirScriptLexer_amd'),
-	'mmirf/scriptParser':   path.resolve('viewParser/MmirScriptParser_amd'),
-	'mmirf/contentLexer':   path.resolve('viewParser/MmirScriptContentLexer_amd'),
-	'mmirf/contentParser':  path.resolve('viewParser/MmirScriptContentParser_amd'),
-	'mmirf/templateLexer':  path.resolve('viewParser/MmirTemplateLexer_amd'),
-	'mmirf/templateParser': path.resolve('viewParser/MmirTemplateParser_amd'),
+	'mmirf/antlr3':         path.resolve(__dirname, 'viewParser/antlr3-all_amd'),
+	'mmirf/ES3Lexer':       path.resolve(__dirname, 'viewParser/ES3Lexer_amd'),
+	'mmirf/ES3Parser':      path.resolve(__dirname, 'viewParser/ES3Parser_amd'),
+	'mmirf/scriptLexer':    path.resolve(__dirname, 'viewParser/MmirScriptLexer_amd'),
+	'mmirf/scriptParser':   path.resolve(__dirname, 'viewParser/MmirScriptParser_amd'),
+	'mmirf/contentLexer':   path.resolve(__dirname, 'viewParser/MmirScriptContentLexer_amd'),
+	'mmirf/contentParser':  path.resolve(__dirname, 'viewParser/MmirScriptContentParser_amd'),
+	'mmirf/templateLexer':  path.resolve(__dirname, 'viewParser/MmirTemplateLexer_amd'),
+	'mmirf/templateParser': path.resolve(__dirname, 'viewParser/MmirTemplateParser_amd'),
 
-	'build-tool/module-config-helper': 'module-config-helper',
-	'build-tool/webpack-helper-module-config': 'webpack-helper-module-config',
-	'build-tool/webpack-app-config': 'webpack-app-module-config'
+	'build-tool/module-config-helper':         path.resolve(__dirname, 'module-config-helper'),
+	'build-tool/webpack-helper-module-config': path.resolve(__dirname, 'webpack-helper-module-config'),
+	'build-tool/webpack-app-config':           path.resolve(__dirname, 'webpack-app-module-config')
 };
 
 // delete mmirModuleBaseConfig.shim;
