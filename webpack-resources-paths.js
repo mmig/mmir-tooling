@@ -5,21 +5,11 @@ var mmirModuleBaseConfig = require('mmir-lib/modulesBaseConfig');
 var webpackRemovedPaths = ['jquery'];
 
 var webpackDefaultPaths = {
+
 	'mmirf/scion': 'vendor/libs/scion-amd-mod.min.pp',
 	'mmirf/simpleViewEngine': 'env/view/stubViewEngine',
 	//FIXME add package util as path:
 	'mmirf/util': 'tools/util_purejs',
-
-	//FIXME replace in mmir-lib?
-	'mmirf/antlr3':         path.resolve(__dirname, 'viewParser/antlr3-all_amd'),
-	'mmirf/ES3Lexer':       path.resolve(__dirname, 'viewParser/ES3Lexer_amd'),
-	'mmirf/ES3Parser':      path.resolve(__dirname, 'viewParser/ES3Parser_amd'),
-	'mmirf/scriptLexer':    path.resolve(__dirname, 'viewParser/MmirScriptLexer_amd'),
-	'mmirf/scriptParser':   path.resolve(__dirname, 'viewParser/MmirScriptParser_amd'),
-	'mmirf/contentLexer':   path.resolve(__dirname, 'viewParser/MmirScriptContentLexer_amd'),
-	'mmirf/contentParser':  path.resolve(__dirname, 'viewParser/MmirScriptContentParser_amd'),
-	'mmirf/templateLexer':  path.resolve(__dirname, 'viewParser/MmirTemplateLexer_amd'),
-	'mmirf/templateParser': path.resolve(__dirname, 'viewParser/MmirTemplateParser_amd'),
 
 	'mmirf/util/resourceLoader': path.resolve(__dirname, 'webpack-loadFile'),
 
