@@ -51,9 +51,9 @@ module.exports = function(options){
 
 		try {
 			var result = settings[options.url];//require(options.url);
-			invoke(options.async !== false, options.success, [result]);
+			options.success && invoke(options.async !== false, options.success, [result]);
 		} catch(err){
-			invoke(options.async !== false, options.error, [err, 'error', err+'']);
+			options.error && invoke(options.async !== false, options.error, [err, 'error', err+'']);
 		}
 
 	} else {
