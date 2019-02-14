@@ -4,7 +4,7 @@ var fileUtils = require('./webpack-filepath-utils.js');
 var createWebWorkerLoaderConfig = function(rootDir){
 
 	var webworkerPaths = require('./webpack-resources-paths.js').workers.map(function(val){
-		return fileUtils.normalizePath(path.join(rootDir, val));
+		return fileUtils.normalizePath(path.isAbsolute(val)? val : path.join(rootDir, val));
 	});
 
 

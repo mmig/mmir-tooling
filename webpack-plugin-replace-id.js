@@ -31,14 +31,27 @@ function getModId(_modPaths, path, fileExtensions, originalId) {
 	var clpath = path.replace(fileExtensions, '');
 	clpath = clpath === path? null : clpath;
 	var val;
+	var results = [];
 	for (var p in _modPaths) {
 		val = _modPaths[p];
 		if (val === path || val === clpath) {
-			return p;
+			results.push(p);
 		} else if(clpath && clpath.indexOf(val) === 0){
 			// console.log('  handle package alias "'+clpath+'" -> ', p + idFromPath(clpath.substring(val.length)));//DEBUG
-			return p + idFromPath(clpath.substring(val.length));
+			results.push(p + idFromPath(clpath.substring(val.length)));
 		}
+	}
+	var len = results.length;
+	if(len > 0){
+		if(len === 1){
+			return results[0];
+		}
+		//if there are multiple entries/IDs -> use shortest one!
+		results.sort(function(a, b){
+			return a.length - b.length;
+		});
+		// console.log('  handle multiple results: ', results, ': '+originalId+' -> "'+results[0]+'"');//DEBUG
+		return results[0];
 	}
 }
 
@@ -66,6 +79,7 @@ class ReplaceModuleIdPlugin {
 		this.alias = alias || {};
 		this.mmirDir = mmirLibDir;
 		this.fileExtensions = fileExtensions;
+			// console.log('ReplaceModuleIdPlugin.constructor: alias -> ', JSON.stringify(alias));
 	}
 
 	apply(compiler) {
@@ -92,8 +106,8 @@ class ReplaceModuleIdPlugin {
 
 					var lookUpId = getModId(aliasLookup, fullpath, fileExtensions, id);
 
-					// if(/application/.test(fullpath)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
-					// if(/application/.test(id)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
+					// if(/mmir-plugin-/.test(fullpath)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
+					// if(/mmir-plugin-/.test(id)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
 
 					if (lookUpId) {
 

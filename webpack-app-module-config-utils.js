@@ -30,7 +30,7 @@ var generateFromAppConfig = function(mmirAppConfig){
 		if(mmirAppConfig.includeModules) {
 			// ['asyncGrammar'] -> 'var doIncludeModules = function(){\n  require.resolve("mmirf/asyncGrammar");\n};\n';
 
-			var rePrefix = /^mmirf\//;
+			var rePrefix = /^(mmirf\/)|mmir-plugin-/;
 			moduleImplStr += 'var doIncludeModules = function(){\n' +
 						mmirAppConfig.includeModules.map(function(incl){
 							incl = rePrefix.test(incl) || fs.existsSync(incl)? incl : 'mmirf/' + incl;
@@ -45,7 +45,7 @@ var generateFromAppConfig = function(mmirAppConfig){
 		if(mmirAppConfig.autoLoadModules) {
 			// ['grammar/de'] -> 'var doAutoLoadModules = function(){\n  require("mmirf/grammar/de");\n};\n';
 
-			var rePrefix = /^mmirf\//;
+			var rePrefix = /^(mmirf\/)|mmir-plugin-/;
 			moduleImplStr += 'var doAutoLoadModules = function(){\n' +
 						mmirAppConfig.autoLoadModules.map(function(incl){
 							incl = rePrefix.test(incl) || fs.existsSync(incl)? incl : 'mmirf/' + incl;
@@ -56,22 +56,6 @@ var generateFromAppConfig = function(mmirAppConfig){
 			moduleExports.push(['applyAutoLoads', 'doAutoLoadModules']);
 			// console.log('app config module -> doAutoLoadModules: ', moduleImplStr);
 		}
-
-		//DISABLED now supplied via directories.json
-		// if(mmirAppConfig.genViews) {
-		// 	// ['application/login'] -> 'var doGetViews = function(){\n  return ["mmirf/view/application/login"];\n};\n';
-		//
-		// 	var rePrefix = /^mmirf\/view\//;
-		// 	moduleImplStr += 'var doGetViews = function(){\n return [\n' +
-		// 				mmirAppConfig.genViews.map(function(incl){
-		// 					incl = rePrefix.test(incl)? incl : 'mmirf/view/' + incl;
-		// 					return '  "'+incl+'"'
-		// 				}).join(',\n') +
-		// 		'\n];};\n';
-		//
-		// 	moduleExports.push(['getViewModuleIds', 'doGetViews']);
-		// 	// console.log('app config module -> doGetViews: ', moduleImplStr);
-		// }
 
 		if(mmirAppConfig.runtimeSettings) {
 			moduleImplStr += 'var appSettings = ' + JSON.stringify(mmirAppConfig.runtimeSettings, null, 2) + ';\n';
