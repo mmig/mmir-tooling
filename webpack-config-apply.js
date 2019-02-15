@@ -224,9 +224,11 @@ var createModuleRules = function(mmirAppConfig){
 	if(includePluginList){
 		var workersList = require('./webpack-resources-paths.js').workers;
 		includePluginList.forEach(function(plugin){
-			console.log('adding mmir-plugin "'+plugin+'" ...');//DEBUG
+			var id = typeof plugin === 'string'? plugin : plugin.id;
+			var pluginConfig = plugin.config || null;
+			console.log('adding mmir-plugin "'+id+'" ...');//DEBUG
 			//addPluginInfos: function(pluginPackageDir, alias, workersList, appConfig)
-			pluginsUtil.addPluginInfos(plugin, mmirAppConfig.paths, workersList, mmirAppConfig);
+			pluginsUtil.addPluginInfos(id, workersList, mmirAppConfig, pluginConfig, runtimeConfig);
 		});
 
 		// console.log('added mmir-plugins: ', workersList, mmirAppConfig);//DEBUG
