@@ -175,7 +175,7 @@ function addConfig(pluginConfig, runtimeConfig, pluginConfigInfo, pluginId){
 module.exports = {
 	addPluginInfos: function(pluginId, workersList, appConfig, pluginConfig, runtimeConfig){
 
-		var pluginInfo = require(pluginId + '/module-ids.js');
+		var pluginInfo = require(pluginId + '/module-ids.gen.js');
 
 		var paths = pluginInfo.getAll('paths', true);
 
@@ -193,7 +193,7 @@ module.exports = {
 			appConfigUtils.addIncludeModule(appConfig, mod, paths[mod]);
 		});
 
-		var pluginConfigInfo = require(pluginId + '/module-config.js');
+		var pluginConfigInfo = require(pluginId + '/module-config.gen.js');
 
 		if(pluginConfigInfo.pluginName){
 			addConfig(pluginConfig, runtimeConfig, pluginConfigInfo, pluginId);
