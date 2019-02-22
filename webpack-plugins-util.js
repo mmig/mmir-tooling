@@ -2,9 +2,13 @@
 var path = require('path');
 var _ = require('lodash');
 var appConfigUtils = require('./webpack-app-module-config-utils.js');
+var settingsUtils = require('./settings-utils.js');
 
 var asrCoreId = 'mmir-plugin-encoder-core.js';
 var ttsCoreId = 'webAudioTextToSpeech.js';
+
+var applyToAllSpeechConfigs = '__apply-to-all-configs__';
+var ALL_SPEECH_CONFIGS_TYPE = settingsUtils.getAllSpeechConfigsType();
 
 /**
  * mapping from file-name to load-module-ID in MediaManager/plugin-loading mechanism
@@ -114,6 +118,14 @@ function getConfigEnv(pluginConfig, runtimeConfig){
 	return env;
 }
 
+/**
+ * create plugin-entry in mediaManager.plugin configuration
+ *
+ * @param  {MMIRPluginConfig} pluginConfig the plugin-configuration
+ * @param  {MMIRPluginInfo} pluginConfigInfo the plugin-info
+ * @param  {string} pluginId the plugin-ID
+ * @return {MediaManagerPluginEntry} the plugin-entry for mediaManager.plugin
+ */
 function createConfigEntry(pluginConfig, pluginConfigInfo, pluginId){
 	var isAsr = isAsrPlugin(pluginId);
 	var mod = isAsr? asrCoreId : ttsCoreId;
@@ -124,11 +136,101 @@ function createConfigEntry(pluginConfig, pluginConfigInfo, pluginId){
 	return {mod: mod, config: config, ctx: ctx};
 }
 
+/**
+ * apply config-values from pluginConfig to runtimeConfig into entry pluginConfigInfo.pluginName
+ *
+ * @param  {MMIRPluginConfig} pluginConfig the plugin-configuration
+ * @param  {Configuration} runtimeConfig the main configuration (JSON-like) object
+ * @param  {Settings} settings the application settings (dicitionaries, speech-configs etc)
+ * @param  {MMIRPluginInfo} pluginConfigInfo the plugin-info
+ */
+function applyPluginSpeechConfig(pluginConfig, settings, pluginConfigInfo){
+
+	var speechConfs = pluginConfigInfo.speechConfig;
+	if(speechConfs){
+
+		var applyList = [];
+		speechConfs.forEach(function(sc){
+			if(pluginConfig[sc]){
+				applyList.push({name: sc, value: pluginConfig[sc]});
+			}
+		});
+
+		if(applyList.length > 0){
+
+			var speechConfigs = new Map();
+			settingsUtils.getSettingsFor(settings, 'speech').forEach(function(sc){
+				speechConfigs.add(sc.id, sc);
+			});
+
+			var allSpeech = settings.find(function(s){ return s.type === ALL_SPEECH_CONFIGS_TYPE; });
+			if(allSpeech){
+				speechConfigs.add(ALL_SPEECH_CONFIGS_TYPE, allSpeech);
+			}
+
+			var val, name;
+			applyList.forEach(function(config){
+				val = config.value;
+				name = config.name;
+				if(typeof val !== 'string'){
+
+					Object.keys(val).forEach(function(lang){
+						doApplySpeechConfigValue(name, val[lang], lang, speechConfigs, settings);
+					});
+
+				} else {
+					doApplySpeechConfigValue(name, val, applyToAllSpeechConfigs, speechConfigs, settings);
+				}
+			});
+
+		}
+	}
+}
+
+function doApplySpeechConfigValue(name, val, lang, speechConfigs, settings){
+
+		var sc = speechConfigs.get(lang);
+		if(!sc){
+			sc = settingsUtils.createSettingsEntryFor(lang === applyToAllSpeechConfigs? ALL_SPEECH_CONFIGS_TYPE : 'speech', {plugins: {}}, lang);
+			speechConfigs.add(lang, sc);
+			settings.push(sc);
+
+		} else {
+
+			if(!sc.value){
+				//NOTE will crash, if file is a list ... for now, no support for file-list speech-configs!
+				sc.value = settingsUtils.loadSettingsFrom(sc.file);
+			}
+
+			if(sc.include && sc.include !== 'inline'){
+				console.log("WARN settings-utils: applying plugin speech-config to file setting, cannot include this as file, enforce inlining instead.");
+				sc.include = 'inline';
+			}
+		}
+
+		sc.value.plugins = sc.value.plugins || {};
+		var configEntry = sc.value.plugins[pluginConfigInfo.pluginName];
+		if(!configEntry){
+			configEntry = {};
+			sc.value.plugins[pluginConfigInfo.pluginName] = configEntry;
+		}
+		configEntry[name] = val;
+
+}
+
+/**
+ * apply config-values from pluginConfig to runtimeConfig into entry pluginConfigInfo.pluginName
+ *
+ * @param  {MMIRPluginConfig} pluginConfig the plugin-configuration
+ * @param  {Configuration} runtimeConfig the main configuration (JSON-like) object
+ * @param  {MMIRPluginInfo} pluginConfigInfo the plugin-info
+ */
 function applyPluginConfig(pluginConfig, runtimeConfig, pluginConfigInfo){
 
 	var config = runtimeConfig[pluginConfigInfo.pluginName] || {};
+	var speechConfs = pluginConfigInfo.speechConfig? new Set(pluginConfigInfo.speechConfig) : null;
 	for(var c in pluginConfig){
-		if(c === 'env' || c === 'ctx'){
+		if(c === 'env' || c === 'ctx' || (speechConfs && speechConfs.has(c))){
 			continue;
 		}
 		config[c] = pluginConfig[c];
@@ -136,10 +238,11 @@ function applyPluginConfig(pluginConfig, runtimeConfig, pluginConfigInfo){
 	runtimeConfig[pluginConfigInfo.pluginName] = config;
 }
 
-function addConfig(pluginConfig, runtimeConfig, pluginConfigInfo, pluginId){
+function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, pluginId){
 
 	if(pluginConfig){
 		applyPluginConfig(pluginConfig, runtimeConfig, pluginConfigInfo);
+		applyPluginSpeechConfig(pluginConfig, settings, pluginConfigInfo);
 	}
 
 	var confEntry = createConfigEntry(pluginConfig, pluginConfigInfo, pluginId);
@@ -173,7 +276,7 @@ function addConfig(pluginConfig, runtimeConfig, pluginConfigInfo, pluginId){
 }
 
 module.exports = {
-	addPluginInfos: function(pluginId, workersList, appConfig, pluginConfig, runtimeConfig){
+	addPluginInfos: function(pluginId, workersList, appConfig, pluginConfig, runtimeConfig, settings){
 
 		var pluginInfo = require(pluginId + '/module-ids.gen.js');
 
@@ -196,7 +299,7 @@ module.exports = {
 		var pluginConfigInfo = require(pluginId + '/module-config.gen.js');
 
 		if(pluginConfigInfo.pluginName){
-			addConfig(pluginConfig, runtimeConfig, pluginConfigInfo, pluginId);
+			addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, pluginId);
 		} else {
 			console.log('ERROR invalid module-config.js for plugin '+pluginId+': missing field pluginName ', pluginConfigInfo);
 		}

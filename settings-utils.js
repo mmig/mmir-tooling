@@ -6,6 +6,8 @@ var fileUtils = require('./webpack-filepath-utils.js');
 var appConfigUtils = require('./webpack-app-module-config-utils.js');
 var directoriesUtil = require('./mmir-directories-util.js');
 
+var ALL_SPEECH_CONFIGS_TYPE = 'speech-all';
+
 /**
  * scan for
  *
@@ -164,6 +166,23 @@ function removeBom(content){
 	return content;
 }
 
+/**
+ * HELPER load all files for settings-entry
+ * @param  {SettingsEntry} s NOTE s.file MUST be an Array!
+ */
+function doLoadAllFilesFor(s){
+	console.log('WARN settings-utils: encountered multiple file resources for "'+s.id+'" ('+s.type+'): cannot be included as (single) file, inlining  resources instead...');
+	s.include = 'inline';
+	if(!s.value){
+		console.log('WARN settings-utils: forced inlining for "'+s.id+'" ('+s.type+') with multiple file resources: content not loaded yet, loading file content and merging now...');
+		var content = {};
+		s.file.forEach(function(f){
+			_.merge(content, readJson(f));
+		});
+		s.value = content;
+	}
+}
+
 function contains(list, settingsType, settingsId){
 	return list.findIndex(function(item){
 		return item.id === settingsId && item.type === settingsType;
@@ -215,8 +234,24 @@ function normalizeConfigurations(settingsList){
 	}
 }
 
+/**
+ * HELPER create a non-file settings entry (i.e. not loaded from a file)
+ *
+ * @param  {SettingsType} type the type of settings object, e.g. "speech" or "configuration"
+ * @param  {Object} value the actual settings-data (JSON-like object)
+ * @param  {String} [id] if more than 1 settings-entry for this type can exist, its ID
+ * @return {SettingsEntry} the settings-entry
+ */
+function createSettingsEntryFor(type, value, id){
+	return {type: type, file: 'settings://'+type+'/options' + (id? '/'+id : ''), include: 'inline', value: value, id: id};
+}
+
 function getConfiguration(settingsList){
 	return settingsList.find(function(item){ return item.type === 'configuration'});
+}
+
+function getSettings(settingsList, type){
+	return settingsList.filter(function(item){ return item.type === type});
 }
 
 function toAliasId(settings){
@@ -279,13 +314,24 @@ module.exports = {
 	//
 	// 	return list;
 	// },
+	createSettingsEntryFor: createSettingsEntryFor,
 	normalizeConfigurations: normalizeConfigurations,
 	getConfiguration: getConfiguration,
+	getSettingsFor: getSettings,
+	/** load settings file
+	 * NOTE: if updating s.value with the loaded data, need to update s.include and s.file accordingly!
+	 */
+	loadSettingsFrom: readJson,
+	getAllSpeechConfigsType: function(){ return ALL_SPEECH_CONFIGS_TYPE; },
 	addSettingsToAppConfig: function(settings, appConfig, directories, runtimeConfig, regExpExcludeType){
 
 		if(!settings || settings.length < 1){
 			return;
 		}
+
+		var allSpeechSettings = settings.find(function(s){
+			return s.type === ALL_SPEECH_CONFIGS_TYPE;
+		});
 
 		settings.forEach(function(s){
 
@@ -296,16 +342,7 @@ module.exports = {
 			var aliasId = toAliasId(s);
 
 			if(s.include === 'file' && _.isArray(s.file)){
-				console.log('WARN settings-utils: encountered multiple file resources for "'+s.id+'" ('+s.type+'): cannot be included as (single) file, inlining  resources instead...');
-				s.include = 'inline';
-				if(!s.value){
-					console.log('WARN settings-utils: forced inlining for "'+s.id+'" ('+s.type+') with multiple file resources: content not loaded yet, loading file content and merging now...');
-					var content = {};
-					s.file.forEach(function(f){
-						_.merge(content, readJson(f));
-					});
-					s.value = content;
-				}
+				doLoadAllFilesFor(s);
 			}
 
 			console.log('  adding setting ('+s.include+') for '+s.type+' as ', aliasId);//DEBUG
@@ -324,8 +361,18 @@ module.exports = {
 			} else if(s.type === 'grammar'){
 				directoriesUtil.addJsonGrammar(directories, aliasId)
 			} else if(s.type === 'speech'){
+				if(allSpeechSettings){
+					if(s.include === 'file'){
+						console.log("WARN settings-utils: applying 'speech-all' settings: cannot include file for "+s.id+", inlining instead.");
+						if(!s.value){
+							s.value = readJson(s.file);
+						}
+						s.include = 'inline';
+					}
+					_.merge(s.value, allSpeechSettings.value);
+				}
 				directoriesUtil.addSpeechConfig(directories, aliasId)
-			} else {
+			} else if(s.type !== ALL_SPEECH_CONFIGS_TYPE) {
 				console.log("WARN settings-utils: encountered multiple unknown settings definitions when applying to app-config: ", s);
 			}
 

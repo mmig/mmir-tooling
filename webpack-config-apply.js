@@ -75,7 +75,7 @@ var createModuleRules = function(mmirAppConfig){
 	//add configuration from mmirAppConfig for merging, if necessary
 	if(runtimeConfig){
 		// console.log('JSON configuration settings: adding & merging mmirAppConfig.configuration ', runtimeConfig);//DEBU
-		settings.push({type: 'configuration', file: 'configuration://options', value: runtimeConfig});//<- push "mmirAppConfig.confiuration" into the end of parsed settings files
+		settings.push(settingsUtil.createSettingsEntryFor('configuration', runtimeConfig));//<- push "mmirAppConfig.confiuration" into the end of parsed settings files
 	}
 	settingsUtil.normalizeConfigurations(settings);
 	// console.log('JSON configuration setting (merge test): ', settingsUtil.getConfiguration(settings));//DEBU
@@ -228,7 +228,7 @@ var createModuleRules = function(mmirAppConfig){
 			var pluginConfig = plugin.config || null;
 			console.log('adding mmir-plugin "'+id+'" ...');//DEBUG
 			//addPluginInfos: function(pluginPackageDir, alias, workersList, appConfig)
-			pluginsUtil.addPluginInfos(id, workersList, mmirAppConfig, pluginConfig, runtimeConfig);
+			pluginsUtil.addPluginInfos(id, workersList, mmirAppConfig, pluginConfig, runtimeConfig, settings);
 		});
 
 		// console.log('added mmir-plugins: ', workersList, mmirAppConfig);//DEBUG
@@ -238,6 +238,7 @@ var createModuleRules = function(mmirAppConfig){
 /////////////////////////////////////////////////////////////////////////////////////
 
 	// console.log(' configuration.json -> ', JSON.stringify(runtimeConfig));//DEBU
+	console.log(' ########### settings -> ', JSON.stringify(settings));//DEBUG
 	// appConfigUtils.addAppSettings(mmirAppConfig, 'mmirf/settings/configuration', runtimeConfig);
 
 	settingsUtil.addSettingsToAppConfig(settings, mmirAppConfig, directories, runtimeConfig);//, /configuration/i);
