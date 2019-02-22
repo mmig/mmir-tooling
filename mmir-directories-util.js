@@ -115,6 +115,10 @@ function addScxml(scxml, reqId){
 	_addPath(scxml, spath, reqId + '.js');
 }
 
+function getLanguages(json){
+	return json[lpath] || [];
+}
+
 module.exports = {
 	addCtrl: addCtrl,
 	addView: addView,
@@ -125,7 +129,8 @@ module.exports = {
 	addDictionary: addDictionary,
 	addSpeechConfig: addSpeechConfig,
 	addScxml: addScxml,
-	createDirectoriesJson: createDirectoriesJson
+	createDirectoriesJson: createDirectoriesJson,
+	getLanguages: getLanguages
 	// reset: function(){
 	// 	_json = null;
 	// },

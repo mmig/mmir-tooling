@@ -323,15 +323,24 @@ module.exports = {
 	 */
 	loadSettingsFrom: readJson,
 	getAllSpeechConfigsType: function(){ return ALL_SPEECH_CONFIGS_TYPE; },
-	addSettingsToAppConfig: function(settings, appConfig, directories, runtimeConfig, regExpExcludeType){
+	addSettingsToAppConfig: function(settings, appConfig, directories, runtimeConfig, regExpExcludeType, ignoreMissingDictionaries){
 
 		if(!settings || settings.length < 1){
 			return;
 		}
 
-		var allSpeechSettings = settings.find(function(s){
+		//get speech-config settings that should be applied to speech-configs
+		var iall = settings.findIndex(function(s){
 			return s.type === ALL_SPEECH_CONFIGS_TYPE;
 		});
+		var allSpeechSettings;
+		if(iall !== -1){
+			allSpeechSettings = settings[iall];
+			//remove from settings list (will be merged into each speech-config, see below)
+			settings.splice(iall, 1);
+		}
+
+		var dicts = ignoreMissingDictionaries? null : new Map();
 
 		settings.forEach(function(s){
 
@@ -357,6 +366,7 @@ module.exports = {
 				// directoriesUtil.addConfiguration(directories, aliasId);
 
 			} else if(s.type === 'dictionary'){
+				dicts && dicts.set(s.id, s);
 				directoriesUtil.addDictionary(directories, aliasId)
 			} else if(s.type === 'grammar'){
 				directoriesUtil.addJsonGrammar(directories, aliasId)
@@ -392,5 +402,23 @@ module.exports = {
 			// if(!appConfig.autoLoadModules) appConfig.autoLoadModules = [];
 			// appConfig.autoLoadModules.push(file)
 		});
+
+
+		//ensure that for each language there is a (possibly empty) dictionary
+		if(!ignoreMissingDictionaries && (!regExpExcludeType || !regExpExcludeType.test('dictionary'))){
+			var languages = directoriesUtil.getLanguages(directories);
+			var missing = [];
+			languages.forEach(function(l){
+				var dict = dicts.get(l);
+				if(!dict){
+					missing.push(createSettingsEntryFor('dictionary', {}, l));
+				}
+			});
+			if(missing.length > 0){
+				// console.log("INFO settings-utils: adding missing dictionaries for : ", missing);
+				this.addSettingsToAppConfig(missing, appConfig, directories, runtimeConfig, regExpExcludeType, true);
+			}
+		}
+
 	}
 };
