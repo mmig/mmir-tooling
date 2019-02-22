@@ -160,12 +160,12 @@ function applyPluginSpeechConfig(pluginConfig, settings, pluginConfigInfo){
 
 			var speechConfigs = new Map();
 			settingsUtils.getSettingsFor(settings, 'speech').forEach(function(sc){
-				speechConfigs.add(sc.id, sc);
+				speechConfigs.set(sc.id, sc);
 			});
 
 			var allSpeech = settings.find(function(s){ return s.type === ALL_SPEECH_CONFIGS_TYPE; });
 			if(allSpeech){
-				speechConfigs.add(ALL_SPEECH_CONFIGS_TYPE, allSpeech);
+				speechConfigs.set(ALL_SPEECH_CONFIGS_TYPE, allSpeech);
 			}
 
 			var val, name;
@@ -175,11 +175,11 @@ function applyPluginSpeechConfig(pluginConfig, settings, pluginConfigInfo){
 				if(typeof val !== 'string'){
 
 					Object.keys(val).forEach(function(lang){
-						doApplySpeechConfigValue(name, val[lang], lang, speechConfigs, settings);
+						doApplySpeechConfigValue(name, val[lang], lang, pluginConfigInfo.pluginName, speechConfigs, settings);
 					});
 
 				} else {
-					doApplySpeechConfigValue(name, val, applyToAllSpeechConfigs, speechConfigs, settings);
+					doApplySpeechConfigValue(name, val, applyToAllSpeechConfigs, pluginConfigInfo.pluginName, speechConfigs, settings);
 				}
 			});
 
@@ -187,12 +187,12 @@ function applyPluginSpeechConfig(pluginConfig, settings, pluginConfigInfo){
 	}
 }
 
-function doApplySpeechConfigValue(name, val, lang, speechConfigs, settings){
+function doApplySpeechConfigValue(name, val, lang, pluginName, speechConfigs, settings){
 
 		var sc = speechConfigs.get(lang);
 		if(!sc){
 			sc = settingsUtils.createSettingsEntryFor(lang === applyToAllSpeechConfigs? ALL_SPEECH_CONFIGS_TYPE : 'speech', {plugins: {}}, lang);
-			speechConfigs.add(lang, sc);
+			speechConfigs.set(lang, sc);
 			settings.push(sc);
 
 		} else {
@@ -209,10 +209,10 @@ function doApplySpeechConfigValue(name, val, lang, speechConfigs, settings){
 		}
 
 		sc.value.plugins = sc.value.plugins || {};
-		var configEntry = sc.value.plugins[pluginConfigInfo.pluginName];
+		var configEntry = sc.value.plugins[pluginName];
 		if(!configEntry){
 			configEntry = {};
-			sc.value.plugins[pluginConfigInfo.pluginName] = configEntry;
+			sc.value.plugins[pluginName] = configEntry;
 		}
 		configEntry[name] = val;
 
