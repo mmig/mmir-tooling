@@ -238,7 +238,7 @@ var createModuleRules = function(mmirAppConfig){
 /////////////////////////////////////////////////////////////////////////////////////
 
 	// console.log(' configuration.json -> ', JSON.stringify(runtimeConfig));//DEBU
-	console.log(' ########### settings -> ', JSON.stringify(settings));//DEBUG
+	// console.log(' ########### settings -> ', JSON.stringify(settings));//DEBU
 	// appConfigUtils.addAppSettings(mmirAppConfig, 'mmirf/settings/configuration', runtimeConfig);
 
 	settingsUtil.addSettingsToAppConfig(settings, mmirAppConfig, directories, runtimeConfig);//, /configuration/i);

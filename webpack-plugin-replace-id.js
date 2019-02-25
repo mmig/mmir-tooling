@@ -89,11 +89,8 @@ class ReplaceModuleIdPlugin {
 
 			var aliasLookup = this.alias;
 			var fileExtensions = this.fileExtensions;
-			var cwd = process.cwd();
 
 			// console.log('ReplaceModuleIdPlugin.beforeModuleIds: current dir "'+__dirname+'", mmir-lib dir "'+this.mmirDir+'", checking '+JSON.stringify(aliasLookup)); //DEBUG
-
-			var fix_index;
 
 			modules.forEach(function(module) {
 				if (module.id === null && module.libIdent) {
@@ -121,7 +118,7 @@ class ReplaceModuleIdPlugin {
 
 						module.id = id;
 					}
-				} else {
+				} else if(process.env.verbose) {
 					console.log('[WARN] ReplaceModuleIdPlugin.beforeModuleIds: cannot process module ', module);
 				}
 			}, this);
