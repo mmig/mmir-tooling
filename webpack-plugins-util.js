@@ -15,7 +15,8 @@ var ALL_SPEECH_CONFIGS_TYPE = settingsUtils.getAllSpeechConfigsType();
  * (to be used in configuration.json)
  */
 var moduleIdMap = {
-	'webaudioinput.js': 'mmir-plugin-encoder-core.js'
+	'webaudioinput.js': 'mmir-plugin-encoder-core.js',
+	'mmir-plugin-tts-core-xhr.js': 'webAudioTextToSpeech.js'
 };
 
 /**
@@ -101,9 +102,15 @@ function normalizeMediaManagerPluginConfig(configList){
 	});
 }
 
-function getConfigEnv(pluginConfig, runtimeConfig){
+function getConfigEnv(pluginConfig, pluginInfo, runtimeConfig){
 
 	var env = pluginConfig && pluginConfig.env;
+	if(!env && pluginInfo.defaultValues && pluginInfo.defaultValues.env){
+		env = pluginInfo.defaultValues.env;
+		if(!Array.isArray(env)){
+			env = [env];
+		}
+	}
 	if(!env && runtimeConfig.mediaManager && runtimeConfig.mediaManager.plugins){
 		env = Object.keys(runtimeConfig.mediaManager.plugins);
 	}
@@ -121,15 +128,20 @@ function getConfigEnv(pluginConfig, runtimeConfig){
 /**
  * create plugin-entry in mediaManager.plugin configuration
  *
- * @param  {MMIRPluginConfig} pluginConfig the plugin-configuration
+ * @param  {MMIRPluginConfig} pluginConfig the (user supplied) plugin-configuration
  * @param  {MMIRPluginInfo} pluginConfigInfo the plugin-info
  * @param  {string} pluginId the plugin-ID
  * @return {MediaManagerPluginEntry} the plugin-entry for mediaManager.plugin
  */
 function createConfigEntry(pluginConfig, pluginConfigInfo, pluginId){
 	var isAsr = isAsrPlugin(pluginId);
-	var mod = isAsr? asrCoreId : ttsCoreId;
-	var config = normalizeImplName(pluginId);
+	var mod = pluginConfigInfo.defaultValues && pluginConfigInfo.defaultValues.mod;
+	// console.log('#### config entry for '+pluginConfigInfo.pluginName+' default mod? ', JSON.stringify(mod));//DEBUG
+	if(!mod){
+		// console.log('#### config entry for '+pluginConfigInfo.pluginName+' default mod? ', mod);//DEBUG
+		mod = isAsr? asrCoreId : ttsCoreId;
+	}
+	var config = normalizeImplName(pluginId);//TODO
 	var ctx = (pluginConfig && pluginConfig.ctx) || void(0);
 
 	//{ "mod": "mmir-plugin-encoder-core.js", "config": "mmir-plugin-asr-nuance-xhr.js"}
@@ -230,7 +242,7 @@ function applyPluginConfig(pluginConfig, runtimeConfig, pluginConfigInfo){
 	var config = runtimeConfig[pluginConfigInfo.pluginName] || {};
 	var speechConfs = pluginConfigInfo.speechConfig? new Set(pluginConfigInfo.speechConfig) : null;
 	for(var c in pluginConfig){
-		if(c === 'env' || c === 'ctx' || (speechConfs && speechConfs.has(c))){
+		if(c === 'env' || c === 'ctx' || c === 'mod' || (speechConfs && speechConfs.has(c))){
 			continue;
 		}
 		config[c] = pluginConfig[c];
@@ -247,7 +259,10 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
 
 	var confEntry = createConfigEntry(pluginConfig, pluginConfigInfo, pluginId);
 
-	var env = getConfigEnv(pluginConfig, runtimeConfig);
+	var env = getConfigEnv(pluginConfig, pluginConfigInfo, runtimeConfig);
+
+	// console.log('#### will add '+pluginConfigInfo.pluginName+' to envs ', env, ' with entry ', confEntry);//DEBUG
+
 	if(!runtimeConfig.mediaManager){
 		runtimeConfig.mediaManager = {};
 	}
@@ -299,7 +314,13 @@ module.exports = {
 		var pluginConfigInfo = require(pluginId + '/module-config.gen.js');
 
 		if(pluginConfigInfo.pluginName){
-			addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, pluginId);
+			if(Array.isArray(pluginConfigInfo.pluginName)){
+				pluginConfigInfo.pluginName.forEach(function(pluginName){
+					addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo.plugins[pluginName], pluginId);
+				});
+			} else {
+				addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, pluginId);
+			}
 		} else {
 			console.log('ERROR invalid module-config.js for plugin '+pluginId+': missing field pluginName ', pluginConfigInfo);
 		}
