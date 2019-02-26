@@ -140,8 +140,10 @@ function createConfigEntry(pluginConfig, pluginConfigInfo, pluginId){
 	if(!mod){
 		// console.log('#### config entry for '+pluginConfigInfo.pluginName+' default mod? ', mod);//DEBUG
 		mod = isAsr? asrCoreId : ttsCoreId;
+	} else {
+		mod = moduleIdMap[normalizeImplName(mod)] || mod;
 	}
-	var config = normalizeImplName(pluginId);//TODO
+	var config = normalizeImplName(pluginId);//TODO should only create plugin-ID-config, if necessary (i.e. for "sub-module implementations", not for "main module plugins" like android-speech plugin)
 	var ctx = (pluginConfig && pluginConfig.ctx) || void(0);
 
 	//{ "mod": "mmir-plugin-encoder-core.js", "config": "mmir-plugin-asr-nuance-xhr.js"}
