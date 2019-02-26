@@ -219,7 +219,7 @@ var createModuleRules = function(mmirAppConfig){
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	var pluginsUtil = require('./webpack-plugins-util.js');
+	var pluginsUtil = require('./plugins-utils.js');
 	var includePluginList = mmirAppConfig.includePlugins;
 	if(includePluginList){
 		var workersList = require('./webpack-resources-paths.js').workers;
