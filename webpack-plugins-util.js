@@ -5,7 +5,7 @@ var appConfigUtils = require('./webpack-app-module-config-utils.js');
 var settingsUtils = require('./settings-utils.js');
 
 var asrCoreId = 'mmir-plugin-encoder-core.js';
-var ttsCoreId = 'webAudioTextToSpeech.js';
+var ttsCoreId = 'audiotts.js';
 
 var applyToAllSpeechConfigs = '__apply-to-all-configs__';
 var ALL_SPEECH_CONFIGS_TYPE = settingsUtils.getAllSpeechConfigsType();
@@ -16,7 +16,7 @@ var ALL_SPEECH_CONFIGS_TYPE = settingsUtils.getAllSpeechConfigsType();
  */
 var moduleIdMap = {
 	'webaudioinput.js': 'mmir-plugin-encoder-core.js',
-	'mmir-plugin-tts-core-xhr.js': 'webAudioTextToSpeech.js'
+	'mmir-plugin-tts-core-xhr.js': 'audiotts.js'
 };
 
 /**
