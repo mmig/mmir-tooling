@@ -222,13 +222,17 @@ var createModuleRules = function(mmirAppConfig){
 	var pluginsUtil = require('./plugins-utils.js');
 	var includePluginList = mmirAppConfig.includePlugins;
 	if(includePluginList){
+
 		var workersList = require('./webpack-resources-paths.js').workers;
+		var fileResList = require('./webpack-resources-paths.js').fileResources;
+		var textResList = require('./webpack-resources-paths.js').textResources;
+		var resPaths = require('./webpack-resources-paths.js').resourcesPaths;
+
 		includePluginList.forEach(function(plugin){
 			var id = typeof plugin === 'string'? plugin : plugin.id;
-			var pluginConfig = plugin.config || null;
+			var pluginSettings = typeof plugin !== 'string'? plugin : {id: id};
 			console.log('adding mmir-plugin "'+id+'" ...');//DEBUG
-			//addPluginInfos: function(pluginPackageDir, alias, workersList, appConfig)
-			pluginsUtil.addPluginInfos(id, workersList, mmirAppConfig, pluginConfig, runtimeConfig, settings);
+			pluginsUtil.addPluginInfos(pluginSettings, workersList, fileResList, resPaths, textResList, mmirAppConfig, runtimeConfig, settings);
 		});
 
 		// console.log('added mmir-plugins: ', workersList, mmirAppConfig);//DEBUG
@@ -258,12 +262,18 @@ var createModuleRules = function(mmirAppConfig){
 	// console.log('###### creating module webpack-app-module-config.js with contents: '+ JSON.stringify(mmirAppConfigContent));
 
 	var binFilePaths = require('./webpack-resources-paths.js').fileResources.map(function(val){
-		return fileUtils.normalizePath(path.join(rootDir, val));
+		return fileUtils.normalizePath(path.isAbsolute(val)? val : path.join(rootDir, val));
 	});
 
+	//console.log('###### including as raw files: '+ binFilePaths);
+
 	var textFilePaths = require('./webpack-resources-paths.js').textResources.map(function(val){
-		return fileUtils.normalizePath(path.join(rootDir, val));
+		return fileUtils.normalizePath(path.isAbsolute(val)? val : path.join(rootDir, val));
 	});
+
+	// console.log('###### including as text files: '+ textFilePaths);
+
+	var binFilePluginResMap = require('./webpack-resources-paths.js').resourcesPaths;//FIXME test plugin raw-file-include
 
 	var moduleRules = [
 
@@ -274,9 +284,19 @@ var createModuleRules = function(mmirAppConfig){
 				loader: 'file-loader',
 				options: {
 					name: function(file) {
-						//use relative path path (from root) in target/output directory for the resouce:
+
+						if(binFilePluginResMap && binFilePluginResMap[fileUtils.normalizePath(file)]){
+							console.log('  including [raw file] from plugin, remapping include-path "'+file+'" -> ', binFilePluginResMap[fileUtils.normalizePath(file)]);
+							return binFilePluginResMap[fileUtils.normalizePath(file)];
+						}
+
+						//use relative path path (from mmir-lib root) in target/output directory for the resouce:
 						if(file.indexOf(rootDir) === 0){
+							console.log('  including [raw file], remapping include-path "'+file+'" -> ', file.substring(rootDir.length).replace(/^(\\|\/)/, ''));
 							file = file.substring(rootDir.length).replace(/^(\\|\/)/, '');
+						} else {//otherwise: include as bare file-name
+							console.log('  including [raw file] remapping include-path "'+file+'" -> ', path.basename(file));
+							file = path.basename(file);
 						}
 						return file;
 					}

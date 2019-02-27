@@ -2,7 +2,10 @@
 var path = require('path');
 var mmirModuleBaseConfig = require('mmir-lib/modulesBaseConfig');
 
+//remove paths that match the ID from mmir base paths:
 var webpackRemovedPaths = ['jquery'];
+
+//NOTE: non-absolute paths will be resolved against the mmir-lib package's path
 
 var webpackDefaultPaths = {
 
@@ -42,14 +45,18 @@ var webpackModuleConfig = {
 		'workers/jsccCompiler.js',
 		'workers/pegjsCompiler.js'
 	],
+	//paths for "raw" files that will be included as-is (i.e. copied)
 	fileResources: [
 		'vendor/sounds/beep-notification.mp3',
 		'vendor/styles/simpleViewLayout.css',
 		'vendor/styles/stdlne-wait-dlg.css'
 	],
+	//path for text resources
 	textResources: [
 		'env/grammar/grammarTemplate_reduced.tpl'
-	]
+	],
+	//path mappings for copied files etc (i.e. will be included/copied to the specified relative file path/name)
+	resourcesPaths: {}
 }
 
 module.exports = webpackModuleConfig;

@@ -1,8 +1,9 @@
-
+resolveAndAddAliasPaths
 var path = require('path');
 var _ = require('lodash');
 var appConfigUtils = require('./webpack-app-module-config-utils.js');
 var settingsUtils = require('./settings-utils.js');
+var fileUtils = require('./webpack-filepath-utils.js');
 
 var asrCoreId = 'mmir-plugin-encoder-core.js';
 var ttsCoreId = 'audiotts.js';
@@ -38,7 +39,7 @@ function isAsrPlugin(pluginId){
 	return /^mmir-plugin-asr-/.test(pluginId);
 }
 
-function addResolveAliasPaths(alias, paths){
+function resolveAndAddAliasPaths(alias, paths){
 	for(var p in paths){
 		paths[p] = path.resolve(paths[p]);
 		alias[p] = paths[p];
@@ -293,24 +294,46 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
 }
 
 module.exports = {
-	addPluginInfos: function(pluginId, workersList, appConfig, pluginConfig, runtimeConfig, settings){
+	addPluginInfos: function(pluginSettings, workersList, binFilesList, binFilesPaths, textFilesList, appConfig, runtimeConfig, settings){
+
+		var pluginId = pluginSettings.id;
+		var pluginConfig = pluginSettings.config;
+		var mode = pluginSettings.mode;
 
 		var pluginInfo = require(pluginId + '/module-ids.gen.js');
 
-		var paths = pluginInfo.getAll('paths', true);
+		var paths = pluginInfo.getAll('paths', mode, true);
 
-		addResolveAliasPaths(appConfig.paths, paths)
+		resolveAndAddAliasPaths(appConfig.paths, paths)
 
-		var workers = pluginInfo.getAll('workers');
+		var workers = pluginInfo.getAll('workers', mode);
 
 		workers.forEach(function(w){
 			workersList.push(paths[w]);
 		});
 
-		var includeModules = pluginInfo.getAll('modules');
+		var includeModules = pluginInfo.getAll('modules', mode);
 
 		includeModules.forEach(function(mod){
 			appConfigUtils.addIncludeModule(appConfig, mod, paths[mod]);
+		});
+
+		var includeFiles = pluginInfo.getAll('files', mode);
+		includeFiles.forEach(function(mod){
+
+			var modPath = paths[mod];
+
+			binFilesList.push(modPath);
+
+			//NOTE the module-ID for exported files is <plugin ID>/<file name without extension>
+			//     -> specify the include-path for the files (i.e. relative path to which the file is copied) as
+			//        <plugin ID>/<file name>
+			binFilesPaths[fileUtils.normalizePath(modPath)] = path.normalize(path.join(path.dirname(mod), path.basename(modPath)));
+
+			// console.log('  ############### adding exported (raw) file for plugin '+pluginId+' ['+mod+'] -> ', modPath);//DEBUG
+
+			appConfigUtils.addIncludeModule(appConfig, mod, modPath);
+
 		});
 
 		var pluginConfigInfo = require(pluginId + '/module-config.gen.js');
