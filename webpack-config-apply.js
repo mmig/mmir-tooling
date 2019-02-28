@@ -273,7 +273,7 @@ var createModuleRules = function(mmirAppConfig){
 
 	// console.log('###### including as text files: '+ textFilePaths);
 
-	var binFilePluginResMap = require('./webpack-resources-paths.js').resourcesPaths;//FIXME test plugin raw-file-include
+	var fileResourcesPathMap = require('./webpack-resources-paths.js').resourcesPaths;
 
 	var moduleRules = [
 
@@ -285,20 +285,26 @@ var createModuleRules = function(mmirAppConfig){
 				options: {
 					name: function(file) {
 
-						if(binFilePluginResMap && binFilePluginResMap[fileUtils.normalizePath(file)]){
-							console.log('  including [raw file] from plugin, remapping include-path "'+file+'" -> ', binFilePluginResMap[fileUtils.normalizePath(file)]);
-							return binFilePluginResMap[fileUtils.normalizePath(file)];
-						}
+						if(fileResourcesPathMap && fileResourcesPathMap[fileUtils.normalizePath(file)]){
 
-						//use relative path path (from mmir-lib root) in target/output directory for the resouce:
-						if(file.indexOf(rootDir) === 0){
+							//if there is an explicit mapping entry, use the entry:
+							console.log('  including [raw file] from plugin, remapping include-path "'+file+'" -> ', fileResourcesPathMap[fileUtils.normalizePath(file)]);
+							file = fileResourcesPathMap[fileUtils.normalizePath(file)];
+
+						} else if(file.indexOf(rootDir) === 0){
+
+							//use relative path path (from mmir-lib root) in target/output directory for the resouce:
 							console.log('  including [raw file], remapping include-path "'+file+'" -> ', file.substring(rootDir.length).replace(/^(\\|\/)/, ''));
 							file = file.substring(rootDir.length).replace(/^(\\|\/)/, '');
-						} else {//otherwise: include as bare file-name
+
+						} else {
+							//otherwise: include as bare file-name
 							console.log('  including [raw file] remapping include-path "'+file+'" -> ', path.basename(file));
 							file = path.basename(file);
 						}
-						return file;
+
+						//do normalize path-separators to '/' for proper usage in JS code -> "var url = require(<file resource>)"
+						return fileUtils.normalizePath(file);
 					}
 				}
 			}
