@@ -96,7 +96,7 @@ function normalizeMediaManagerPluginConfig(configList){
 				if(id){
 					entry.config = id;
 				} else if(deprecatedImplFileIdMap[normalized]){
-					console.log('WARN: found deprecated media-plugin '+deprecatedImplFileIdMap[normalized]+' in configuration; this plugin will probably not work ', entry);
+					console.log('WARN plugin-utils: found deprecated media-plugin '+deprecatedImplFileIdMap[normalized]+' in configuration; this plugin will probably not work ', entry);
 				}
 			}
 		}
@@ -137,18 +137,27 @@ function getConfigEnv(pluginConfig, pluginInfo, runtimeConfig){
 function createConfigEntry(pluginConfig, pluginConfigInfo, pluginId){
 	var isAsr = isAsrPlugin(pluginId);
 	var mod = pluginConfigInfo.defaultValues && pluginConfigInfo.defaultValues.mod;
+	var type = pluginConfigInfo.defaultValues && pluginConfigInfo.defaultValues.type;
 	// console.log('#### config entry for '+pluginConfigInfo.pluginName+' default mod? ', JSON.stringify(mod));//DEBUG
 	if(!mod){
 		// console.log('#### config entry for '+pluginConfigInfo.pluginName+' default mod? ', mod);//DEBUG
-		mod = isAsr? asrCoreId : ttsCoreId;
+		if(type){
+			mod = type === 'asr'? asrCoreId : ttsCoreId;
+			if(mod === ttsCoreId && type !== 'tts'){
+				console.log('ERROR plugin-utils: plugin did not specify module-name and a plugin-type other than "asr" and "tts" (type '+type+'), cannot automatically derive module-name for config-entry of ', pluginId);
+			}
+		} else {
+			mod = isAsr? asrCoreId : ttsCoreId;
+		}
+
 	} else {
 		mod = moduleIdMap[normalizeImplName(mod)] || mod;
 	}
 	var config = normalizeImplName(pluginId);//TODO should only create plugin-ID-config, if necessary (i.e. for "sub-module implementations", not for "main module plugins" like android-speech plugin)
 	var ctx = (pluginConfig && pluginConfig.ctx) || void(0);
 
-	//{ "mod": "mmir-plugin-encoder-core.js", "config": "mmir-plugin-asr-nuance-xhr.js"}
-	return {mod: mod, config: config, ctx: ctx};
+	//{ "mod": "mmir-plugin-encoder-core.js", "config": "mmir-plugin-asr-nuance-xhr.js", "type": "asr"}
+	return {mod: mod, config: config, type: type, ctx: ctx};
 }
 
 /**
@@ -218,7 +227,7 @@ function doApplySpeechConfigValue(name, val, lang, pluginName, speechConfigs, se
 			}
 
 			if(sc.include && sc.include !== 'inline'){
-				console.log("WARN settings-utils: applying plugin speech-config to file setting, cannot include this as file, enforce inlining instead.");
+				console.log("WARN plugin-utils: applying plugin speech-config to file setting, cannot include this as file, enforce inlining instead.");
 				sc.include = 'inline';
 			}
 		}
@@ -347,7 +356,7 @@ module.exports = {
 				addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, pluginId);
 			}
 		} else {
-			console.log('ERROR invalid module-config.js for plugin '+pluginId+': missing field pluginName ', pluginConfigInfo);
+			console.log('ERROR plugin-utils: invalid module-config.js for plugin '+pluginId+': missing field pluginName ', pluginConfigInfo);
 		}
 
 		console.log('plugin-utils: addPluginInfos() -> paths ', paths, ', workers ', workers, ', include modules ', includeModules, runtimeConfig);//DEBUG
