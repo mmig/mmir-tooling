@@ -378,7 +378,7 @@ var createModuleRules = function(mmirAppConfig){
 			test: fileUtils.createFileTestFunc(scxmlModels.map(function(s){return s.file;}), ' for [scxml] files'),
 			use: {
 				loader: path.resolve(webpackRootDir, 'mmir-scxml-loader.js'),
-				options: {mapping: scxmlModels},
+				options: {mapping: scxmlModels, ignoreErrors: scxmlOptions && scxmlOptions.ignoreErrors},
 			},
 			type: 'javascript/auto'
 		});

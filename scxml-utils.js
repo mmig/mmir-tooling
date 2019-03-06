@@ -36,7 +36,8 @@ function readDir(dir, list, options){
 			list.push({
 				id: id,
 				file: normalized,
-				mode: opt && opt.mode? opt.mode : DEFAULT_MODE
+				mode: opt && opt.mode? opt.mode : DEFAULT_MODE,
+				ignoreErrors: opt && opt.ignoreErrors? opt.ignoreErrors : false,
 			});
 		}
 	});
