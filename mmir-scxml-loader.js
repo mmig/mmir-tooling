@@ -1,4 +1,4 @@
-var path = require('path');
+
 var loaderUtils = require('loader-utils');
 var fileUtils = require('./webpack-filepath-utils.js');
 
@@ -23,6 +23,22 @@ var MODULE_CODE_SUFFIX = ';\n' +
 							'if(!prepareCallback) return; setTimeout(function(){prepareCallback(null, ScxmlModel)}, 0);' +
 						'};\nmodule.exports = ScxmlModel;';
 
+
+function toError(errList, file){
+	if(Array.isArray(errList)){
+		var sb = [];
+		var len = errList.length;
+		errList.forEach(function(err, index){
+			if(err.tagname && err.reason){
+				sb.push('SCXML ERROR ('+(index+1)+') in <'+err.tagname+'>: '+err.reason + '\n  at '+file+':'+err.line+':'+err.column);
+			} else {
+				sb.push(err && err.stack? err.stack : 'SCXML ERROR ('+(index+1)+') in file '+file+': '+err);
+			}
+		});
+		return new Error('encountered '+len+' error'+(len === 1? '' : 's')+' while parsing SCXML:\n' + sb.join('\n'));
+	}
+	return errList instanceof Error? errList : new Error('SCXML ERROR in file '+file+': '+errList);
+}
 
 module.exports = function(content, map, meta) {
 	var callback = this.async();
@@ -63,10 +79,12 @@ module.exports = function(content, map, meta) {
 
   //TODO ID optional settable via loader options?
   var id = scxmlInfo.id;
+	var ignoreRuntimeErrors = scxmlInfo.ignoreErrors === true || options.ignoreErrors === true;
+	// console.log('SCXML parsing, ignoreErrors -> ', ignoreRuntimeErrors, scxmlInfo, ', options.ignoreErrors: ', options.ignoreErrors)//DEBU
 	scxml.documentStringToModel(id, content, function(err, model){
 
 		if(err){
-			callback(err);
+			callback(toError(err, scxmlFile));
 			return;/////////////// EARLY EXIT /////////////////
 		}
 
@@ -75,7 +93,7 @@ module.exports = function(content, map, meta) {
 		model.prepare(function(err, fnModel) {
 
 				if(err){
-					callback(err);
+					callback(toError(err, scxmlFile));
 					return;/////////////// EARLY EXIT /////////////////
 				}
 
@@ -86,7 +104,7 @@ module.exports = function(content, map, meta) {
 		    callback(null, scxmlCode, map, meta);
 		});
 
-  })
+  }, {reportAllErrors: !ignoreRuntimeErrors})
 
   return;
 };

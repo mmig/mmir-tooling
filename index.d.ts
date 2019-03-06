@@ -205,6 +205,16 @@ export interface StateMachineOptions {
 	 * </pre>
 	 */
 	path?: string;
+	/** if TRUE, runtime errors will be ignored.
+	 *  if FALSE (or omitted) the compilation will fail with an error message
+	 *  when encountering SCXML runtime errors.
+	 *
+	 * NOTE: if ignored, the runtime errors will be triggered when the state-machine
+	 *       enters the corresponing state during runtime!
+	 *
+	 * @default false
+	 */
+	ignoreErrors?: boolean;
 	/** optionally specify options for found resource, or specifying resources/locations directly */
 	models?: {dialog?: StateMachineEntry, input?: StateMachineEntry};
 }
@@ -219,6 +229,17 @@ export interface StateMachineEntry {
 	 * @default "extended"
 	 */
 	mode?: "extended" | "simple";
+
+	/** if TRUE, runtime errors will be ignored.
+	 *  if FALSE (or omitted) the compilation will fail with an error message
+	 *  when encountering SCXML runtime errors.
+	 *
+	 * NOTE: if ignored, the runtime errors will be triggered when the state-machine
+	 *       enters the corresponing state during runtime!
+	 *
+	 * @default false
+	 */
+	ignoreErrors?: boolean;
 
 	/**  for explicitly specifying the state-machine directly (e.g. instead or in addition of parsing <code>path</code>) */
 	file?: string;
