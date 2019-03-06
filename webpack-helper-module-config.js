@@ -66,7 +66,7 @@ module.exports = {
 		core.require = function(deps, onSuccess){
 			var result;
 			if(isArray(deps)){
-				result = deps.map(function(dep){ return __webpack_require__(deps); });
+				result = deps.map(function(dep){ return __webpack_require__(dep); });
 				if(onSuccess){
 					//simulate async callback invocation
 					setTimeout(function(){
