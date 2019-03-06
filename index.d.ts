@@ -68,6 +68,23 @@ export type ModuleId = string;//TODO explicitly specify MMIR module IDs
  */
 export type ModulePaths = {[moduleId: string]: string};
 
+/**
+ * @example
+ * var grammarOptions = {
+ * 	path: './grammars',
+ * 	engine: 'pegjs',
+ * 	asyncCompile: false,
+ * 	grammars: {
+ * 		ja: {ignore: true},
+ * 		de: {exclude: true},
+ * 		en: {engine: 'jscc', asyncCompile: true},
+ *
+ * 		//specifying JSON grammar files directly
+ * 		testing: {engine: 'jscc', file: path.resolve('./grammar-test/en/grammar.json')},
+ * 		testing2: {id: '!id warning!', engine: 'jison', file: path.resolve('./grammar-test/de/grammar.json_large-example')}
+ * 	}
+ * };
+ */
 export interface GrammarOptions {
 	/** file path for searching (recursively) JSON grammars within languages-subdirectory:
 	 * path/.../<grammar ID>/grammar.json
@@ -83,11 +100,10 @@ export interface GrammarEntry {
 	  */
 	engine?: "jscc" | "jison" | "pegjs";
 	/**
-	 * if <code>true</code>, and the execution environment supports Workers, then the grammar will be loaded
-	 * in a Worker on app start-up, i.e. execution will be asynchronously in a worker-thread
-	 * @default false
+	 * if <code>true</code>, and thread-webworker is available, grammar will be compiled paralelized / in a separate thread
+	 * @default true
 	 */
-	async?: boolean;
+	asyncCompile?: boolean;
 	/**
 	 * if <code>true</code>, the corresponding grammar will be completely excluded, i.e. no executable grammar will be compiled
 	 * from the corresponding JSON grammar
@@ -107,6 +123,23 @@ export interface GrammarEntry {
 	file?: string;
 }
 
+/**
+ * @example
+ *		var settingOptions = {
+ *		 	path: path.resolve('./config'),
+ *		 	configuration: false,
+ *		 	grammar: {
+ *		 		ja: {exclude: true}
+ *		 	},
+ *		 	speech: {
+ *		 		de: {exclude: true},
+ *		 		en: {include: 'file'}
+ *		 	},
+ *		 	dictionary: {
+ *		 		ja: {include: 'file'}
+ *		 	}
+ *		 };
+ */
 export interface SettingsOptions {
 	/** file path for searching settings:
 	 * <pre>
@@ -148,6 +181,21 @@ export interface SettingsEntryOptions {
 
 export type SettingsType = 'configuration' | 'dictionary' | 'grammar' | 'speech';
 
+/**
+ * @example
+ * var stateMachineOptions = {
+ * 	path: './statedef_large',
+ * 	models: {
+ * 		input: {
+ * 			mode: 'simple',
+ * 			file: './config/statedef_minimal/inputDescriptionSCXML.xml'
+ * 		},
+ * 		dialog: {
+ * 			mode: 'extended'
+ * 		}
+ * 	}
+ * };
+ */
 export interface StateMachineOptions {
 
 	/** file path for searching (recursively) for SCXML files (state-engines):
@@ -205,10 +253,9 @@ export type ModuleConfig = {[configName: string]: any} & {logLevel?: mmir.LogLev
 
 /** options for handling found resources when parsing the resourcesPath */
 export interface ResourcesOptions {
-	/** if true, explicitly exports implementation resources (controllers, helpers etc.); ensures that the resource is included in webpack build.
-	 *
-	 *  This may be necessary, if the resources are not explicitly <pre>require()</pre>'d anywhere
-	 *  (e.g. loaded by dynamically constructing the resource-name/-ID)
+	/** for automatically converting old-style implementations that are no CommonJS or AMD modules:
+	 * if true, explicitly exports the implementation resource (i.e. as module.exports)
+	 * @see ImplementationOptions
 	 */
 	addModuleExport?: boolean;
 	/** excludes the specified resources types when parsing the resourcesPath */
@@ -226,28 +273,64 @@ export interface ViewOptions {
 	path?: string;
 }
 
+/**
+ * @example
+ * var ctrlOptions = {
+ * 	path: './implementations_all/controllers',
+ * 	controllers: {
+ * 		application: {
+ * 			addModuleExport: true
+ * 		},
+ * 		calendar: {
+ * 			file: path.resolve('./implementations/controllers/calendar.js')
+ * 		},
+ * 		application2: false,
+ * 		application3: {exclude: true},
+ * 	}
+ * }
+ */
 export interface ControllerOptions {
 	/** file path for (recursively) searching controller implementation files:
 	 * path/<controller ID>.js
 	 */
 	path?: string;
-	controllers?: {[id: string]: ImplementationOptions};
+	controllers?: boolean | {[id: string]: ImplementationOptions};
 }
 
+/**
+ * @example
+ * var helperOptions = {
+ * 	path: './implementations_all/helpers',
+ * 	addModuleExport: true,
+ * 	helpers: {
+ * 		calendarHelper: {exclude: false}
+ * 	}
+ * }
+ */
 export interface HelperOptions {
 	/** file path for (recursively) searching helper implementation files:
 	 * path/.../<controller ID>Helper.js
 	 */
 	path?: string;
-	helpers?: {[id: string]: ImplementationOptions};
+	helpers?: boolean | {[id: string]: ImplementationOptions};
 }
 
+/**
+ * @example
+ * var modelOptions = {
+ * 	path: './implementations_all/models',
+ * 	models: {
+ * 		user: {addModuleExport: 'mmir.User'},
+ * 		calendarModel: {addModuleExport: 'mmir.CalendarModel'}
+ * 	}
+ * }
+ */
 export interface ModelOptions {
 	/** file path for searching (data) model implementation files:
 	 * path/<model ID>.js
 	 */
 	path?: string;
-	models?: {[id: string]: ImplementationOptions};
+	models?: boolean | {[id: string]: ImplementationOptions};
 }
 
 export interface ImplementationOptions {
@@ -255,12 +338,16 @@ export interface ImplementationOptions {
 	/** if <code>true</code>, the corresponding implementation will be excluded (when parsing <code>path</code>) */
 	exclude?: boolean;
 
-	/** if true, explicitly exports implementation resources (controllers, helpers etc.); ensures that the resource is included in webpack build.
+	/** for automatically converting old-style implementations that are no CommonJS or AMD modules:
+	 * if true, explicitly exports the implementation resource, i.e. adds something like
+	 * <pre>
+	 * module.exports.<resource name> = <resource constructor>;
+	 * </pre>
+	 * to the implementation source/module.
 	 *
-	 *  This may be necessary, if the resources are not explicitly <pre>require()</pre>'d anywhere
-	 *  (e.g. loaded by dynamically constructing the resource-name/-ID)
+	 * If string, the specified string will be used for the export.
 	 */
-	addModuleExport?: boolean;
+	addModuleExport?: boolean | string;
 
 	/**  for explicitly specifying the implementation-file directly (e.g. instead or in addition of parsing <code>path</code>) */
 	file?: string;
@@ -272,6 +359,37 @@ export interface ImplementationOptions {
 	type?: "controller" | "helper" | "model";
 }
 
+/**
+ * @example
+ * var includePlugins = [
+ *	{id: 'mmir-plugin-asr-nuance-xhr', config: {
+ *    // ctx: 'nuance',//OPTIONAL install into sub-context "nuance"
+ *      appKey: "9...",
+ *      appId: "NMDPTRIAL....",
+ *	}},
+ *  {id: 'mmir-plugin-asr-google-xhr',
+ *    mode: 'wasm',
+ *    config: {
+ *      appKey: 'A....',
+ *      results: 5
+ *  }},
+ *  {id: 'mmir-plugin-tts-nuance-xhr', config: {
+ *    appKey: "9....",
+ *    appId: "NMDPTRIAL_...",
+ *    voice: {fr: 'Samantha'},
+ *    language: {ja: 'jpn-JPN'}
+ *  }},
+ *  {id: 'mmir-plugin-tts-speakjs', config: {
+ *    env: 'browser',
+ *    ctx: 'local' //OPTIONAL install into sub-context "local"
+ *  }},
+ *  {id: 'mmir-plugin-speech-android', config: {
+ *    // ctx: 'android',//OPTIONAL install into sub-context "android"
+ *    voice: {de: 'male'},
+ *    language: {en: 'eng-IND'}
+ *  }},
+ *];
+ */
 export interface PluginOptions {
 	/**
 	 * the (package) ID of the plugin
