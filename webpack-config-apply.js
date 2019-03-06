@@ -151,6 +151,12 @@ var createModuleRules = function(mmirAppConfig){
 		// console.log('including SCXML models from options ', scxmlOptions.models);//DEBU
 		scxmlUtils.scxmlFromOptions(scxmlOptions, appRootDir, scxmlModels);
 	}
+
+	if(scxmlModels.length === 0){
+		console.log('no SCXML models specified, including minimal default SCXML models for "input" and "dialog"...');//DEBUG
+		scxmlUtils.scxmlDefaults(scxmlOptions, appRootDir, scxmlModels);
+	}
+
 	// console.log('SCXML models: ', scxmlModels, scxmlOptions);//DEBUG
 
 	scxmlUtils.addScxmlToAppConfig(scxmlModels, mmirAppConfig, directories, runtimeConfig);

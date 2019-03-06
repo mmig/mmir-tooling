@@ -84,6 +84,29 @@ function addFromOptions(scxmlModels, list, appRootDir){
 	}
 }
 
+
+function addDefaults(kind, list, appRootDir){
+
+	//TODO support other types/kinds than "minimal" engines
+	if(kind && kinde !== 'minimal'){
+		console.log('WARN scxml-utils: only support "minimal" for default input- and dialog-engine!');
+	}
+
+	var inputEngine = {
+		id: 'input',
+		mode: 'extended',
+		file: fileUtils.normalizePath(path.resolve(__dirname, 'defaultValues/inputEngine.scxml'))
+	};
+
+	var dialogEngine = {
+		id: 'dialog',
+		mode: 'extended',
+		file: fileUtils.normalizePath(path.resolve(__dirname, 'defaultValues/dialogEngine.scxml'))
+	};
+
+	list.push(inputEngine, dialogEngine);
+}
+
 function contains(list, id){
 	return list.findIndex(function(item){
 		return item.id === id;
@@ -115,7 +138,7 @@ module.exports = {
 	 * @param {String} appRootDir the root directory of the app (against which relative paths will be resolved)
 	 * @param {Array<ScxmlEntry>} [scxmlModels] OPTIONAL list of ScxmlEntry objects, to which the new entries (read from the options.directory) will be added
 	 * 																					if omitted, a new list will be created and returned.
-	 * 										ScxmlEntry.id {String}: the grammar id (usually the language code, e.g. "en" or "de")
+	 * 										ScxmlEntry.id {String}: the SCXML engine ID (one of "input" or "dialog")
 	 * 										ScxmlEntry.file {String}: the path to the JSON grammar (from which the executable grammar will be created)
 	 * 										ScxmlEntry.mode {"extended" | "simple"}: run SCXML modle in "simple" or "extended" mode, DEFAULT: "extended"
 	 * @return {Array<ScxmlEntry>} the list of ScxmlEntry objects
@@ -139,6 +162,16 @@ module.exports = {
 
 		var list = scxmlModels || [];
 		addFromOptions(models, list, appRootDir);
+
+		return list;
+	},
+
+	scxmlDefaults: function(options, appRootDir, scxmlModels){
+
+		var kind = options && options.type;
+
+		var list = scxmlModels || [];
+		addDefaults(kind, list, appRootDir);
 
 		return list;
 	},
