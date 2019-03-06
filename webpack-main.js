@@ -19,12 +19,6 @@ if(appConfig.applyAutoLoads){
 	appConfig.applyAutoLoads();
 }
 
-
-// //FIXME TEST:
-// require('mmirf/asyncGrammar');
-// // require('mmirf/jsccAsyncGen');
-// // require('mmirf/jisonGen');
-// require('mmirf/jisonAsyncGen');
-// // require('mmirf/pegjsAsyncGen');
-
-// require('mmirf/grammar/en');
+if(appConfig.jqueryInit){
+	appConfig.jqueryInit();
+}

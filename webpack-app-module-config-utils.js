@@ -63,6 +63,11 @@ var generateFromAppConfig = function(mmirAppConfig){
 			// console.log('app config module -> settings: ', moduleImplStr);
 		}
 
+		if(mmirAppConfig.jquery){
+			moduleImplStr += 'var doInitJQuery = function(){ require("mmirf/core").jquery = require("jquery"); };\n';
+			moduleExports.push(['jqueryInit', 'doInitJQuery']);
+		}
+
 		moduleExportsStr = moduleExports.length > 0?
 			'{' + (moduleExports.map(
 					function(pairs){

@@ -48,9 +48,19 @@ var createResolveAlias = function(mmirAppConfig){
 	return alias;
 }
 
+var enableJQuery = function(mmirAppConfig){
+	mmirAppConfig.jquery = true;
+	var paths = require('./webpack-resources-paths.js').paths;
+	paths['mmirf/util'] = 'tools/util_jquery';
+}
+
 var createModuleRules = function(mmirAppConfig){
 
 	var appRootDir = mmirAppConfig.rootPath || process.cwd();
+
+	if(mmirAppConfig.jquery){
+		enableJQuery(mmirAppConfig);
+	}
 
 	var directories = directoriesJsonUtils.createDirectoriesJson();
 
