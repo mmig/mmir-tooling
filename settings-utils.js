@@ -297,13 +297,15 @@ module.exports = {
 	 */
 	jsonSettingsFromDir: function(options, appRootDir, settingsList){
 
-		var dir = options.path;
-		if(!path.isAbsolute(dir)){
+		var dir = options && options.path;
+		if(dir && !path.isAbsolute(dir)){
 			dir = path.resolve(appRootDir, dir);
 		}
 
 		var list = settingsList || [];
-		readDir(dir, list, options);
+		if(dir){
+			readDir(dir, list, options);
+		}
 
 		return list;
 	},
