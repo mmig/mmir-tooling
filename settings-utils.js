@@ -278,10 +278,10 @@ module.exports = {
 	 *
 	 * @param  {SetttingsOptions} options the settings-options with field options.path:
 	 *                                  options.path: {String} the directory to parse for JSON settings
-	 *                                  opionts.configuration: {Boolean | SettingsEntryOptions} options for the configuration.json entry
-	 *                                  opionts.dictionary: {Boolean | {[id: String: SettingsEntryOptions}} options-map for the dictionary.json entries where id is (usually) the language code
-	 *                                  opionts.grammar: {Boolean | {[id: String: SettingsEntryOptions}} options-map for the grammar.json entries where id is (usually) the language code
-	 *                                  opionts.speech: {Boolean | {[id: String: SettingsEntryOptions}} options-map for the speech.json entries where id is (usually) the language code
+	 *                                  options.configuration: {Boolean | SettingsEntryOptions} options for the configuration.json entry
+	 *                                  options.dictionary: {Boolean | {[id: String]: SettingsEntryOptions}} options-map for the dictionary.json entries where id is (usually) the language code
+	 *                                  options.grammar: {Boolean | {[id: String]: SettingsEntryOptions}} options-map for the grammar.json entries where id is (usually) the language code
+	 *                                  options.speech: {Boolean | {[id: String]: SettingsEntryOptions}} options-map for the speech.json entries where id is (usually) the language code
 	 *                                   where:
 	 *                                     if Boolean: if FALSE, the corresponding JSON settings are excluded/ignored
 	 *                                     if SettingsEntryOptions:

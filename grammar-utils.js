@@ -112,7 +112,6 @@ module.exports = {
 	 *																																									DEFAULT: "jscc"
 	 *														options.grammars[id].async {Boolean}: OPTIONAL if <code>true</code>, and the execution environment supports Workers, then the grammar will be loaded
 	 *																																			in a Worker on app start-up, i.e. execution will be asynchronously in a worker-thread
-	 *																																			TODO impl. mechanism
 	 *														options.grammars[id].exclude {Boolean}: OPTIONAL if <code>true</code>, the corresponding grammar will be completely excluded, i.e. no executable grammar will be compiled
 	 *																																				from the corresponding JSON grammar
 	 *														options.grammars[id].ignore {Boolean}: OPTIONAL if <code>true</code>, the grammar will not be loaded
@@ -134,7 +133,6 @@ module.exports = {
 	 * 										                                   and then will be available e.g. via <code>mmir.semantic.interprest(<input phrase string>, <grammar-id>)</code>.
 	 * 										GrammarEntry.async {Boolean}: OPTIONAL if <code>true</code>, and the execution environment supports Workers, then the grammar will be loaded
 	 * 																												in a Worker on app start-up, i.e. execution will be asynchronously in a worker-thread
-	 * 																												TODO impl. mechanism
 	 * @return {Array<GrammarEntry>} the list of GrammarEntry objects
 	 */
 	jsonGrammarsFromDir: function(options, appRootDir, grammarList){
