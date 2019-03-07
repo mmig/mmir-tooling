@@ -96,9 +96,9 @@ function readDir(dir, list, options){
 	}
 }
 
-function addFromOptions(settings, list, appRootDir){
-	//TODO
-}
+// function addFromOptions(settings, list, appRootDir){
+// 	//TODO
+// }
 
 function isSettingsType(type, filePath){
 	return new RegExp('^' +  type  + '\.json$', 'i').test(path.basename(filePath));
@@ -148,14 +148,14 @@ function detectByteOrder(buffer){
 	return 'utf8'
 }
 
-function toUtfString(buffer, enc){
-	var penc = enc.replace('utf', 'utf-');
-	// var Iconv = require('iconv').Iconv;
-	// var iconv = new Iconv(penc, 'UTF-8');
-	// return iconv.convert(buffer).toString();
-	var iconv = require('iconv-lite');
-	return iconv.decode(buffer, enc);
-}
+// function toUtfString(buffer, enc){
+// 	var penc = enc.replace('utf', 'utf-');
+// 	// var Iconv = require('iconv').Iconv;
+// 	// var iconv = new Iconv(penc, 'UTF-8');
+// 	// return iconv.convert(buffer).toString();
+// 	var iconv = require('iconv-lite');
+// 	return iconv.decode(buffer, enc);
+// }
 
 function removeBom(content){
 	// console.log('remove BOM? -> ', content.codePointAt(0), content.codePointAt(1), content.codePointAt(2), content.codePointAt(3), content.codePointAt(4));//DEBU
@@ -401,8 +401,8 @@ module.exports = {
 			// console.log('settings-util: adding include module '+aliasId, file)
 			// appConfigUtils.addIncludeModule(appConfig, aliasId, file);
 			// appConfig.includeModules.push(file)
-			// if(!appConfig.autoLoadModules) appConfig.autoLoadModules = [];
-			// appConfig.autoLoadModules.push(file)
+			// if(!appConfig.loadAfterInit) appConfig.loadAfterInit = [];
+			// appConfig.loadAfterInit.push(file)
 		});
 
 
