@@ -65,7 +65,37 @@ export interface AppConfig {
 	resourcesPath?: string;
 	resourcesPathOptions?: ResourcesOptions;
 
+	/**
+	 * include a (optional) module, e.g. will be available via
+	 * <code>mmir.require()</code>.
+	 *
+	 * The prefix "mmirf/" can be omitted.
+	 *
+	 * @example
+	 * includeModules: ['jsccGen', 'mmirf/jisonGen'],
+	 */
 	includeModules?: Array<ModuleId>;
+	/**
+	 * include module AND do load it BEFORE initializing the mmir library;
+	 * the module will also be available via <code>mmir.require()</code>.
+	 *
+	 * The prefix "mmirf/" can be omitted.
+	 *
+	 * @example
+	 * loadBeforeInit: ['mmirf/polyfill'],
+	 */
+	loadBeforeInit?: Array<ModuleId>;
+	/**
+	 * include module AND do load it AFTER initializing the mmir library;
+	 * the module will also be available via <code>mmir.require()</code>.
+	 *
+	 * The prefix "mmirf/" can be omitted.
+	 *
+	 * @example
+	 * loadAfterInit: ['mmirf/grammar/testing'],
+	 */
+	loadAfterInit?: Array<ModuleId>;
+
 	config?: ModuleConfigOptions;
 
 	jquery?: boolean;

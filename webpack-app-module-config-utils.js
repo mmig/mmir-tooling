@@ -42,19 +42,34 @@ var generateFromAppConfig = function(mmirAppConfig){
 			// console.log('app config module -> includeModules: ', moduleImplStr);
 		}
 
-		if(mmirAppConfig.autoLoadModules) {
-			// ['grammar/de'] -> 'var doAutoLoadModules = function(){\n  require("mmirf/grammar/de");\n};\n';
+		if(mmirAppConfig.loadAfterInit) {
+			// ['grammar/de'] -> 'var doLoadAfterInit = function(){\n  require("mmirf/grammar/de");\n};\n';
 
 			var rePrefix = /^(mmirf\/)|mmir-plugin-/;
-			moduleImplStr += 'var doAutoLoadModules = function(){\n' +
-						mmirAppConfig.autoLoadModules.map(function(incl){
+			moduleImplStr += 'var doLoadAfterInit = function(){\n' +
+						mmirAppConfig.loadAfterInit.map(function(incl){
 							incl = rePrefix.test(incl) || fs.existsSync(incl)? incl : 'mmirf/' + incl;
 							return '  require("'+incl+'");'
 						}).join('\n') +
 				'\n};\n';
 
-			moduleExports.push(['applyAutoLoads', 'doAutoLoadModules']);
-			// console.log('app config module -> doAutoLoadModules: ', moduleImplStr);
+			moduleExports.push(['applyAutoLoads', 'doLoadAfterInit']);
+			// console.log('app config module -> doLoadAfterInit: ', moduleImplStr);
+		}
+
+		if(mmirAppConfig.loadBeforeInit) {
+			// ['polyfill'] -> 'var doLoadBeforeInit = function(){\n  require("mmirf/polyfill");\n};\n';
+
+			var rePrefix = /^(mmirf\/)|mmir-plugin-/;
+			moduleImplStr += 'var doLoadBeforeInit = function(){\n' +
+						mmirAppConfig.loadBeforeInit.map(function(incl){
+							incl = rePrefix.test(incl) || fs.existsSync(incl)? incl : 'mmirf/' + incl;
+							return '  require("'+incl+'");'
+						}).join('\n') +
+				'\n};\n';
+
+			moduleExports.push(['applyAutoPreloads', 'doLoadBeforeInit']);
+			// console.log('app config module -> doLoadBeforeInit: ', moduleImplStr);
 		}
 
 		if(mmirAppConfig.runtimeSettings) {
@@ -121,7 +136,7 @@ function toAliasPath(moduleFilePath){
 }
 
 function addAutoLoadModule(appConfig, id, file){
-	doAddModule(appConfig, 'autoLoadModules', id, file);
+	doAddModule(appConfig, 'loadAfterInit', id, file);
 }
 
 function addIncludeModule(appConfig, id, file){
