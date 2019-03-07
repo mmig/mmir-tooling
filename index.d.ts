@@ -8,9 +8,34 @@ export interface ConfigApply {
 	apply: (webpackInstance: any, webpackConfig: any, mmirAppConfig: AppConfig) => void
 }
 
+/**
+ * @example
+ * var appConfig = {
+ * 	//path to directory that contains classic mmir directory structure
+ * 	resourcesPath: 'src/mmir',
+ * 	resourcesPathOptions: {
+ * 		//for included models, controllers, helpers: convert old-style
+ * 		// implementations by adding an export statement
+ * 		addModuleExport: true,
+ * 		//exlude model implementations, and do not include JSON grammar resources
+ * 		exclude: ['models', 'settings/grammar']
+ * 	},
+ * 	//utilize jQuery in mmir instead of (less backwards compatible)
+ * 	// alternative implementations (npm package jquery needs to be installed!)
+ * 	jquery: true,
+ * 	//specify language for runtime configuration (== configuration.json)
+ * 	configuration: {language: 'en'},
+ * 	//do include controller implementation found within resourcesPath
+ * 	// (NOTE: this is the default behavior)
+ * 	controllers: true,
+ * 	//do NOT include helper implemenations found within resourcesPath
+ * 	helpers: false,
+ * 	//...
+ * }
+ */
 export interface AppConfig {
 
-	/** used for resolving non-absolute paths: the absolute path to the app's root/sources directory (if omitted the current working directory is used for resolving paths) */
+	/** used for resolving non-absolute paths: the absolute path to the app's root/sources directory (if omitted the current working directory is used for resolving non-absolute paths) */
 	rootPath?: string;
 	/** specifying additional (or replacing) module paths */
 	paths?: ModulePaths;
@@ -45,18 +70,18 @@ export interface AppConfig {
 
 	jquery?: boolean;
 
-	grammars?: GrammarOptions;
-	stateMachines?: StateMachineOptions;
+	grammars?: GrammarOptions | boolean;
+	stateMachines?: StateMachineOptions | boolean;
 
 	settings?: SettingsOptions;
 	configuration?: RuntimeConfiguration;
 
 	includePlugins?: Array<PluginOptions>;
 
-	views?: ViewOptions;
-	controllers?: ControllerOptions;
-	helpers?: HelperOptions;
-	models?: ModelOptions;
+	views?: ViewOptions | boolean;
+	controllers?: ControllerOptions | boolean;
+	helpers?: HelperOptions | boolean;
+	models?: ModelOptions | boolean;
 }
 
 export type ModuleId = string;//TODO explicitly specify MMIR module IDs
