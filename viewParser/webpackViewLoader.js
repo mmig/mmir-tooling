@@ -38,11 +38,11 @@ define([
 	 *
 	 * @param  {PresentationManager} _instance
 	 *          the instance of the PresentationManager
-	 * @param  {Dictionary<Layout>} _layouts
+	 * @param  {Map<string, Layout>} _layouts
 	 *          the layout collection of the PresentationManager for adding loaded layouts
-	 * @param  {Dictionary<View>} _views
+	 * @param  {Map<string, View>} _views
 	 *          the view collection of the PresentationManager for adding loaded views
-	 * @param  {Dictionary<Partial>} _partials
+	 * @param  {Map<string, Partial>} _partials
 	 *          the partials collection of the PresentationManager for adding loaded partials
 	 * @param  {Function} createViewKey
 	 *          the PresentationManager's helper function for creating keys to be used when
@@ -58,7 +58,7 @@ define([
 	 * @memberOf ViewLoader
 	 */
 	function loadViews (
-			_instance, _layouts, _views, _partials, createViewKey, createPartialKey
+			_instance, _layouts, _views, _partials, _createViewKey, _createPartialKey
 	) {
 
 		/**
@@ -117,11 +117,15 @@ define([
 
 			defaultLayoutName = defaultLayoutName[0].toLowerCase() + defaultLayoutName.substring(1);
 			var reDefId = new RegExp('\\b'+defaultLayoutName+'.js$');
-			var id = layoutsFileList.find(function(id){
-				return reDefId.test(id);
-			});
+			var index = -1;
+			for(var i=0,size=layoutsFileList.length; i < size; --i){
+				if(reDefId.test(layoutsFileList[i])){
+					index = i;
+					break;
+				}
+			};
 
-			return id? id.replace(/\.js$/, '') : id;
+			return index !== -1? layoutsFileList[index].replace(/\.js$/, '') : null;
 		}
 
 		/**
