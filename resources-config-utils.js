@@ -15,7 +15,7 @@ function parseRootDir(dir, parseOptions, options){
 		if(fileUtils.isDirectory(absPath)){
 
 			var dirName = path.basename(absPath).toLowerCase();
-			if(parseOptions.exclude && parseOptions.exclude.find(function(item){ return item === dirName;})){
+			if(options[dirName] === false || (parseOptions.exclude && parseOptions.exclude.find(function(item){ return item === dirName;}))){
 				console.log('parsing resources: excluding resources for ', dirName, parseOptions.exclude);
 				return;////////// EARLY EXIT ////////////////
 			}
@@ -71,13 +71,13 @@ function parseConfigDir(dir, parseOptions, options){
 
 			switch(dirName){
 				case 'languages':
-					if(!parseOptions.exclude || !parseOptions.exclude.find(function(item){ return item === 'grammar';})){
+					if(options.grammar !== false && (!parseOptions.exclude || !parseOptions.exclude.find(function(item){ return item === 'grammar';}))){
 						options.grammars = {path: fileUtils.normalizePath(absPath)};
 					}
 					else console.log('parsing resources: excluding grammar resources for ', dirName, parseOptions.exclude);//DEBUG
 					break;
 				case 'statedef':
-					if(!parseOptions.exclude || !parseOptions.exclude.find(function(item){ return item === 'stateMachines';})){
+					if(options.stateMachines !== false && (!parseOptions.exclude || !parseOptions.exclude.find(function(item){ return item === 'stateMachines';}))){
 						options.stateMachines = {path: fileUtils.normalizePath(absPath)};
 					}
 					else console.log('parsing resources: excluding scxml resources for ', dirName, parseOptions.exclude);//DEBUG
