@@ -5,7 +5,6 @@ var fileUtils = require('./webpack-filepath-utils.js');
 
 var appConfigUtils = require('./webpack-app-module-config-utils.js');
 var directoriesUtil = require('./mmir-directories-util.js');
-var configurationUtil = require('./settings-utils.js');
 
 var DEFAULT_MODE = 'extended';
 
@@ -86,7 +85,7 @@ function addFromOptions(scxmlModels, list, appRootDir){
 }
 
 
-function addDefaults(kind, list, appRootDir){
+function addDefaults(kind, list, _appRootDir){
 
 	//TODO support other types/kinds than "minimal" engines
 	if(kind && kinde !== 'minimal'){
@@ -185,9 +184,9 @@ module.exports = {
 	 * 										scxml.file {String}: the path to the SCXML file (from which the executable SCXML model will be created)
 	 * @param  {[type]} appConfig the app configuration to which the SCXML models will be added
 	 * @param  {[type]} directories the directories.json representation
-	 * @param  {[type]} runtimeConfiguration the configuration.json representation
+	 * @param  {[type]} _runtimeConfiguration the configuration.json representation
 	 */
-	addScxmlToAppConfig: function(scxmlModels, appConfig, directories, runtimeConfiguration){
+	addScxmlToAppConfig: function(scxmlModels, appConfig, directories, _runtimeConfiguration){
 
 		if(!scxmlModels || scxmlModels.length < 1){
 			return;
