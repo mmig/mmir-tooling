@@ -2,7 +2,7 @@ define([
 	  'mmirf/util/deferredWithState'
 	, 'mmirf/configurationManager'
 	, 'mmirf/logger'
-	, 'mmirf/constants'
+	, 'mmirf/resources'
 	, 'mmirf/commonUtils'
 	, 'mmirf/controllerManager'
 	, 'module'
@@ -10,7 +10,7 @@ define([
 	deferred,
 	configurationManager,
 	Logger,
-	constants,
+	res,
 	utils,
 	ctrlManager,
 	module
@@ -112,7 +112,7 @@ define([
 			//the default layout is not attached to a controller:
 			// -> so instead, search in gen-path of layouts for an entry with the default layout's name
 
-			var layoutGenPath = constants.getCompiledLayoutPath().replace(/\/$/, '');//<- remove trailing slash
+			var layoutGenPath = res.getCompiledLayoutPath().replace(/\/$/, '');//<- remove trailing slash
 			var layoutsFileList = utils.listDir(layoutGenPath, /\.js$/i);
 
 			defaultLayoutName = defaultLayoutName[0].toLowerCase() + defaultLayoutName.substring(1);
