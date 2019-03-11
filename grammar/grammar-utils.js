@@ -4,8 +4,8 @@ var _ = require ('lodash');
 var fileUtils = require('../webpack-filepath-utils.js');
 
 var appConfigUtils = require('../webpack-app-module-config-utils.js');
-var directoriesUtil = require('../mmir-directories-util.js');
-var configurationUtil = require('../settings-utils.js');
+var directoriesUtil = require('../tools/directories-utils.js');
+var configurationUtil = require('../tools/settings-utils.js');
 
 function readDir(dir, list, options){
 

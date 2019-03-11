@@ -1,9 +1,9 @@
-resolveAndAddAliasPaths
+
 var path = require('path');
 var _ = require('lodash');
-var appConfigUtils = require('./webpack-app-module-config-utils.js');
+var appConfigUtils = require('../webpack-app-module-config-utils.js');
 var settingsUtils = require('./settings-utils.js');
-var fileUtils = require('./webpack-filepath-utils.js');
+var fileUtils = require('../webpack-filepath-utils.js');
 
 var asrCoreId = 'mmir-plugin-encoder-core.js';
 var ttsCoreId = 'audiotts.js';
@@ -303,7 +303,7 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
 }
 
 module.exports = {
-	addPluginInfos: function(pluginSettings, workersList, binFilesList, binFilesPaths, textFilesList, appConfig, runtimeConfig, settings){
+	addPluginInfos: function(pluginSettings, workersList, binFilesList, binFilesPaths, _textFilesList, appConfig, runtimeConfig, settings){
 
 		var pluginId = pluginSettings.id;
 		var pluginConfig = pluginSettings.config;

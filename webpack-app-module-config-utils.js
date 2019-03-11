@@ -124,7 +124,7 @@ var addAliasFrom = function(mmirAppConfig, alias){
 
 	//DISABLED redirection must be handled by NormalModuleReplacementPlugin, because loadFile is not directly require'ed, but vie package (sub) path 'mmirf/util'
 	// //add "proxy" for mmirf/util/loadFile, so that inlined resouces get returned directly:
-	// alias['mmirf/util/loadFile'] = path.resolve('./webpack-loadFile.js');
+	// alias['mmirf/util/loadFile'] = path.resolve('./runtime/webpack-loadFile.js');
 	// var origLoadFile = path.resolve(alias['mmirf/util'], 'loadFile.js');
 	// alias['mmirf/util/loadFile__raw'] = origLoadFile;
 

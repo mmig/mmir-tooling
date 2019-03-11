@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 var fileUtils = require('./webpack-filepath-utils.js');
 var appConfigUtils = require('./webpack-app-module-config-utils.js');
-var directoriesJsonUtils = require('./mmir-directories-util.js');
+var directoriesJsonUtils = require('./tools/directories-utils.js');
 
 
 var ReplaceModuleIdPlugin = require('./webpack-plugin-replace-id.js');
@@ -68,7 +68,7 @@ var createModuleRules = function(mmirAppConfig){
 	var runtimeConfig = mmirAppConfig.configuration;//{language: 'de'};
 
 	//parse resources directory (if specified) for detecting default mmir resouce structrue/resource options:
-	var resourceUtils = require('./resources-config-utils.js');
+	var resourceUtils = require('./tools/resources-config-utils.js');
 	if(mmirAppConfig.resourcesPath){
 		console.log('parsing resources directory: ', mmirAppConfig.resourcesPath, ', current app-config: ', mmirAppConfig);//DEBUG
 		var genAppConfig = resourceUtils.resourcePathsFrom(mmirAppConfig.resourcesPath, mmirAppConfig.resourcesPathOptions);
@@ -76,7 +76,7 @@ var createModuleRules = function(mmirAppConfig){
 		console.log('adding results from parsing resources directory: ', genAppConfig, ' -> ', mmirAppConfig);//DEBUG
 	}
 
-	var settingsUtil = require('./settings-utils.js');
+	var settingsUtil = require('./tools/settings-utils.js');
 	var settingsOptions = mmirAppConfig.settings;
 	var settings = settingsUtil.jsonSettingsFromDir(settingsOptions, appRootDir);
 	// console.log('JSON settings: ', settings);
@@ -137,7 +137,7 @@ var createModuleRules = function(mmirAppConfig){
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	var scxmlUtils = require('./scxml-utils.js');
+	var scxmlUtils = require('./scxml/scxml-utils.js');
 	var scxmlOptions = mmirAppConfig.stateMachines;
 	//exmaple:
 	// {
@@ -174,7 +174,7 @@ var createModuleRules = function(mmirAppConfig){
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	var implUtils = require('./impl-utils.js');
+	var implUtils = require('./impl/impl-utils.js');
 
 	var ctrlOptions = mmirAppConfig.controllers;
 	var ctrlList = [];
@@ -214,7 +214,7 @@ var createModuleRules = function(mmirAppConfig){
 
 	//FIXME include controllers!
 
-	var viewUtils = require('./view-utils.js');
+	var viewUtils = require('./view/view-utils.js');
 
 	var viewOptions = mmirAppConfig.views;
 	//exmaple:
@@ -235,7 +235,7 @@ var createModuleRules = function(mmirAppConfig){
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	var pluginsUtil = require('./plugins-utils.js');
+	var pluginsUtil = require('./tools/plugins-utils.js');
 	var includePluginList = mmirAppConfig.includePlugins;
 	if(includePluginList){
 
@@ -273,7 +273,7 @@ var createModuleRules = function(mmirAppConfig){
 	// console.log('###### mmirAppConfig: '+ JSON.stringify(mmirAppConfig));
 
 	var mmirAppConfigContent = appConfigUtils.generateModuleCode(mmirAppConfig);
-	var appConfigModulePath = fileUtils.normalizePath(path.join(webpackRootDir, 'webpack-app-module-config.js'));
+	var appConfigModulePath = fileUtils.normalizePath(path.join(webpackRootDir, 'runtime', 'webpackModuleInit.js'));
 
 	// console.log('###### creating module webpack-app-module-config.js with contents: '+ JSON.stringify(mmirAppConfigContent));
 
@@ -365,7 +365,7 @@ var createModuleRules = function(mmirAppConfig){
 		moduleRules.push({
 			test: fileUtils.createFileTestFunc(views.map(function(v){return v.file;}), ' for [view] files'),
 			use: {
-				loader: path.resolve(webpackRootDir, 'mmir-view-loader.js'),
+				loader: path.resolve(webpackRootDir, 'view', 'view-loader.js'),
 				options: {mapping: views},
 			},
 			type: 'javascript/auto'
@@ -377,7 +377,7 @@ var createModuleRules = function(mmirAppConfig){
 		moduleRules.push({
 			test: fileUtils.createFileTestFunc(scxmlModels.map(function(s){return s.file;}), ' for [scxml] files'),
 			use: {
-				loader: path.resolve(webpackRootDir, 'mmir-scxml-loader.js'),
+				loader: path.resolve(webpackRootDir, 'scxml', 'scxml-loader.js'),
 				options: {mapping: scxmlModels, ignoreErrors: scxmlOptions && scxmlOptions.ignoreErrors},
 			},
 			type: 'javascript/auto'
@@ -390,7 +390,7 @@ var createModuleRules = function(mmirAppConfig){
 		moduleRules.push({
 			test: fileUtils.createFileTestFunc(implList.map(function(s){return s.file;}), ' for [controller | helper | model] files'),
 			use: {
-				loader: path.resolve(webpackRootDir, 'mmir-impl-loader.js'),
+				loader: path.resolve(webpackRootDir, 'impl', 'impl-loader.js'),
 				options: {mapping: implList},
 			},
 			type: 'javascript/auto'
@@ -499,8 +499,8 @@ var createPlugins = function(webpackInstance, alias, mmirAppConfig){
 					// console.log('------------- replacing module ', resource.request, ' -> ', modPath);
 					resource.request = modPath;
 				} else {
-					// console.log('############# replacing module ', resource.request, ' -> ', path.join(webpackRootDir, 'webpack-loadFile.js'));
-					resource.request = path.join(webpackRootDir, 'webpack-loadFile.js');
+					// console.log('############# replacing module ', resource.request, ' -> ', alias['mmirf/util/resourceLoader']);
+					resource.request = alias['mmirf/util/resourceLoader'];
 				}
 			}
 		),

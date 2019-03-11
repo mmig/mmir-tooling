@@ -1,7 +1,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var fileUtils = require('./webpack-filepath-utils.js');
+var fileUtils = require('../webpack-filepath-utils.js');
 
 function parseRootDir(dir, parseOptions, options){
 

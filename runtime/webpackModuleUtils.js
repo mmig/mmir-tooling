@@ -4,38 +4,29 @@ var core = require('mmirf/core');
 var defaultConfig = {
 
   /** @memberOf mmir.require.config */
-	baseUrl: './'
+	baseUrl: './',
 
 	//configurations for the modules:
-	, config: {
+	config: {
 
 		/** @memberOf mmir.require.config.moduleConfig */
 	    'mmirf/inputManager': {
-	        scxmlDoc: 'config/statedef/inputDescriptionSCXML.xml'
-	        // simple | mode
-	        , mode: 'extended'
-	        //EXAMPLE: set module-specific log-level to 'info'
-//		    , logLevel: 'info'
-	    }
+	        scxmlDoc: 'config/statedef/inputDescriptionSCXML.xml',
+	        // simple | extended
+	        mode: 'extended'
+			},
 		/** @memberOf mmir.require.config.moduleConfig */
-	    , 'mmirf/dialogManager': {
-	        scxmlDoc: 'config/statedef/dialogDescriptionSCXML.xml'
-	        // simple | mode
-	        , mode: 'extended'
-	        //EXAMPLE: set module-specific log-level to 'verbose'
-//		    , logLevel: 'verbose'
-	    }
-	    , 'mmirf/simpleViewEngine': {
+	    'mmirf/dialogManager': {
+	        scxmlDoc: 'config/statedef/dialogDescriptionSCXML.xml',
+	        // simple | extended
+	        mode: 'extended'
+	    },
+	    'mmirf/simpleViewEngine': {
 	    	//ID attribute when inserting simpleViewEngine style:
-	    	cssId: 'simple-view'
+	    	cssId: 'simple-view',
 	    	//the path to the css file for the simpleViewEngine style:
-	    	, cssUrl: 'mmirf/vendor/styles/simpleViewLayout.css'
+	    	cssUrl: 'mmirf/vendor/styles/simpleViewLayout.css'
 	    }
-
-        //EXAMPLE: set module-specific log-level to 'warn'
-	    //         log-levels: 'verbose' | 'debug' | 'info' | 'warn' | 'error' | 'critical' | 'disabled'
-	    //         or number:     0           1        2        3         4           5           6
-//	    , 'mmirf/view': { logLevel: 'warn' }
 
 	}
 };
@@ -69,6 +60,14 @@ module.exports = {
 
 		var isArray = require('mmirf/util/isArray');
 
+		/**
+		 * requirejs/AMD-like require implementation
+		 *
+		 * @param  {Array<string>|string} [deps] single or list of dependencies
+		 * @param  {Function} [onSuccess] success callback for async require (the callback's arguments corresponds to deps list)
+		 * @param  {Function} [onError] error callback
+		 * @return {any} if non-async require, the requested module
+		 */
 		core.require = function(deps, onSuccess, onError){
 			var result;
 			try{
@@ -79,7 +78,7 @@ module.exports = {
 						//simulate async callback invocation
 						setTimeout(function(){
 							onSuccess.apply(null, result);
-						}, 4);
+						}, 0);
 					}
 				} else {
 				 	result = __webpack_require__(deps);
@@ -92,7 +91,7 @@ module.exports = {
 					//simulate async callback invocation
 					setTimeout(function(){
 						onError.apply(null, err);
-					}, 4);
+					}, 0);
 
 				} else {
 
@@ -102,6 +101,13 @@ module.exports = {
 			return result;
 		};
 
+		/**
+		 * requirejs/AMD-like define implementation
+		 *
+		 * @param  {string} name the module name/ID
+		 * @param  {Array<string>} [deps] list of dependencies
+		 * @param  {Function} factory the factory method for creating the module (the factory's arguments corresponds to deps list)
+		 */
 		core._define = function(name, deps, factory){
 
 			var resolved, modIndex, reqIndex, expIndex;
@@ -120,7 +126,7 @@ module.exports = {
 							return null;
 						case 'require':
 							reqIndex = index;
-							return;
+							return null;
 					}
 					return __webpack_require__(dep);
 				});

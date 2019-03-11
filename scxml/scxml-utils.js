@@ -1,10 +1,10 @@
 var path = require('path');
 var fs = require('fs');
 var _ = require ('lodash');
-var fileUtils = require('./webpack-filepath-utils.js');
+var fileUtils = require('../webpack-filepath-utils.js');
 
-var appConfigUtils = require('./webpack-app-module-config-utils.js');
-var directoriesUtil = require('./mmir-directories-util.js');
+var appConfigUtils = require('../webpack-app-module-config-utils.js');
+var directoriesUtil = require('../tools/directories-utils.js');
 
 var DEFAULT_MODE = 'extended';
 
@@ -95,13 +95,13 @@ function addDefaults(kind, list, _appRootDir){
 	var inputEngine = {
 		id: 'input',
 		mode: 'extended',
-		file: fileUtils.normalizePath(path.resolve(__dirname, 'defaultValues/inputEngine.scxml'))
+		file: fileUtils.normalizePath(path.resolve(__dirname, '..', 'defaultValues/inputEngine.scxml'))
 	};
 
 	var dialogEngine = {
 		id: 'dialog',
 		mode: 'extended',
-		file: fileUtils.normalizePath(path.resolve(__dirname, 'defaultValues/dialogEngine.scxml'))
+		file: fileUtils.normalizePath(path.resolve(__dirname, '..', 'defaultValues/dialogEngine.scxml'))
 	};
 
 	list.push(inputEngine, dialogEngine);
@@ -195,7 +195,7 @@ module.exports = {
 		if(!appConfig.paths){
 			appConfig.paths = {};
 		}
-		appConfig.paths['mmirf/scion'] = require.resolve('./webpack-scion.js');
+		appConfig.paths['mmirf/scion'] = path.resolve(__dirname, '..', 'runtime', 'webpackScion.js');
 
 		// console.log('scxml-utils.addScxmlToAppConfig(): set mmirf/scion module implementation to ', appConfig.paths['mmirf/scion']);//DEBU
 

@@ -1,10 +1,11 @@
 var path = require('path');
 var fs = require('fs');
 var _ = require('lodash');
-var fileUtils = require('./webpack-filepath-utils.js');
+var fileUtils = require('../webpack-filepath-utils.js');
 
-var appConfigUtils = require('./webpack-app-module-config-utils.js');
-var directoriesUtil = require('./mmir-directories-util.js');
+var appConfigUtils = require('../webpack-app-module-config-utils.js');
+
+var directoriesUtil = require('./directories-utils.js');
 
 var ALL_SPEECH_CONFIGS_TYPE = 'speech-all';
 

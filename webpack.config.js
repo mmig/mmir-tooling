@@ -9,7 +9,33 @@ var webpackConfig = {
 		path: path.resolve(__dirname, 'dist'),
 		library: "mmir",
 		libraryTarget: "umd"
-	}
+	},
+	devServer: {
+		open: false,
+		contentBase: './dist'
+	},
+	module: {
+    rules: [
+      {
+        test: /\.js$/,
+				// function(p){
+				// 	var n = path.normalize(p);
+				// 	var scion = require.resolve('@scion-scxml/core');
+				// 	if(n === path.normalize(scion) || n === path.normalize(require.resolve('@scion-scxml/core-base'))){
+				// 		console.log('############# test', scion)
+				// 		return true;
+				// 	}
+				// 	return false;
+				// },
+        use: {
+					loader: 'babel-loader',
+					options: {
+						presets: ["@babel/preset-env"]
+					}
+				}
+      }
+    ]
+  }
 };
 
 //FIXME TEST
@@ -19,10 +45,11 @@ var webpackConfig = {
 var grammarOptions = {
 	path: './config/languages',
 	engine: 'pegjs',
+	// asyncCompile: false,
 	grammars: {
 		ja: {ignore: true},
 		de: {exclude: true},
-		en: {engine: 'jison', async: true},
+		en: {engine: 'jscc', async: true},
 
 		//specifying JSON grammar files directly
 		testing: {engine: 'jscc', file: path.resolve('./config/languages/de/grammar.json')},
@@ -56,12 +83,14 @@ var settingOptions = {
 //FIXME TEST scxml options
 var stateMachineOptions = {
 	path: './config/statedef_large',
+	ignoreErrors: true,
 	models: {
 		input: {
 			mode: 'simple',
 			file: './config/statedef_minimal/inputDescriptionSCXML.xml'
 		},
 		dialog: {
+			// ignoreErrors: true,
 			mode: 'extended'
 		}
 	}
@@ -101,6 +130,7 @@ var modelOptions = {
 
 //FIXME TEST app-configuratin
 const mmirAppConfig = {
+	jquery: true,
 	grammars: grammarOptions,
 	views: viewOptions,
 	settings: settingOptions,
@@ -111,8 +141,9 @@ const mmirAppConfig = {
 	helpers: helperOptions,
 	models: modelOptions,
 
+	loadBeforeInit: ['mmirf/polyfill'],
 
-	//TEST parsing resource path & some custom settings:
+	// //TEST parsing resource path & some custom settings:
 	// resourcesPath: 'test-www',
 	// resourcesPathOptions: {
 	// 	addModuleExport: true,
@@ -130,7 +161,7 @@ const mmirAppConfig = {
 	// 		}
 	// 	}
 	// },
-
+	//
 	// includeModules: ['mmirf/jsccGen'],
 
 // 	config: {

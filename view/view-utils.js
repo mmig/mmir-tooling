@@ -1,9 +1,12 @@
 var path = require('path');
 var fs = require('fs');
-var fileUtils = require('./webpack-filepath-utils.js');
+var fileUtils = require('../webpack-filepath-utils.js');
 
-var appConfigUtils = require('./webpack-app-module-config-utils.js');
-var directoriesUtil = require('./mmir-directories-util.js');
+var appConfigUtils = require('../webpack-app-module-config-utils.js');
+var resources = require('../webpack-resources-paths.js');
+
+var directoriesUtil = require('../tools/directories-utils.js');
+
 
 var VirtualModulePlugin;
 function initVirtualModulePlugin(){
@@ -46,7 +49,7 @@ function readDir(dir, list, options){
 	}
 }
 
-function readSubDir(dirs, list, options){
+function readSubDir(dirs, list, _options){
 
 	var dir = dirs.dir;
 	var files = fs.readdirSync(dir);
@@ -186,7 +189,7 @@ module.exports = {
 	 * @param  {[type]} directories the directories.json representation
 	 * @param  {[type]} runtimeConfiguration the configuration.json representation
 	 */
-	addViewsToAppConfig: function(views, ctrls, appConfig, directories, runtimeConfiguration){
+	addViewsToAppConfig: function(views, ctrls, appConfig, directories, _runtimeConfiguration){
 
 		if(!views || views.length < 1){
 			return;
@@ -208,14 +211,14 @@ module.exports = {
 		appConfig.includeModules.push('mmirf/yield', 'mmirf/layout', 'mmirf/view', 'mmirf/partial');//TODO only include types that were actually parsed
 
 		//FIXME set simpleViewEngine TODO support setting engine via appConfig
-		require('./webpack-resources-paths.js').paths['mmirf/simpleViewEngine'] = 'env/view/simpleViewEngine'
+		resources.paths['mmirf/simpleViewEngine'] = 'env/view/simpleViewEngine';
 
 		if(!appConfig.paths){
 			appConfig.paths = {};
 		}
 
 		// replace default viewLoader with webpack-viewLoader:
-		appConfig.paths['mmirf/viewLoader'] = path.resolve('viewParser/webpackViewLoader.js');
+		appConfig.paths['mmirf/viewLoader'] = path.resolve(__dirname, '..', 'runtime', 'webpackViewLoader.js');
 
 		// appConfig.paths['mmirf/controllerManager'] = path.resolve('viewParser/webpackCtlrManager.js');
 		// appConfig.paths['mmirf/viewLoader'] = path.join(path.dirname(require.resolve('mmir-lib')), 'env/view/viewLoader');

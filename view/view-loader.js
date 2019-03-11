@@ -1,8 +1,8 @@
 
 var loaderUtils = require('loader-utils');
-var fileUtils = require('./webpack-filepath-utils.js');
+var fileUtils = require('../webpack-filepath-utils.js');
 
-var mmir = require('./mmir-init.js');
+var mmir = require('../mmir-init.js');
 var Controller = mmir.require('mmirf/controller');
 
 ///////////////////////////////////////////////////////////////////////////////

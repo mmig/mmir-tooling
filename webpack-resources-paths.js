@@ -11,17 +11,15 @@ var webpackDefaultPaths = {
 
 	'mmirf/scion': 'vendor/libs/scion-amd-mod.min.pp',
 	'mmirf/simpleViewEngine': 'env/view/stubViewEngine',
-	//FIXME add package util as path:
+	//use non-jQuery utils by default:
 	'mmirf/util': 'tools/util_purejs',
 
-	'mmirf/util/resourceLoader': path.resolve(__dirname, 'webpack-loadFile'),
+	'mmirf/util/resourceLoader': path.resolve(__dirname, 'runtime', 'webpackLoadFile'),
 
-	'build-tool/module-config-helper':         path.resolve(__dirname, 'module-config-helper'),
-	'build-tool/webpack-helper-module-config': path.resolve(__dirname, 'webpack-helper-module-config'),
-	'build-tool/webpack-app-config':           path.resolve(__dirname, 'webpack-app-module-config')
+	'build-tool/module-config-helper':         path.resolve(__dirname, 'runtime', 'moduleConfigImpl'),
+	'build-tool/webpack-helper-module-config': path.resolve(__dirname, 'runtime', 'webpackModuleUtils'),
+	'build-tool/webpack-app-config':           path.resolve(__dirname, 'runtime', 'webpackModuleInit')
 };
-
-// delete mmirModuleBaseConfig.shim;
 
 var paths = mmirModuleBaseConfig.paths;
 webpackRemovedPaths.forEach(function(entry){
