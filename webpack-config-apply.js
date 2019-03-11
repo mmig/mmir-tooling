@@ -405,7 +405,7 @@ var createModuleRules = function(mmirAppConfig){
 			mmirAppConfig.webpackPlugins = [];
 		}
 
-		mmirAppConfig.webpackPlugins.push(function(webpackInstance, alias, mmirAppConfig){
+		mmirAppConfig.webpackPlugins.push(function(webpackInstance, alias, _mmirAppConfig){
 			return new webpackInstance.NormalModuleReplacementPlugin(
 				/mmirf\/settings\/(configuration|dictionary|grammar|speech)\//i,
 				function(resource) {
