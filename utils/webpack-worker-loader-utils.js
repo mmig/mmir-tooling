@@ -1,9 +1,11 @@
 var path = require('path');
-var fileUtils = require('./utils/filepath-utils.js');
+var fileUtils = require('./filepath-utils.js');
+
+var resources = require('../webpack-resources-paths.js');
 
 var createWebWorkerLoaderConfig = function(rootDir){
 
-	var webworkerPaths = require('./webpack-resources-paths.js').workers.map(function(val){
+	var webworkerPaths = resources.workers.map(function(val){
 		return fileUtils.normalizePath(path.isAbsolute(val)? val : path.join(rootDir, val));
 	});
 

@@ -173,7 +173,7 @@ const mmirAppConfig = {
 // 	}
 };
 
-// require('./webpack-worker-loader-config').apply(webpackConfig);
+// require('./utils/webpack-worker-loader-utils').apply(webpackConfig);
 require('./webpack-config-apply').apply(webpack, webpackConfig, mmirAppConfig);
 
 module.exports = webpackConfig;

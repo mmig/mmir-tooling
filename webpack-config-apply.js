@@ -637,6 +637,6 @@ module.exports = {
 		}
 
 		//add webworker loader configuration
-		require('./webpack-worker-loader-config').apply(webpackConfig, rootDir, useRulesForLoaders);
+		require('./utils/webpack-worker-loader-utils').apply(webpackConfig, rootDir, useRulesForLoaders);
 	}
 };
