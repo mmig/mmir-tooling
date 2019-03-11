@@ -16,7 +16,7 @@
     "url": "https://github.com/mmig/mmir-lib/issues"
   },
   "homepage": "https://github.com/mmig/mmir-lib#readme",
-  "main": "webpack-main.js",
+  "main": "webpack-config-apply.js",
   "types": "index.d.ts",
   "directories": {
     "lib": "./dist"
@@ -37,13 +37,11 @@
     "start": "webpack-dev-server"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.2.5",
     "@scion-scxml/core": "^2.6.22",
-    "acorn": "^6.1.1",
+    "@scion-scxml/scxml": "^4.3.25",
     "file-loader": "^2.0.0",
     "jquery": "^3.3.1",
     "lodash": "^4.17.11",
-    "mmir-lib": "git+https://gitlab-cos.b.dfki.de/mmir/dev_mmir-lib.git#develop/webpack",
     "raw-loader": "^0.5.1",
     "val-loader": "^1.1.1",
     "virtual-module-webpack-plugin": "^0.4.1",
