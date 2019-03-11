@@ -1,5 +1,5 @@
 var path = require('path');
-var fileUtils = require('./webpack-filepath-utils.js');
+var fileUtils = require('./utils/filepath-utils.js');
 
 var createWebWorkerLoaderConfig = function(rootDir){
 

@@ -2,7 +2,7 @@ const path = require('path');
 const process = require('process');
 const _ = require('lodash');
 
-var fileUtils = require('./webpack-filepath-utils.js');
+var fileUtils = require('./utils/filepath-utils.js');
 var appConfigUtils = require('./utils/webpack-module-init-gen.js');
 var directoriesJsonUtils = require('./tools/directories-utils.js');
 

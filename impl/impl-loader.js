@@ -1,6 +1,6 @@
 
 var loaderUtils = require('loader-utils');
-var fileUtils = require('../webpack-filepath-utils.js');
+var fileUtils = require('../utils/filepath-utils.js');
 
 function getExportCodeFor(varName){
 	return '\n' +

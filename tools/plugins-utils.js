@@ -3,7 +3,7 @@ var path = require('path');
 var _ = require('lodash');
 var appConfigUtils = require('../utils/webpack-module-init-gen.js');
 var settingsUtils = require('./settings-utils.js');
-var fileUtils = require('../webpack-filepath-utils.js');
+var fileUtils = require('../utils/filepath-utils.js');
 
 var asrCoreId = 'mmir-plugin-encoder-core.js';
 var ttsCoreId = 'audiotts.js';
