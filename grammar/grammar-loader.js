@@ -147,9 +147,9 @@ module.exports = function(content, map, meta) {
 
 //HACK force prevention of json-loader
 var jsonLoaderPath;
-module.exports.pitch = function(remainingRequest, precedingRequest, data) {
+module.exports.pitch = function(_remainingRequest, _precedingRequest, _data) {
 
-	// console.log('mmir-grammer-loader: PITCHing | remaining: ', remainingRequest, ' | preceding: ', precedingRequest, ' | data: ', data);//DEBUG
+	// console.log('mmir-grammer-loader: PITCHing | remaining: ', _remainingRequest, ' | preceding: ', _precedingRequest, ' | data: ', _data);//DEBUG
 	// console.log('mmir-grammer-loader: PITCHing options -> ',loaderUtils.getOptions(this));//DEBUG
 
 	if(asyncSupport && !pendingAsyncGrammars){

@@ -201,7 +201,7 @@ module.exports = {
 	 * @param  {[type]} directories the directories.json representation
 	 * @param  {[type]} runtimeConfiguration the configuration.json representation
 	 */
-	addImplementationsToAppConfig: function(implList, appConfig, directories, runtimeConfiguration){
+	addImplementationsToAppConfig: function(implList, appConfig, directories, _runtimeConfiguration){
 
 		if(!implList || implList.length < 1){
 			return;
