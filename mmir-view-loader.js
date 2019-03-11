@@ -1,4 +1,4 @@
-var path = require('path');
+
 var loaderUtils = require('loader-utils');
 var fileUtils = require('./webpack-filepath-utils.js');
 
