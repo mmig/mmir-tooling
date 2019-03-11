@@ -6,8 +6,9 @@ var fileUtils = require('./utils/filepath-utils.js');
 var appConfigUtils = require('./utils/webpack-module-init-gen.js');
 var directoriesJsonUtils = require('./tools/directories-utils.js');
 
-
 var ReplaceModuleIdPlugin = require('./utils/webpack-plugin-replace-id.js');
+
+var resourcesConfig = require('./webpack-resources-config');
 
 
 var isDisableLogging = false;
@@ -27,7 +28,7 @@ var webpackRootDir = __dirname;
 
 var createResolveAlias = function(mmirAppConfig){
 
-	var paths = require('./webpack-resources-paths.js').paths;
+	var paths = resourcesConfig.paths;
 
 	var alias = {}, p;
 	for (var n in paths) {
@@ -50,7 +51,7 @@ var createResolveAlias = function(mmirAppConfig){
 
 var enableJQuery = function(mmirAppConfig){
 	mmirAppConfig.jquery = true;
-	var paths = require('./webpack-resources-paths.js').paths;
+	var paths = resourcesConfig.paths;
 	paths['mmirf/util'] = 'tools/util_jquery';
 }
 
@@ -239,10 +240,10 @@ var createModuleRules = function(mmirAppConfig){
 	var includePluginList = mmirAppConfig.includePlugins;
 	if(includePluginList){
 
-		var workersList = require('./webpack-resources-paths.js').workers;
-		var fileResList = require('./webpack-resources-paths.js').fileResources;
-		var textResList = require('./webpack-resources-paths.js').textResources;
-		var resPaths = require('./webpack-resources-paths.js').resourcesPaths;
+		var workersList = resourcesConfig.workers;
+		var fileResList = resourcesConfig.fileResources;
+		var textResList = resourcesConfig.textResources;
+		var resPaths = resourcesConfig.resourcesPaths;
 
 		includePluginList.forEach(function(plugin){
 			var id = typeof plugin === 'string'? plugin : plugin.id;
@@ -277,19 +278,19 @@ var createModuleRules = function(mmirAppConfig){
 
 	// console.log('###### creating module webpack-app-module-config.js with contents: '+ JSON.stringify(mmirAppConfigContent));
 
-	var binFilePaths = require('./webpack-resources-paths.js').fileResources.map(function(val){
+	var binFilePaths = resourcesConfig.fileResources.map(function(val){
 		return fileUtils.normalizePath(path.isAbsolute(val)? val : path.join(rootDir, val));
 	});
 
 	//console.log('###### including as raw files: '+ binFilePaths);
 
-	var textFilePaths = require('./webpack-resources-paths.js').textResources.map(function(val){
+	var textFilePaths = resourcesConfig.textResources.map(function(val){
 		return fileUtils.normalizePath(path.isAbsolute(val)? val : path.join(rootDir, val));
 	});
 
 	// console.log('###### including as text files: '+ textFilePaths);
 
-	var fileResourcesPathMap = require('./webpack-resources-paths.js').resourcesPaths;
+	var fileResourcesPathMap = resourcesConfig.resourcesPaths;
 
 	var moduleRules = [
 

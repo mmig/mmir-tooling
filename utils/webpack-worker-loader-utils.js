@@ -1,7 +1,7 @@
 var path = require('path');
 var fileUtils = require('./filepath-utils.js');
 
-var resources = require('../webpack-resources-paths.js');
+var resources = require('../webpack-resources-config.js');
 
 var createWebWorkerLoaderConfig = function(rootDir){
 

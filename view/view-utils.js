@@ -3,7 +3,7 @@ var fs = require('fs');
 var fileUtils = require('../utils/filepath-utils.js');
 
 var appConfigUtils = require('../utils/webpack-module-init-gen.js');
-var resources = require('../webpack-resources-paths.js');
+var resources = require('../webpack-resources-config.js');
 
 var directoriesUtil = require('../tools/directories-utils.js');
 
