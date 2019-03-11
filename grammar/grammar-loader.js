@@ -1,8 +1,8 @@
-var path = require('path');
-var loaderUtils = require('loader-utils');
-var fileUtils = require('./webpack-filepath-utils.js');
 
-var mmir = require('./mmir-init.js');
+var loaderUtils = require('loader-utils');
+var fileUtils = require('../webpack-filepath-utils.js');
+
+var mmir = require('../mmir-init.js');
 var semantic = mmir.require('mmirf/semanticInterpreter');
 
 //////// async / threaded grammar compiler support: ////////////////
@@ -11,8 +11,8 @@ try {
 	// console.log('#################### start detecting async grammar support...')
 	var Threads = require('webworker-threads');
 	var thread = Threads.create();
-	thread.eval(function testAsync(){return true;}).eval('testAsync()', function(err, result){
-		// console.log('#################### detected async grammar support -> ', result, ', error? -> ', err);
+	thread.eval(function testAsync(){return true;}).eval('testAsync()', function(_err, _result){
+		// console.log('#################### detected async grammar support -> ', _result, ', error? -> ', _err);
 		thread.destroy();
 	});
 
@@ -47,10 +47,7 @@ function getEngine(grammarInfo, options){
 
 module.exports = function(content, map, meta) {
 	var callback = this.async();
-	// someAsyncOperation(content, function(err, result, sourceMaps, meta) {
-	// 	if (err) return callback(err);
-	// 	callback(null, result, sourceMaps, meta);
-	// });
+
   var grammar;
   try{
     grammar = JSON.parse(content);

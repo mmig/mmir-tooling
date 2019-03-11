@@ -92,7 +92,7 @@ var createModuleRules = function(mmirAppConfig){
 	runtimeConfig = settingsUtil.getConfiguration(settings).value;
 
 
-	var grammarUtils = require('./grammar-utils.js');
+	var grammarUtils = require('./grammar/grammar-utils.js');
 	var grammarOptions = mmirAppConfig.grammars;
 	//exmaple:
 	// var grammarOptions = {
@@ -352,7 +352,7 @@ var createModuleRules = function(mmirAppConfig){
 		moduleRules.push({
 			test: fileUtils.createFileTestFunc(grammars.map(function(g){return g.file;}), ' for [grammar] files'),
 			use: {
-				loader: path.resolve(webpackRootDir, 'mmir-grammar-loader.js'),
+				loader: path.resolve(webpackRootDir, 'grammar', 'grammar-loader.js'),
 				options: {mapping: grammars, config: grammarOptions},
 			},
 			type: 'javascript/auto'
