@@ -3,7 +3,7 @@ var fs = require('fs');
 var _ = require ('lodash');
 var fileUtils = require('../webpack-filepath-utils.js');
 
-var appConfigUtils = require('../webpack-app-module-config-utils.js');
+var appConfigUtils = require('../utils/webpack-module-init-gen.js');
 var directoriesUtil = require('../tools/directories-utils.js');
 
 var DEFAULT_MODE = 'extended';

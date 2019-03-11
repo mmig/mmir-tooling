@@ -18,15 +18,6 @@ var webpackConfig = {
     rules: [
       {
         test: /\.js$/,
-				// function(p){
-				// 	var n = path.normalize(p);
-				// 	var scion = require.resolve('@scion-scxml/core');
-				// 	if(n === path.normalize(scion) || n === path.normalize(require.resolve('@scion-scxml/core-base'))){
-				// 		console.log('############# test', scion)
-				// 		return true;
-				// 	}
-				// 	return false;
-				// },
         use: {
 					loader: 'babel-loader',
 					options: {

@@ -1,7 +1,7 @@
 
 var path = require('path');
 var _ = require('lodash');
-var appConfigUtils = require('../webpack-app-module-config-utils.js');
+var appConfigUtils = require('../utils/webpack-module-init-gen.js');
 var settingsUtils = require('./settings-utils.js');
 var fileUtils = require('../webpack-filepath-utils.js');
 

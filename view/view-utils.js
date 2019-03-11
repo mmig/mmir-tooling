@@ -2,7 +2,7 @@ var path = require('path');
 var fs = require('fs');
 var fileUtils = require('../webpack-filepath-utils.js');
 
-var appConfigUtils = require('../webpack-app-module-config-utils.js');
+var appConfigUtils = require('../utils/webpack-module-init-gen.js');
 var resources = require('../webpack-resources-paths.js');
 
 var directoriesUtil = require('../tools/directories-utils.js');
@@ -220,7 +220,7 @@ module.exports = {
 		// replace default viewLoader with webpack-viewLoader:
 		appConfig.paths['mmirf/viewLoader'] = path.resolve(__dirname, '..', 'runtime', 'webpackViewLoader.js');
 
-		// appConfig.paths['mmirf/controllerManager'] = path.resolve('viewParser/webpackCtlrManager.js');
+		// appConfig.paths['mmirf/controllerManager'] = path.resolve(__dirname, '..', 'runtime', 'webpackCtlrManager.js');
 		// appConfig.paths['mmirf/viewLoader'] = path.join(path.dirname(require.resolve('mmir-lib')), 'env/view/viewLoader');
 
 		//add generated stub controllers if necessary:
