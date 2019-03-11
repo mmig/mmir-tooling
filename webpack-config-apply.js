@@ -7,7 +7,7 @@ var appConfigUtils = require('./utils/webpack-module-init-gen.js');
 var directoriesJsonUtils = require('./tools/directories-utils.js');
 
 
-var ReplaceModuleIdPlugin = require('./webpack-plugin-replace-id.js');
+var ReplaceModuleIdPlugin = require('./utils/webpack-plugin-replace-id.js');
 
 
 var isDisableLogging = false;

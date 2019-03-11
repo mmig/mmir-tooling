@@ -126,7 +126,7 @@ class ReplaceModuleIdPlugin {
 
 		if (!compiler.hooks || !compiler.hooks.compilation) {
 			compiler.plugin('compilation', function(compilation) {
-				compilation.plugin("before-module-ids", processModules)
+				compilation.plugin('before-module-ids', processModules)
 			});
 		} else {
 			compiler.hooks.compilation.tap('ReplaceModuleIdPlugin', compilation => {
