@@ -1,0 +1,29 @@
+{
+  "name": "build-es6-map-set",
+  "version": "1.0.0",
+  "description": "custom build es6-map and es6-set polyfill",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run build-dev && npm run build-prod",
+    "build-dev": "browserify index.js -o dist/es6-map-set-polyfill.js",
+    "build-prod": "browserify -p tinyify --debug index.js | exorcist dist/es6-map-set-polyfill.min.js.map > dist/es6-map-set-polyfill.min.js"
+  },
+  "author": "russa",
+  "license": "MIT",
+  "keywords": [
+    "es6",
+    "set",
+    "map",
+    "polyfill"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "browserify": "^16.2.3",
+    "es5-ext": "^0.10.48",
+    "es6-map": "^0.1.5",
+    "es6-set": "^0.1.5",
+    "es6-symbol": "^3.1.1",
+    "exorcist": "^1.0.1",
+    "tinyify": "^2.5.0"
+  }
+}

@@ -15,13 +15,11 @@
   ],
   "author": "MMIG team",
   "license": "MIT",
-  "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-chmod": "^2.0.0",
-    "gulp-filter": "^5.0.0",
-    "gulp-preservetime": "^1.2.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-sequence": "^0.4.6",
-    "gulp-util": "^3.0.8"
+  "devDependencies": {},
+  "peerDependencies": {
+    "mmir-lib": "git+https://gitlab-cos.b.dfki.de/mmir/dev_mmir-lib.git#develop/webpack"
+  },
+  "dependencies": {
+    "mmir-lib": "git+https://gitlab-cos.b.dfki.de/mmir/dev_mmir-lib.git#develop/webpack"
   }
 }
