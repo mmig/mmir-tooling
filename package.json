@@ -22,7 +22,7 @@
     "mmir-lib": "git+https://gitlab-cos.b.dfki.de/mmir/dev_mmir-lib.git#develop/webpack"
   },
   "dependencies": {
-    "lodash": "^4.17.11",
-    "mmir-lib": "git+https://gitlab-cos.b.dfki.de/mmir/dev_mmir-lib.git#develop/webpack"
+    "@scion-scxml/scxml": "^4.3.25",
+    "lodash": "^4.17.11"
   }
 }
