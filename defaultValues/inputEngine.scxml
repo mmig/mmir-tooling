@@ -1,0 +1,5 @@
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" profile="ecmascript" name="input" initial="Main">
+  <state id="Main">
+    <transition event="init"><script>console.info('starting minimal input engine ...')</script></transition>
+  </state>
+</scxml>
