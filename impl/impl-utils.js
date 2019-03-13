@@ -3,7 +3,7 @@ var fs = require('fs');
 var _ = require ('lodash');
 var fileUtils = require('../utils/filepath-utils.js');
 
-var appConfigUtils = require('../utils/webpack-module-init-gen.js');
+var appConfigUtils = require('../utils/module-config-init.js');
 var directoriesUtil = require('../tools/directories-utils.js');
 
 //mode: 'controller' | 'helper' | 'model'
@@ -199,9 +199,10 @@ module.exports = {
 	 * 										impl.file {String}: the path to the JSON impl (from which the executable impl will be created)
 	 * @param  {[type]} appConfig the app configuration to which the implementations will be added
 	 * @param  {[type]} directories the directories.json representation
+	 * @param  {ResourcesConfig} _resources the resources configuration
 	 * @param  {[type]} runtimeConfiguration the configuration.json representation
 	 */
-	addImplementationsToAppConfig: function(implList, appConfig, directories, _runtimeConfiguration){
+	addImplementationsToAppConfig: function(implList, appConfig, directories, _resources, _runtimeConfiguration){
 
 		if(!implList || implList.length < 1){
 			return;

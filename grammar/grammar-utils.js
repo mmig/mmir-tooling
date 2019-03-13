@@ -3,7 +3,7 @@ var fs = require('fs');
 var _ = require ('lodash');
 var fileUtils = require('../utils/filepath-utils.js');
 
-var appConfigUtils = require('../utils/webpack-module-init-gen.js');
+var appConfigUtils = require('../utils/module-config-init.js');
 var directoriesUtil = require('../tools/directories-utils.js');
 var configurationUtil = require('../tools/settings-utils.js');
 
@@ -35,7 +35,8 @@ function readDir(dir, list, options){
 				file: normalized,
 				engine: opt && opt.engine? opt.engine : void(0),
 				ignore: opt && opt.ignore? true : false,
-				async: opt && opt.async? true : false
+				async: opt && opt.async? true : false,
+				asyncCompile: opt && opt.asyncCompile === false? false : true
 			});
 		}
 	});
@@ -177,9 +178,10 @@ module.exports = {
 	 * 										                                   and then will be available e.g. via <code>mmir.semantic.interprest(<input phrase string>, <grammar-id>)</code>.
 	 * @param  {[type]} appConfig the app configuration to which the grammars will be added
 	 * @param  {[type]} directories the directories.json representation
+	 * @param  {ResourcesConfig} _resources the resources configuration
 	 * @param  {[type]} runtimeConfiguration the configuration.json representation
 	 */
-	addGrammarsToAppConfig: function(grammars, appConfig, directories, runtimeConfiguration){
+	addGrammarsToAppConfig: function(grammars, appConfig, directories, _resources, runtimeConfiguration){
 
 		if(!grammars || grammars.length < 1){
 			return;

@@ -3,7 +3,7 @@ var fs = require('fs');
 var _ = require('lodash');
 var fileUtils = require('../utils/filepath-utils.js');
 
-var appConfigUtils = require('../utils/webpack-module-init-gen.js');
+var appConfigUtils = require('../utils/module-config-init.js');
 
 var directoriesUtil = require('./directories-utils.js');
 
@@ -326,7 +326,7 @@ module.exports = {
 	 */
 	loadSettingsFrom: readJson,
 	getAllSpeechConfigsType: function(){ return ALL_SPEECH_CONFIGS_TYPE; },
-	addSettingsToAppConfig: function(settings, appConfig, directories, runtimeConfig, regExpExcludeType, ignoreMissingDictionaries){
+	addSettingsToAppConfig: function(settings, appConfig, directories, _resources, runtimeConfig, regExpExcludeType, ignoreMissingDictionaries){
 
 		if(!settings || settings.length < 1){
 			return;
@@ -394,16 +394,6 @@ module.exports = {
 			} else {
 				appConfigUtils.addAppSettings(appConfig, aliasId, s.value);
 			}
-
-			//FIXME TEST include via webpack JSON loader:
-			// var file = _.isArray(s.file)? s.file.find(function(f){
-			// 	return fs.existsSync(f)
-			// }) : s.file;
-			// console.log('settings-util: adding include module '+aliasId, file)
-			// appConfigUtils.addIncludeModule(appConfig, aliasId, file);
-			// appConfig.includeModules.push(file)
-			// if(!appConfig.loadAfterInit) appConfig.loadAfterInit = [];
-			// appConfig.loadAfterInit.push(file)
 		});
 
 
@@ -419,7 +409,7 @@ module.exports = {
 			});
 			if(missing.length > 0){
 				// console.log("INFO settings-utils: adding missing dictionaries for : ", missing);
-				this.addSettingsToAppConfig(missing, appConfig, directories, runtimeConfig, regExpExcludeType, true);
+				this.addSettingsToAppConfig(missing, appConfig, directories, _resources, runtimeConfig, regExpExcludeType, true);
 			}
 		}
 

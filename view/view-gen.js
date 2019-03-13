@@ -1,7 +1,4 @@
 
-var loaderUtils = require('loader-utils');
-var fileUtils = require('../utils/filepath-utils.js');
-
 var mmir = require('../mmir-init.js');
 var Controller = mmir.require('mmirf/controller');
 
@@ -26,19 +23,18 @@ function getCtrl(viewInfo){
 }
 ///////////////////////////////////////////////////////////////////////////////
 
-module.exports = function(content, map, meta) {
+/**
+ * compile view defintion (eHTML) into an executable JS view
+ *
+ * @param  {string} content the view definition (eHTML) as string
+ * @param  {string} viewFile the path of the view file (for debugging/error information)
+ * @param  {ViewLoadOptions} options the ViewLoadOptions with property mapping (list of ViewOptions)
+ * @param  {Function} callback the callback when view compilation has been completed: callback(error | null, compiledView, map, meta)
+ * @param  {any} [_map] source mapping (unused)
+ * @param  {any} [_meta] meta data (unused)
+ */
+function compile(content, viewFile, options, callback, _map, _meta) {
 
-	var callback = this.async();
-
-	var options = loaderUtils.getOptions(this) || {};
-	// console.log('mmir-view-loader: options -> ', options);//DEBU
-	if(!options || !options.mapping){
-		callback('failed to parse view template: missing list for view settings [{id: "the ID", file: "the file path", ...}, ...]');
-		return;/////////////// EARLY EXIT /////////////////
-	}
-
-	var viewFile = fileUtils.normalizePath(this.resource);
-	// console.log('mmir-view-loader: resource -> ', viewFile);//DEBU
 	var i = options.mapping.findIndex(function(v){
 		return v.file === viewFile;
 	});
@@ -74,6 +70,10 @@ module.exports = function(content, map, meta) {
 		viewInstance = new viewConstr(ctrl, viewInfo.viewName, content);
 	}
 
-	callback(null, '\n' + viewInstance.stringify() + '\n', map, meta);//FIXME TEST
+	callback(null, '\n' + viewInstance.stringify() + '\n', _map, _meta);
 	return;
 };
+
+module.exports = {
+	compile: compile
+}

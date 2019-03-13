@@ -1,40 +1,12 @@
-const path = require('path');
-const webpack = require('webpack');
 
-var webpackConfig = {
-	mode: 'none',
-	entry: './webpack-main.js', //'./main.js',
-	output: {
-		filename: 'main.js',
-		path: path.resolve(__dirname, 'dist'),
-		library: "mmir",
-		libraryTarget: "umd"
-	},
-	devServer: {
-		open: false,
-		contentBase: './dist'
-	},
-	module: {
-    rules: [
-      {
-        test: /\.js$/,
-        use: {
-					loader: 'babel-loader',
-					options: {
-						presets: ["@babel/preset-env"]
-					}
-				}
-      }
-    ]
-  }
-};
+var path = require('path');
 
 //FIXME TEST
 // const mmirAppConfig = void(0);//FIXME from commandline argument/env-var ...?
 
 //FIXME TEST grammar options
 var grammarOptions = {
-	path: './config/languages',
+	path: './test-data/config/languages',
 	engine: 'pegjs',
 	// asyncCompile: false,
 	grammars: {
@@ -43,19 +15,19 @@ var grammarOptions = {
 		en: {engine: 'jscc', async: true},
 
 		//specifying JSON grammar files directly
-		testing: {engine: 'jscc', file: path.resolve('./config/languages/de/grammar.json')},
-		testing2: {id: '!id warning!', engine: 'jison', file: path.resolve('./config/languages/de/grammar.json_large-example')}
-		// testing_id_collision TODO : {engine: 'jison', file: path.resolve('./config/languages/de/grammar.json_large-example')}
+		testing: {engine: 'jscc', file: path.resolve('./test-data/config/languages/de/grammar.json')},
+		testing2: {id: '!id warning!', asyncCompile: false, engine: 'jison', file: path.resolve('./test-data/config/languages/de/grammar.json_large-example')}
+		// testing_id_collision TODO : {engine: 'jison', file: path.resolve('./test-data/config/languages/de/grammar.json_large-example')}
 
 	}
 };
 //FIXME TEST view options
 var viewOptions = {
-	path: './views',
+	path: './test-data/views',
 }
 //FIXME TEST settings options:
 var settingOptions = {
-	path: path.resolve('./config'),
+	path: path.resolve('./test-data/config'),
 	// configuration: false,
 	// speech: false,
 	//TODO support "gobal" options for exclude, include:'file' (exepting grammars)
@@ -73,12 +45,12 @@ var settingOptions = {
 };
 //FIXME TEST scxml options
 var stateMachineOptions = {
-	path: './config/statedef_large',
+	path: './test-data/config/statedef_large',
 	ignoreErrors: true,
 	models: {
 		input: {
 			mode: 'simple',
-			file: './config/statedef_minimal/inputDescriptionSCXML.xml'
+			file: './test-data/config/statedef_minimal/inputDescriptionSCXML.xml'
 		},
 		dialog: {
 			// ignoreErrors: true,
@@ -88,14 +60,14 @@ var stateMachineOptions = {
 };
 //FIXME TEST controller options
 var ctrlOptions = {
-	path: './implementations_rm-bom/controllers',
+	path: './test-data/implementations_rm-bom/controllers',
 	// addModuleExport: true,
 	controllers: {
 		application: {
 			addModuleExport: true
 		},
 		calendar: {
-			file: path.resolve('./implementations/controllers/calendar.js')
+			file: path.resolve('./test-data/implementations/controllers/calendar.js')
 		},
 		application2: false,
 		application3: {exclude: true},
@@ -103,7 +75,7 @@ var ctrlOptions = {
 }
 //FIXME TEST controller options
 var helperOptions = {
-	path: './implementations_ORIG/helpers',
+	path: './test-data/implementations_ORIG/helpers',
 	addModuleExport: true,
 	helpers: {
 		calendarHelper: {exclude: false}
@@ -111,7 +83,7 @@ var helperOptions = {
 }
 //FIXME TEST controller options
 var modelOptions = {
-	path: './implementations_ORIG/models',
+	path: './test-data/implementations_ORIG/models',
 	// addModuleExport: true,
 	models: {
 		user: {addModuleExport: 'mmir.User'},
@@ -121,7 +93,7 @@ var modelOptions = {
 
 //FIXME TEST app-configuratin
 const mmirAppConfig = {
-	jquery: true,
+
 	grammars: grammarOptions,
 	views: viewOptions,
 	settings: settingOptions,
@@ -132,6 +104,7 @@ const mmirAppConfig = {
 	helpers: helperOptions,
 	models: modelOptions,
 
+	jquery: true,
 	loadBeforeInit: ['mmirf/polyfill'],
 
 	// //TEST parsing resource path & some custom settings:
@@ -148,7 +121,7 @@ const mmirAppConfig = {
 	// 			addModuleExport: true
 	// 		},
 	// 		calendar: {
-	// 			file: path.resolve('./implementations/controllers/calendar.js')
+	// 			file: path.resolve('./test-data/implementations/controllers/calendar.js')
 	// 		}
 	// 	}
 	// },
@@ -174,6 +147,4 @@ const mmirAppConfig = {
 };
 
 // require('./utils/webpack-worker-loader-utils').apply(webpackConfig);
-require('./webpack-config-apply').apply(webpack, webpackConfig, mmirAppConfig);
-
-module.exports = webpackConfig;
+require('./index').apply(mmirAppConfig);

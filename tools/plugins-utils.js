@@ -1,7 +1,7 @@
 
 var path = require('path');
 var _ = require('lodash');
-var appConfigUtils = require('../utils/webpack-module-init-gen.js');
+var appConfigUtils = require('../utils/module-config-init.js');
 var settingsUtils = require('./settings-utils.js');
 var fileUtils = require('../utils/filepath-utils.js');
 
@@ -303,7 +303,12 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
 }
 
 module.exports = {
-	addPluginInfos: function(pluginSettings, workersList, binFilesList, binFilesPaths, _textFilesList, appConfig, runtimeConfig, settings){
+	addPluginInfos: function(pluginSettings, appConfig, _directories, resourcesConfig, runtimeConfig, settings){
+
+		var workersList = resourcesConfig.workers;
+		var binFilesList = resourcesConfig.fileResources;
+		var binFilesPaths = resourcesConfig.resourcesPaths;
+		// var _textFilesList = resourcesConfig.textResources;
 
 		var pluginId = pluginSettings.id;
 		var pluginConfig = pluginSettings.config;

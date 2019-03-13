@@ -3,7 +3,7 @@ var fs = require('fs');
 var _ = require ('lodash');
 var fileUtils = require('../utils/filepath-utils.js');
 
-var appConfigUtils = require('../utils/webpack-module-init-gen.js');
+var appConfigUtils = require('../utils/module-config-init.js');
 var directoriesUtil = require('../tools/directories-utils.js');
 
 var DEFAULT_MODE = 'extended';
@@ -184,9 +184,10 @@ module.exports = {
 	 * 										scxml.file {String}: the path to the SCXML file (from which the executable SCXML model will be created)
 	 * @param  {[type]} appConfig the app configuration to which the SCXML models will be added
 	 * @param  {[type]} directories the directories.json representation
+	 * @param  {ResourcesConfig} resources the resources configuration
 	 * @param  {[type]} _runtimeConfiguration the configuration.json representation
 	 */
-	addScxmlToAppConfig: function(scxmlModels, appConfig, directories, _runtimeConfiguration){
+	addScxmlToAppConfig: function(scxmlModels, appConfig, directories, resources, _runtimeConfiguration){
 
 		if(!scxmlModels || scxmlModels.length < 1){
 			return;
@@ -195,7 +196,9 @@ module.exports = {
 		if(!appConfig.paths){
 			appConfig.paths = {};
 		}
-		appConfig.paths['mmirf/scion'] = path.resolve(__dirname, '..', 'runtime', 'webpackScion.js');
+
+		//use scion runtime for compiled SCXML models instead of scion compiler/runtime
+		resources.paths['mmirf/scion'] = resources.paths['mmirf/scionRuntime'];
 
 		// console.log('scxml-utils.addScxmlToAppConfig(): set mmirf/scion module implementation to ', appConfig.paths['mmirf/scion']);//DEBU
 

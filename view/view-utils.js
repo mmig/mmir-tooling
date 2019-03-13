@@ -2,8 +2,7 @@ var path = require('path');
 var fs = require('fs');
 var fileUtils = require('../utils/filepath-utils.js');
 
-var appConfigUtils = require('../utils/webpack-module-init-gen.js');
-var resources = require('../webpack-resources-config.js');
+var appConfigUtils = require('../utils/module-config-init.js');
 
 var directoriesUtil = require('../tools/directories-utils.js');
 
@@ -187,9 +186,10 @@ module.exports = {
 	 * 										ctrl.id {String}: the controller id
 	 * @param  {[type]} appConfig the app configuration to which the views will be added
 	 * @param  {[type]} directories the directories.json representation
+	 * @param  {ResourcesConfig} resources the resources configuration
 	 * @param  {[type]} runtimeConfiguration the configuration.json representation
 	 */
-	addViewsToAppConfig: function(views, ctrls, appConfig, directories, _runtimeConfiguration){
+	addViewsToAppConfig: function(views, ctrls, appConfig, directories, resources, _runtimeConfiguration){
 
 		if(!views || views.length < 1){
 			return;
