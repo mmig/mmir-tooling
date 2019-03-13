@@ -1,13 +1,6 @@
 /// <reference types="mmir-lib" />
 import 'mmir-lib';
 
-export const config: ConfigApply;
-
-export interface ConfigApply {
-	disableLogging: (enabled: boolean) => void;
-	apply: (webpackInstance: any, webpackConfig: any, mmirAppConfig: AppConfig) => void
-}
-
 /**
  * @example
  * var appConfig = {
@@ -37,8 +30,6 @@ export interface AppConfig {
 
 	/** used for resolving non-absolute paths: the absolute path to the app's root/sources directory (if omitted the current working directory is used for resolving non-absolute paths) */
 	rootPath?: string;
-	/** specifying additional (or replacing) module paths */
-	paths?: ModulePaths;
 
 	/** specify the path to the MMIR resources directory with the default structure:
 	 *  <pre>
@@ -65,53 +56,22 @@ export interface AppConfig {
 	resourcesPath?: string;
 	resourcesPathOptions?: ResourcesOptions;
 
-	/**
-	 * include a (optional) module, e.g. will be available via
-	 * <code>mmir.require()</code>.
-	 *
-	 * The prefix "mmirf/" can be omitted.
-	 *
-	 * @example
-	 * includeModules: ['jsccGen', 'mmirf/jisonGen'],
-	 */
-	includeModules?: Array<ModuleId>;
-	/**
-	 * include module AND do load it BEFORE initializing the mmir library;
-	 * the module will also be available via <code>mmir.require()</code>.
-	 *
-	 * The prefix "mmirf/" can be omitted.
-	 *
-	 * @example
-	 * loadBeforeInit: ['mmirf/polyfill'],
-	 */
-	loadBeforeInit?: Array<ModuleId>;
-	/**
-	 * include module AND do load it AFTER initializing the mmir library;
-	 * the module will also be available via <code>mmir.require()</code>.
-	 *
-	 * The prefix "mmirf/" can be omitted.
-	 *
-	 * @example
-	 * loadAfterInit: ['mmirf/grammar/testing'],
-	 */
-	loadAfterInit?: Array<ModuleId>;
-
-	config?: ModuleConfigOptions;
-
-	jquery?: boolean;
-
 	grammars?: GrammarOptions | boolean;
 	stateMachines?: StateMachineOptions | boolean;
 
-	settings?: SettingsOptions;
-	configuration?: RuntimeConfiguration;
-
-	includePlugins?: Array<PluginOptions>;
-
 	views?: ViewOptions | boolean;
-	controllers?: ControllerOptions | boolean;
-	helpers?: HelperOptions | boolean;
-	models?: ModelOptions | boolean;
+
+	// //TODO? support updating/creating settings/configuration?
+	// settings?: SettingsOptions;
+	// configuration?: RuntimeConfiguration;
+
+	// //TODO support plugin-integration via options? would need to create/update configuration.json and settings/speech/<lang>
+	// includePlugins?: Array<PluginOptions>;
+
+	// //TODO? support "modularizing" impl files?
+	// controllers?: ControllerOptions | boolean;
+	// helpers?: HelperOptions | boolean;
+	// models?: ModelOptions | boolean;
 }
 
 export type ModuleId = string;//TODO explicitly specify MMIR module IDs
