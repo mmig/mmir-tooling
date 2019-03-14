@@ -109,6 +109,32 @@ export interface GrammarOptions {
 	grammars?: {[grammarId: string]: GrammarEntry};
 }
 
+export interface BuildOptions {
+	/**
+	 * directory to which the compiled grammars (and checksum files) will be stored
+	 *
+	 * by default, the relative paths are resolved against the app's root directory;
+	 * if the target direcotry is missing it will be newly created.
+	 *
+	 * @default "www/gen/grammar"
+	 */
+	targetDir?: string;
+	/**
+	 * if TRUE the grammar(s) will be newly created and written to the targetDir,
+	 * even if the up-to-date check returns TRUE
+	 */
+	force?: boolean;
+}
+
+export interface GrammarBuildOptions extends GrammarOptions, BuildOptions {}
+export interface GrammarBuildEntry extends GrammarEntry, BuildOptions {}
+
+export interface ViewBuildOptions extends ViewOptions, BuildOptions {}
+export interface ViewBuildEntry extends ImplementationOptions, BuildOptions {}
+
+export interface StateMachineBuildOptions extends StateMachineOptions, BuildOptions {}
+export interface StateMachineBuildEntry extends StateMachineEntry, BuildOptions {}
+
 export interface GrammarEntry {
 	/** the Grammar engine that will be used to compile the executable grammar.
 	  * @default "jscc"

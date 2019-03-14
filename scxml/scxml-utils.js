@@ -36,7 +36,8 @@ function readDir(dir, list, options){
 				id: id,
 				file: normalized,
 				mode: opt && opt.mode? opt.mode : DEFAULT_MODE,
-				ignoreErrors: opt && opt.ignoreErrors? opt.ignoreErrors : false,
+				ignoreErrors: opt && typeof opt.ignoreErrors === 'boolean'? opt.ignoreErrors : void(0),
+				force: opt && typeof opt.force === 'boolean'? opt.force : void(0)
 			});
 		}
 	});
