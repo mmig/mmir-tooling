@@ -69,7 +69,7 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 		} else {
 			error = 'failed to parse SCXML definition: invalid SCXML settings in list: '+JSON.stringfy(options.mapping);
 		}
-		callback(error);
+		callback(error, null, _map, _meta);
 		return;/////////////// EARLY EXIT /////////////////
 	}
 
@@ -77,12 +77,12 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 
   //TODO ID optional settable via loader options?
   var id = scxmlInfo.id;
-	var ignoreRuntimeErrors = scxmlInfo.ignoreErrors === true || options.ignoreErrors === true;
-	// console.log('SCXML parsing, ignoreErrors -> ', ignoreRuntimeErrors, scxmlInfo, ', options.ignoreErrors: ', options.ignoreErrors)//DEBU
+	var ignoreRuntimeErrors = typeof scxmlInfo.ignoreErrors === 'boolean'? scxmlInfo.ignoreErrors : (options.config && options.config.ignoreErrors === true);
+	// console.log('SCXML parsing, ignoreErrors -> ', ignoreRuntimeErrors, ', options.ignoreErrors: ', options.config, scxmlInfo)//DEBU
 	scxml.documentStringToModel(id, content, function(err, model){
 
 		if(err){
-			callback(toError(err, scxmlFile));
+			callback(toError(err, scxmlFile, _map, _meta));
 			return;/////////////// EARLY EXIT /////////////////
 		}
 
@@ -91,7 +91,7 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 		model.prepare(function(err, fnModel) {
 
 				if(err){
-					callback(toError(err, scxmlFile));
+					callback(toError(err, scxmlFile, _map, _meta));
 					return;/////////////// EARLY EXIT /////////////////
 				}
 

@@ -52,13 +52,9 @@ function compile(content, viewFile, options, callback, _map, _meta) {
 		} else {
 			error = 'failed to parse view template: invalid grammar settings in list: '+JSON.stringfy(options.mapping);
 		}
-		callback(error);
+		callback(error, null, _map, _meta);
 		return;/////////////// EARLY EXIT /////////////////
 	}
-
-	// console.log('mmir-view-loader: resource ID at '+i+' -> ', viewInfo.id);//DEBU
-	// callback(null, 'console.log("######################### testing: '+viewInfo.id+'!");module.exports={}', map, meta);//FIXME TEST
-	// return;
 
 	var viewConstr = mmir.require(viewInfo.viewImpl);
 	var viewInstance;
