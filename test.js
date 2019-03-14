@@ -9,6 +9,7 @@ var grammarOptions = {
 	path: './test-data/config/languages',
 	engine: 'pegjs',
 	// asyncCompile: false,
+	// force: true,
 	grammars: {
 		ja: {ignore: true},
 		de: {exclude: true},
@@ -16,14 +17,17 @@ var grammarOptions = {
 
 		//specifying JSON grammar files directly
 		testing: {engine: 'jscc', file: path.resolve('./test-data/config/languages/de/grammar.json')},
-		testing2: {id: '!id warning!', asyncCompile: false, engine: 'jison', file: path.resolve('./test-data/config/languages/de/grammar.json_large-example')}
+		testing2: {id: '!id warning!', engine: 'jison', file: path.resolve('./test-data/config/languages/de/grammar.json_large-example')},
 		// testing_id_collision TODO : {engine: 'jison', file: path.resolve('./test-data/config/languages/de/grammar.json_large-example')}
 
+		testing3: {engine: 'jscc', file: path.resolve('./test-data/test-www/config/languages/ja/grammar.json')},
+		testing4: {engine: 'pegjs', file: path.resolve('./test-data/test-www/config/languages/de/grammar.json')},
 	}
 };
 //FIXME TEST view options
 var viewOptions = {
 	path: './test-data/views',
+	// force: true,
 }
 //FIXME TEST settings options:
 var settingOptions = {
@@ -47,13 +51,14 @@ var settingOptions = {
 var stateMachineOptions = {
 	path: './test-data/config/statedef_large',
 	ignoreErrors: true,
+	// force: true,
 	models: {
 		input: {
 			mode: 'simple',
 			file: './test-data/config/statedef_minimal/inputDescriptionSCXML.xml'
 		},
 		dialog: {
-			// ignoreErrors: true,
+			// ignoreErrors: false,
 			mode: 'extended'
 		}
 	}

@@ -1,10 +1,8 @@
 {
   "name": "mmir-tooling",
-  "version": "3.7.6",
+  "version": "4.0.0",
   "description": "Build tools for MMIR projects",
-  "directories": {
-    "doc": "doc"
-  },
+  "directories": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/mmig/mmir-tooling/"
@@ -16,7 +14,8 @@
   "author": "MMIG team",
   "license": "MIT",
   "devDependencies": {
-    "@types/lodash": "^4.14.123"
+    "@types/lodash": "^4.14.123",
+    "mmir-lib": "git+https://gitlab-cos.b.dfki.de/mmir/dev_mmir-lib.git#develop/webpack"
   },
   "peerDependencies": {
     "mmir-lib": "git+https://gitlab-cos.b.dfki.de/mmir/dev_mmir-lib.git#develop/webpack"
@@ -24,6 +23,6 @@
   "dependencies": {
     "@scion-scxml/scxml": "^4.3.25",
     "lodash": "^4.17.11",
-    "mmir-lib": "git+https://gitlab-cos.b.dfki.de/mmir/dev_mmir-lib.git#develop/webpack"
+    "make-dir": "^2.1.0"
   }
 }
