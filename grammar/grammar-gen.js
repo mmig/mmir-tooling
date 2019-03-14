@@ -1,24 +1,10 @@
 
+var asyncSupportUtil = require('../utils/node-worker-support.js');
+
 var mmir = require('../mmir-init.js');
 var semantic = mmir.require('mmirf/semanticInterpreter');
 
-//////// async / threaded grammar compiler support: ////////////////
-var asyncSupport = false;
-try {
-	// console.log('#################### start detecting async grammar support...')
-	var Threads = require('webworker-threads');
-	var thread = Threads.create();
-	thread.eval(function testAsync(){return true;}).eval('testAsync()', function(_err, _result){
-		// console.log('#################### detected async grammar support -> ', _result, ', error? -> ', _err);
-		thread.destroy();
-	});
-
-	//if we are here, assume that webworker-threads has been properly installed & compiled (i.e. is available)
-	asyncSupport = true;
-
-} catch(err){
-	// console.log('#################### no support for async grammar generation');//DEBUG
-}
+var asyncSupport = asyncSupportUtil.isAsyncSupported();
 
 //helpers for keeping track of pending grammar-compile tasks when in async compile mode
 // -> will not try to destroy the compiler thread as long as there a still tasks for that compiler engine
@@ -43,7 +29,7 @@ function getEngine(grammarInfo, options){
 }
 
 function isAsyncCompile(grammarInfo, options){
-	return asyncSupport && (grammarInfo.asyncCompile !== false && (!options.config || options.config.asyncCompile !== false));
+	return asyncSupport && (typeof grammarInfo.asyncCompile !== 'boolean'? grammarInfo.asyncCompile : (!options.config || options.config.asyncCompile !== false));
 }
 
 /**
@@ -63,12 +49,12 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
     grammar = JSON.parse(content);
   } catch(err){
 		// console.error('ERROR parsing JSON grammar at '+this.resource+' -> ', JSON.stringify(content), arguments, ', [this:] ', this);//DEBUG
-    callback(err);
+    callback(err, null, _map, _meta);
 		return;/////////////// EARLY EXIT /////////////////
   }
   // console.log('mmir-grammer-loader: ', JSON.stringify(grammar));
 
-	// console.log('mmir-grammer-loader: resource -> ', grammarFile);//DEBUG
+	console.log('mmir-grammer-loader: resource -> ', grammarFile);//DEBUG
 	var i = options.mapping.findIndex(function(g){
 		return g.file === grammarFile;
 	});
@@ -86,11 +72,11 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
 		} else {
 			error = 'failed to parse JSON grammar: invalid grammar settings in list: '+JSON.stringfy(options.mapping);
 		}
-		callback(error);
+		callback(error, null, _map, _meta);
 		return;/////////////// EARLY EXIT /////////////////
 	}
 
-	// console.log('mmir-grammer-loader: resource ID at '+i+' -> ', grammarInfo.id);//DEBUG
+	console.log('mmir-grammer-loader: resource ID at '+i+' -> ', grammarInfo.id);//DEBUG
 
 	//TODO(?):
 			// //TODO impl. automated sync/async loading&execution for compiled grammars
@@ -113,11 +99,13 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
 
   semantic.setGrammarEngine(engine, async);
 
-  //TODO ID optional settable via loader options?
+	updatePendingAsyncGrammarStarted(engine, async);
+
   var id = grammarInfo.id;
   semantic.createGrammar(grammar, id, function(result){
 
-    // console.log('mmir-grammer-loader: grammar compiled...');//DEBUG
+    console.log('mmir-grammer-loader: grammar '+id+' compiled...');//DEBUG
+
 		var grammarCode = ';' + result.js_grammar_definition;
     // console.log('mmir-grammer-loader: grammar code size ', grammarCode.length);//DEBUG
 
@@ -166,11 +154,37 @@ function initPendingAsyncGrammarInfo(options){
 	}
 }
 
+
+function updatePendingAsyncGrammarStarted(engine, isAsync){
+	if(isAsync){
+		pendingAsyncGrammars[engine+'Started'] = true;
+	}
+}
+
+function updatePendingAsyncGrammarFinished(grammarInfo, grammarLoadOptions){
+	if(isAsyncCompile(grammarInfo, grammarLoadOptions)){
+		var engine = getEngine(grammarInfo, grammarLoadOptions);
+		var pending = pendingAsyncGrammars;
+		--pending[engine];
+		console.log('mmir-grammer-loader: updated pending async grammar ('+engine+') for grammar "'+grammarInfo.id+'": ', pending);//DEBUG
+
+		for(var n in pending){
+			if(pending[n] <= 0 && pending[n+'Started']){
+				console.log('mmir-grammer-loader: stopping grammer generator for '+engine+'...');//DEBUG
+				mmir.require('mmirf/'+engine+'AsyncGen').destroy();
+			}
+		}
+	}
+}
+
 module.exports = {
 	compile: compile,
 	isAsyncSupported: function(){ return asyncSupport;},
 	createPendingAsyncGrammarsInfo: createPendingAsyncGrammarsInfo,
 	getPendingAsyncGrammars: function(){ return pendingAsyncGrammars; },
 	setPendingAsyncGrammars: function(pending){ pendingAsyncGrammars = pending; },
-	initPendingAsyncGrammarInfo: initPendingAsyncGrammarInfo
+	initPendingAsyncGrammarInfo: initPendingAsyncGrammarInfo,
+	getEngine: getEngine,
+	isAsyncCompile: isAsyncCompile,
+	updatePendingAsyncGrammarFinished: updatePendingAsyncGrammarFinished
 }
