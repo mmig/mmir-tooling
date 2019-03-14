@@ -29,7 +29,7 @@ function getEngine(grammarInfo, options){
 }
 
 function isAsyncCompile(grammarInfo, options){
-	return asyncSupport && (typeof grammarInfo.asyncCompile !== 'boolean'? grammarInfo.asyncCompile : (!options.config || options.config.asyncCompile !== false));
+	return asyncSupport && (typeof grammarInfo.asyncCompile === 'boolean'? grammarInfo.asyncCompile : (!options.config || options.config.asyncCompile !== false));
 }
 
 /**
