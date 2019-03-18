@@ -138,6 +138,14 @@ export interface BuildAppConfig extends AppConfig {
 	 * if the target direcotry is missing it will be newly created.
 	 */
 	targetDir?: string;
+
+	/**
+	 * if directories.json should include the view template fiels (*.ehtml)
+	 * e.g. for up-to-date test & runtime-comilation of view templates
+	 *
+	 * @default true
+	 */
+	includeViewTempalates?: boolean;
 }
 
 export interface GrammarBuildOptions extends GrammarOptions, BuildOptions {}
@@ -146,7 +154,13 @@ export interface GrammarBuildEntry extends GrammarEntry, BuildOptions {}
 export interface ViewBuildOptions extends ViewOptions, BuildOptions {}
 export interface ViewBuildEntry extends ImplementationOptions, BuildOptions {}
 
-export interface StateMachineBuildOptions extends StateMachineOptions, BuildOptions {}
+export interface StateMachineBuildOptions extends StateMachineOptions, BuildOptions {
+	/**
+	 * the module type of the generated/compiled state machine
+	 * @default 'amd'
+	 */
+	moduleType?: 'amd' | 'commonjs';
+}
 export interface StateMachineBuildEntry extends StateMachineEntry, BuildOptions {}
 
 export interface GrammarEntry {
