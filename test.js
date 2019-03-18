@@ -50,7 +50,8 @@ var settingOptions = {
 //FIXME TEST scxml options
 var stateMachineOptions = {
 	path: './test-data/config/statedef_large',
-	// ignoreErrors: true,
+	ignoreErrors: true,
+	// moduleType: 'amd',
 	force: true,
 	models: {
 		input: {
@@ -160,4 +161,7 @@ require('./index').apply(mmirAppConfig).then(function(errors){
 		var msg = '\n\n##################################################\n  Finished compiling resources'+(errMsg? ', with errors: ' +errMsg : '')+'\n#########################################################';
 		console.log(msg);
 		console.log('with results: ', errors);
+		if(errMsg){
+			process.exit(1);
+		}
 });
