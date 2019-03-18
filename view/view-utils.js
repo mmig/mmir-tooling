@@ -220,9 +220,6 @@ module.exports = {
 		// replace default viewLoader with webpack-viewLoader:
 		appConfig.paths['mmirf/viewLoader'] = path.resolve(__dirname, '..', 'runtime', 'webpackViewLoader.js');
 
-		// appConfig.paths['mmirf/controllerManager'] = path.resolve(__dirname, '..', 'runtime', 'webpackCtlrManager.js');
-		// appConfig.paths['mmirf/viewLoader'] = path.join(path.dirname(require.resolve('mmir-lib')), 'env/view/viewLoader');
-
 		//add generated stub controllers if necessary:
 		if(stubCtrlMap.size > 0){
 
