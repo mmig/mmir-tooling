@@ -89,7 +89,7 @@ function addFromOptions(scxmlModels, list, appRootDir){
 function addDefaults(kind, list, _appRootDir){
 
 	//TODO support other types/kinds than "minimal" engines
-	if(kind && kinde !== 'minimal'){
+	if(kind && kind !== 'minimal'){
 		console.log('WARN scxml-utils: only support "minimal" for default input- and dialog-engine!');
 	}
 
