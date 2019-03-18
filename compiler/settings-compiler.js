@@ -32,7 +32,7 @@ var writeDictionaries = function(settings, settingsOptions){
 
 	var dictionaries = settings.filter(function(item){ return item.type === 'dictionary'});
 
-	console.log('processing dictionaries: ', dictionaries);
+	// console.log('processing dictionaries: ', dictionaries);
 
 	var tasks = [];
 
@@ -63,7 +63,7 @@ var writeDictionaries = function(settings, settingsOptions){
 				});
 
 			} else {
-				console.log('omit writing dictionary to '+targetPath+', since it already exists: ', dict);
+				console.log('omit writing dictionary to '+targetPath+', since it already exists');//: ', dict);
 			}
 		});
 
