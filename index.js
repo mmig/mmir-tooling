@@ -44,7 +44,9 @@ var processTargetDirs = function(appDir, appConfig, buildConfig){
 
 var compileResources = function(mmirAppConfig){
 
+	//set defaults specific for tooling-build
 	directoriesUtils.setMode('file');
+	mmirAppConfig.includeViewTempalates = typeof mmirAppConfig.includeViewTempalates === 'boolean'? mmirAppConfig.includeViewTempalates : true;
 
 	var resourcesConfig = createResourcesConfig();
 
@@ -179,6 +181,7 @@ module.exports = {
 	 */
 	apply: function(mmirAppConfig){
 
+		mmirAppConfig = mmirAppConfig || {};
 		var taskList = compileResources(mmirAppConfig);
 
 		return Promise.all(taskList).then(getErrors).catch(getErrors);

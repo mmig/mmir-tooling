@@ -202,6 +202,9 @@ module.exports = {
 			var aliasId = toAliasId(v);
 			appConfigUtils.addIncludeModule(appConfig, aliasId, toAliasPath(v));
 			directoriesUtil.addView(directories, aliasId);
+			if(appConfig.includeViewTempalates){
+				directoriesUtil.addViewTemplate(directories, aliasId);
+			}
 
 			addCtrlStub(v, ctrls, stubCtrlMap);
 		});

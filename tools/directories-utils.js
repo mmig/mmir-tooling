@@ -85,6 +85,14 @@ function addView(json, reqId){
 	// _addPath(json, vpath + '/'  + ctrlName, m[2] + '.ehtml');
 }
 
+function addViewTemplate(json, reqId){
+	var m = reViewInfo.exec(reqId);
+	var ctrlName = m[1];
+
+	_addPath(json, vpath, ctrlName);
+	_addPath(json, vpath + '/'  + ctrlName, m[2] + '.ehtml');
+}
+
 function addGrammar(json, reqId){
 	var m = reGrammarInfo.exec(reqId);
 	var lang = m[1];
@@ -131,6 +139,7 @@ function getLanguages(json){
 module.exports = {
 	addCtrl: addCtrl,
 	addView: addView,
+	addViewTemplate: addViewTemplate,
 	addHelper: addHelper,
 	addModel: addModel,
 	addGrammar: addGrammar,
