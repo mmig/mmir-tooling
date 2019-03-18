@@ -9,7 +9,7 @@ var checksumUtil = require('../utils/checksum-util.js');
 var Promise = require('../utils/promise.js');
 
 var getGrammarTargetPath = function(grammarInfo){
-	return path.join(grammarInfo.targetDir, grammarInfo.id + '_grammar.js');
+	return path.join(grammarInfo.targetDir, grammarInfo.id + '.js');
 }
 
 var getGrammarChecksumPath = function(grammarInfo){
