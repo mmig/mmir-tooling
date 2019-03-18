@@ -404,7 +404,9 @@ module.exports = {
 			languages.forEach(function(l){
 				var dict = dicts.get(l);
 				if(!dict){
-					missing.push(createSettingsEntryFor('dictionary', {}, l));
+					var dictEntry = createSettingsEntryFor('dictionary', {}, l);
+					missing.push(dictEntry);
+					settings.push(dictEntry)
 				}
 			});
 			if(missing.length > 0){
