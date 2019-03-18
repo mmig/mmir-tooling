@@ -1,13 +1,13 @@
 
 
 var path = require('path');
-var fs = require('fs');
-
-const mkdir = require('make-dir');
+var fs = require('fs-extra');
 
 var viewGen = require('../view/view-gen.js');
 
 var checksumUtil = require('../utils/checksum-util.js');
+
+var Promise = require('../utils/promise.js');
 
 var getViewTargetPath = function(viewInfo){
 	return path.join(viewInfo.targetDir, viewInfo.id + '.js');
@@ -21,14 +21,13 @@ var getChecksumContent = function(content, type){
 	return checksumUtil.createContent(content, type);
 }
 
-var checkUpToDate = function(viewInfo, jsonContent,callback){
+var checkUpToDate = function(viewInfo, jsonContent){
 
 	return checksumUtil.upToDate(
 		jsonContent,
 		getViewChecksumPath(viewInfo),
 		getViewTargetPath(viewInfo),
-		void(0),// viewInfo.engine
-		callback
+		void(0)// viewInfo.engine
 	);
 }
 
@@ -37,8 +36,9 @@ var writeView = function(err, viewCode, _map, meta){
 
 	var v = meta && meta.info;
 	if(err){
-		console.log('ERROR compiling view '+(v? v.file : '')+': ', err);
-		return;
+		var msg = 'ERROR compiling view '+(v? v.file : '')+': ';
+		console.log(msg, err);
+		return Promise.revole(err.stack? err : new Error(msg+err));
 	}
 
 	var viewPath =  getViewTargetPath(v);
@@ -47,64 +47,91 @@ var writeView = function(err, viewCode, _map, meta){
 	console.log('###### writing compiled view to file (length '+viewCode.length+') ', viewPath, ' -> ', checksumContent);
 
 	var viewDir = path.dirname(viewPath);
-	if(!fs.existsSync(viewDir)){
-		mkdir.sync(viewDir);
-	}
-	fs.writeFile(viewPath, viewCode, 'utf8', function(err){
-		if(err){
-			console.log('ERROR writing compiled view to '+ viewPath+ ': ', err);
-		}
+	return fs.ensureDir(viewDir).then(function(){
+
+		var p1 = fs.writeFile(viewPath, viewCode, 'utf8').catch(function(err){
+			var msg = 'ERROR writing compiled view to '+ viewPath+ ': ';
+			console.log(msg, err);
+			return err.stack? err : new Error(msg+err);
+		});
+
+		var p2 = fs.writeFile(checksumPath, checksumContent, 'utf8').catch(function(err){
+			var msg = 'ERROR writing checksum file for compiled view to '+checksumPath+ ': ';
+			console.log(msg, err);
+			return err.stack? err : new Error(msg+err);
+		});
+
+		return Promise.all([p1, p2]);
 	});
-	fs.writeFile(checksumPath, checksumContent, 'utf8', function(err){
-		if(err){
-			console.log('ERROR writing checksum file for compiled view to '+checksumPath+ ': ', err);
-		}
-	});
+
 };
 
-
 var prepareCompile = function(options){
-	mkdir.sync(options.config.targetDir);
+	return fs.ensureDir(options.config.targetDir);
 }
 
 var compile = function(loadOptions){
 
+	var tasks = [];
 	loadOptions.mapping.forEach(v => {
 
 		v.targetDir = loadOptions.config.targetDir;
 		v.force = typeof v.force === 'boolean'? v.force : loadOptions.config.force;
 
-		fs.readFile(v.file, 'utf8', function(err, content){
-
-			console.log('###### start processing view '+v.id);
-
-			if(err){
-				console.log('ERROR compiling view '+v.file+': ', err);
-				return;
-			}
+		var t = fs.readFile(v.file, 'utf8').then(function(content){
 
 			var doCompile = function(){
-				viewGen.compile(content, v.file, loadOptions, writeView, null, {info: v, json: content});
+				return new Promise(function(resolve, reject){
+
+					viewGen.compile(content, v.file, loadOptions, function(err, viewCode, _map, meta){
+
+						if(err){
+							var msg = 'ERROR compiling view '+(v? v.file : '')+': ';
+							console.log(msg, err);
+							return resolve(err.stack? err : new Error(msg+err));
+						}
+
+						return writeView(err, viewCode, _map, meta).then(function(){
+							resolve();
+						}).catch(function(err){reject(err)});
+
+					}, null, {info: v, json: content});
+				});
 			};
 
 			if(!v.force){
 
-				checkUpToDate(v, content, function(isUpdateToDate){
+				return checkUpToDate(v, content).then(function(isUpdateToDate){
 
 					if(isUpdateToDate){
 						console.log('compiled view is up-to-data at '+getViewTargetPath(v));
 					} else {
-						doCompile();
+						return doCompile();
 					}
+
+				}).catch(function(err){
+
+					var msg = 'ERROR compiling view '+v.file+': ';
+					console.log(msg, err);
+					return err.stack? err : new Error(msg+err);
 				});
 
 			} else {
 
-				doCompile();
+				return doCompile();
 			}
 
+		}).catch(function(err){
+
+			var msg = 'ERROR compiling view '+v.file+': ';
+			console.log(msg, err);
+			return err.stack? err : new Error(msg+err);
 		});
+
+		tasks.push(t);
 	});
+
+	return Promise.all(tasks);
 }
 
 module.exports = {

@@ -1,41 +1,42 @@
 
-var fs = require('fs');
+var fs = require('fs-extra');
 
 var mmir = require('../mmir-init.js');
 var checksumUtil = mmir.require('mmirf/checksumUtils').init();
 
-var checkUpToDate = function(jsonContent, checksumPath, targetPath, additionalInfo, callback){
+var checkUpToDate = function(jsonContent, checksumPath, targetPath, additionalInfo){
 
-	if(!fs.existsSync(targetPath)){
-		console.log('no compiled resource at '+targetPath);
-		callback(false);
-		return;
-	}
+	return fs.pathExists(targetPath).then(function(exists){
+		if(!exists){
+			console.log('no compiled resource at '+targetPath);
+			return false;
+		}
 
-	if(fs.existsSync(checksumPath)){
+		return fs.pathExists(checksumPath).then(function(exists){
+			if(exists){
 
-		fs.readFile(checksumPath, 'utf8', function(err, checksumContent){
+				return fs.readFile(checksumPath, 'utf8').then(function(checksumContent){
 
-			if(err){
-				console.log('ERROR reading checksum file at '+checksumPath+': ', err);
-				callback(false);
-				return
+					console.log('verifying checksum file at '+checksumPath+' -> ', checksumUtil.isSame(jsonContent, checksumUtil.parseContent(checksumContent), additionalInfo));
+					console.log('  checksum info -> ', checksumUtil.parseContent(checksumContent));
+					console.log('  json info -> ', checksumUtil.parseContent(checksumUtil.createContent(jsonContent, additionalInfo)));
+
+					return checksumUtil.isSame(jsonContent, checksumUtil.parseContent(checksumContent), additionalInfo);
+
+				}).catch(function(err){
+
+					if(err){
+						console.log('ERROR reading checksum file at '+checksumPath+': ', err);
+						return false;
+					}
+				});
+
+			} else {
+				console.log('no checksum file at '+checksumPath);
 			}
-
-			console.log('verifying checksum file at '+checksumPath+' -> ', checksumUtil.isSame(jsonContent, checksumUtil.parseContent(checksumContent), additionalInfo));
-			console.log('  checksum info -> ', checksumUtil.parseContent(checksumContent));
-			console.log('  json info -> ', checksumUtil.parseContent(checksumUtil.createContent(jsonContent, additionalInfo)));
-
-			var res = checksumUtil.isSame(jsonContent, checksumUtil.parseContent(checksumContent), additionalInfo);
-			callback(res);
+			return false;
 		});
-		return;
-
-	} else {
-		console.log('no checksum file at '+checksumPath);
-	}
-
-	return callback(false);
+	});
 }
 
 module.exports = {

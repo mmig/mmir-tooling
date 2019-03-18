@@ -50,8 +50,8 @@ var settingOptions = {
 //FIXME TEST scxml options
 var stateMachineOptions = {
 	path: './test-data/config/statedef_large',
-	ignoreErrors: true,
-	// force: true,
+	// ignoreErrors: true,
+	force: true,
 	models: {
 		input: {
 			mode: 'simple',
@@ -155,4 +155,9 @@ const mmirAppConfig = {
 };
 
 // require('./utils/webpack-worker-loader-utils').apply(webpackConfig);
-require('./index').apply(mmirAppConfig);
+require('./index').apply(mmirAppConfig).then(function(errors){
+		var errMsg = errors.join('\n');
+		var msg = '\n\n##################################################\n  Finished compiling resources'+(errMsg? ', with errors: ' +errMsg : '')+'\n#########################################################';
+		console.log(msg);
+		console.log('with results: ', errors);
+});

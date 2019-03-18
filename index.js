@@ -1,8 +1,9 @@
 
-const fs = require('fs')
 const path = require('path');
 
-var mkdir = require('make-dir');
+var flatten = require('array-flatten');
+
+var Promise = require('./utils/promise.js');
 
 var createBuildConfig = require('./tools/create-build-config.js');
 var createResourcesConfig = require('./tools/create-resources-config.js');
@@ -10,8 +11,7 @@ var createResourcesConfig = require('./tools/create-resources-config.js');
 var grammarCompiler = require('./compiler/grammar-compiler.js');
 var viewCompiler = require('./compiler/view-compiler.js');
 var scxmlCompiler = require('./compiler/scxml-compiler.js');
-
-// var isDisableLogging = false;
+var settingsCompiler = require('./compiler/settings-compiler.js');
 
 // console.log('mmir-lib: ', require('mmir-lib'))
 
@@ -38,22 +38,9 @@ var processTargetDirs = function(appDir, appConfig, buildConfig){
 	buildConfig.settingsOptions.targetDir   = resolveTargetDir(appDir, appConfig.settingsOptions && appConfig.settingsOptions.targetDir? appConfig.settingsOptions.targetDir : appConfig.targetDir? path.join(appConfig.targetDir, 'config') : path.join('www', 'config'));
 }
 
-var writeDirectoriesJson = function(directories, targetDir){
-
-	mkdir.sync(targetDir);
-	fs.writeFile(path.join(targetDir, 'directories.json'), JSON.stringify(directories), 'utf8', function(err){
-		if(err){
-			console.log('ERROR writing directories.json to '+targetDir+': ', err);
-		}
-	})
-}
 
 
 var compileResources = function(mmirAppConfig){
-
-	// if(mmirAppConfig.jquery){
-	// 	enableJQuery(mmirAppConfig);
-	// }
 
 	var resourcesConfig = createResourcesConfig();
 
@@ -63,9 +50,12 @@ var compileResources = function(mmirAppConfig){
 
 	// var moduleRules = [];
 
+	var tasks = [];
+
 	processTargetDirs(appRootDir, mmirAppConfig, buildConfig);
 
-	writeDirectoriesJson(buildConfig.directories, buildConfig.settingsOptions.targetDir);
+	tasks.push(settingsCompiler.writeDictionaries(buildConfig.settings, buildConfig.settingsOptions));
+	tasks.push(settingsCompiler.writeDirectoriesJson(buildConfig.directories, buildConfig.settingsOptions.targetDir));
 
 	if(buildConfig.grammars.length > 0){
 
@@ -75,8 +65,9 @@ var compileResources = function(mmirAppConfig){
 
 		var grammarLoadOptions = {mapping: buildConfig.grammars, config: buildConfig.grammarOptions};
 
-		grammarCompiler.prepareCompile(grammarLoadOptions);
-		grammarCompiler.compile(grammarLoadOptions);
+		tasks.push(grammarCompiler.prepareCompile(grammarLoadOptions).then(function(){
+			return grammarCompiler.compile(grammarLoadOptions);
+		}));
 
 	}
 
@@ -89,8 +80,9 @@ var compileResources = function(mmirAppConfig){
 
 		var viewLoadOptions = {mapping: buildConfig.views, config: buildConfig.viewOptions};
 
-		viewCompiler.prepareCompile(viewLoadOptions);
-		viewCompiler.compile(viewLoadOptions);
+		tasks.push(viewCompiler.prepareCompile(viewLoadOptions).then(function(){
+			return viewCompiler.compile(viewLoadOptions);
+		}));
 	}
 
 	if(buildConfig.scxmlModels.length > 0){
@@ -101,8 +93,9 @@ var compileResources = function(mmirAppConfig){
 
 		var scxmlLoadOptions = {mapping: buildConfig.scxmlModels, config: buildConfig.scxmlOptions};
 
-		scxmlCompiler.prepareCompile(scxmlLoadOptions);
-		scxmlCompiler.compile(scxmlLoadOptions);
+		tasks.push(scxmlCompiler.prepareCompile(scxmlLoadOptions).then(function(){
+			return scxmlCompiler.compile(scxmlLoadOptions);
+		}));
 	}
 
 	//TODO? impl. processing?
@@ -166,7 +159,14 @@ var compileResources = function(mmirAppConfig){
 	// 	});
 	// }
 
-	return;//moduleRules;
+	return tasks;
+}
+
+var getErrors = function(taskResults){
+	if(Array.isArray(taskResults)){
+		return flatten(taskResults).filter(function(err){ return !!err});
+	}
+	return taskResults? [taskResults] : [];
 }
 
 module.exports = {
@@ -175,19 +175,8 @@ module.exports = {
 	 */
 	apply: function(mmirAppConfig){
 
-		compileResources(mmirAppConfig);
+		var taskList = compileResources(mmirAppConfig);
 
-		// //add alias resolving:
-		// var alias = createResolveAlias(mmirAppConfig);
-		// if(!webpackConfig.resolve){
-		// 	webpackConfig.resolve = {alias: alias};
-		// } else {
-		// 	if(webpackConfig.resolve.alias){
-		// 		Object.assign(webpackConfig.resolve.alias, alias);
-		// 	} else {
-		// 		webpackConfig.resolve.alias = alias;
-		// 	}
-		// }
-
+		return Promise.all(taskList).then(getErrors).catch(getErrors);
 	}
 };

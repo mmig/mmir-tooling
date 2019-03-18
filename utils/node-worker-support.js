@@ -22,13 +22,7 @@ try {
 		asyncSupport = true;
 
 	} catch(err){
-
-		console.log('[INFO] could not load implementation for WebWorkers: cannot use WebWorkers/parallel threads for compling grammars etc.');
-		console.log('[INFO]   try enabling WebWorkers for node:');
-		console.log('[INFO]     * install npm package webworker-threads (>= version 8.x)');
-		console.log('[INFO]     * enable experimental node worker_threads via command line argument:');
-		console.log('[INFO]       node --experimental-worker ...');
-		console.log('[INFO]       npm --node-options --experimental-worker ...');
+		console.log('[INFO] could not load implementation for WebWorkers, e.g. (experimental) worker_threads or webworker-threads (>= version 8.x): cannot use WebWorkers/parallel threads for compling grammars etc.');
 	}
 
 }

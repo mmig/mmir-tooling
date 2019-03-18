@@ -1,13 +1,13 @@
 
 
 var path = require('path');
-var fs = require('fs');
-
-const mkdir = require('make-dir');
+var fs = require('fs-extra');
 
 var scxmlGen = require('../scxml/scxml-gen.js');
 
 var checksumUtil = require('../utils/checksum-util.js');
+
+var Promise = require('../utils/promise.js');
 
 var getStateChartTargetPath = function(scxmlInfo){
 	return path.join(scxmlInfo.targetDir, scxmlInfo.id + '.js');
@@ -21,86 +21,102 @@ var getChecksumContent = function(content, type){
 	return checksumUtil.createContent(content, type);
 }
 
-var checkUpToDate = function(scxmlInfo, jsonContent,callback){
+var checkUpToDate = function(scxmlInfo, jsonContent){
 
 	return checksumUtil.upToDate(
 		jsonContent,
 		getStateChartChecksumPath(scxmlInfo),
 		getStateChartTargetPath(scxmlInfo),
-		void(0),// scxmlInfo.engine
-		callback
+		void(0)// scxmlInfo.engine
 	);
 }
 
 
-var writeStateChartModel = function(err, scCode, _map, meta){
+var writeStateChartModel = function(_err, scCode, _map, meta){
 
 	var sc = meta && meta.info;
-	if(err){
-		console.log('ERROR compiling SCXML model '+(sc? sc.file : '')+': ', err);
-		return;
-	}
-
 	var scPath =  getStateChartTargetPath(sc);
 	var checksumContent = getChecksumContent(meta.json);
 	var checksumPath = getStateChartChecksumPath(sc);
+
 	console.log('###### writing compiled SCXML model to file (length '+scCode.length+') ', scPath, ' -> ', checksumContent);
 
-	fs.writeFile(scPath, scCode, 'utf8', function(err){
-		if(err){
-			console.log('ERROR writing compiled SCXML model to '+ scPath+ ': ', err);
-		}
-	});
-	fs.writeFile(checksumPath, checksumContent, 'utf8', function(err){
-		if(err){
-			console.log('ERROR writing checksum file for compiled SCXML model to '+checksumPath+ ': ', err);
-		}
-	});
+	return Promise.all([
+		fs.writeFile(scPath, scCode, 'utf8').catch(function(err){
+			var msg = 'ERROR writing compiled SCXML model to '+ scPath+ ': ';
+			console.log(msg, err);
+			return err.stack? err : new Error(msg+err)
+		}),
+		fs.writeFile(checksumPath, checksumContent, 'utf8').catch(function(err){
+			var msg = 'ERROR writing checksum file for compiled SCXML model to '+checksumPath+ ': ';
+			console.log(msg, err);
+			return err.stack? err : new Error(msg+err);
+		})
+	]);
 };
 
-
 var prepareCompile = function(options){
-	mkdir.sync(options.config.targetDir);
+	return fs.ensureDir(options.config.targetDir);
 }
 
 var compile = function(loadOptions){
 
+	var tasks = [];
 	loadOptions.mapping.forEach(sc => {
 
 		sc.targetDir = loadOptions.config.targetDir;
 		sc.force = typeof sc.force === 'boolean'? sc.force : loadOptions.config.force;
 
-		fs.readFile(sc.file, 'utf8', function(err, content){
+		var t = fs.readFile(sc.file, 'utf8').then(function(content){
 
 			console.log('###### start processing SCXML model '+sc.id);
 
-			if(err){
-				console.log('ERROR compiling SCXML model '+sc.file+': ', err);
-				return;
-			}
-
 			var doCompile = function(){
-				scxmlGen.compile(content, sc.file, loadOptions, writeStateChartModel, null, {info: sc, json: content});
+				return new Promise(function(resolve, reject){
+					scxmlGen.compile(content, sc.file, loadOptions, function(err, scCode, _map, meta){
+
+						if(err){
+							var msg = 'ERROR compiling SCXML model '+(sc? sc.file : '')+': ';
+							console.log(msg, err);
+							return resolve(err.stack? err : new Error(msg+err));
+						}
+
+						return writeStateChartModel(err, scCode, _map, meta).then(function(){
+							resolve();
+						}).catch(function(err){reject(err)});
+
+					}, null, {info: sc, json: content});
+
+				});
 			};
 
 			if(!sc.force){
 
-				checkUpToDate(sc, content, function(isUpdateToDate){
+				return checkUpToDate(sc, content).then(function(isUpdateToDate){
 
 					if(isUpdateToDate){
 						console.log('compiled SCXML model is up-to-data at '+getStateChartTargetPath(sc));
 					} else {
-						doCompile();
+						return doCompile();
 					}
 				});
 
 			} else {
 
-				doCompile();
+				return doCompile();
 			}
 
+		}).catch(function(err){
+
+			var msg = 'ERROR compiling SCXML model '+sc.file+': ';
+			console.log(msg, err);
+			return err.stack? err : new Error(msg+err);
 		});
+
+		tasks.push(t);
 	});
+
+	return Promise.all(tasks);
 }
 
 module.exports = {
