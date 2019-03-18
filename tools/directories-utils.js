@@ -37,8 +37,17 @@ var reJsonGrammarInfo = /mmirf\/settings\/grammar\/([^/]+)/;
 var reDictionaryInfo = /mmirf\/settings\/dictionary\/([^/]+)/;
 var reSpeechConfigInfo = /mmirf\/settings\/speech\/([^/]+)/;
 
+var entryMode = 'id';// 'id' | 'file';
+
+function _getEntry(entry){
+	if(entryMode === 'file'){
+		return entry.replace(/^.*\//, '');
+	}
+	return entry;
+}
 
 function _addPath(json, path, entry){
+	entry = _getEntry(entry);
 	if(!json[path]){
 		json[path] = [entry];
 	} else if(!json[path].find(function(item){return item === entry})){
@@ -130,7 +139,10 @@ module.exports = {
 	addSpeechConfig: addSpeechConfig,
 	addScxml: addScxml,
 	createDirectoriesJson: createDirectoriesJson,
-	getLanguages: getLanguages
+	getLanguages: getLanguages,
+	setMode: function(mode){
+		entryMode = mode;
+	}
 	// reset: function(){
 	// 	_json = null;
 	// },

@@ -5,6 +5,8 @@ var flatten = require('array-flatten');
 
 var Promise = require('./utils/promise.js');
 
+var directoriesUtils = require('./tools/directories-utils.js');
+
 var createBuildConfig = require('./tools/create-build-config.js');
 var createResourcesConfig = require('./tools/create-resources-config.js');
 
@@ -32,7 +34,7 @@ var resolveTargetDir = function(appDir, targetDir){
 var processTargetDirs = function(appDir, appConfig, buildConfig){
 
 	buildConfig.grammarOptions.targetDir = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'grammar') || path.join('www', 'gen', 'grammar'));
-	buildConfig.viewOptions.targetDir    = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view')    || path.join('www', 'gen', 'view'));
+	buildConfig.viewOptions.targetDir    = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view')    || path.join('www', 'gen', 'views'));
 	buildConfig.scxmlOptions.targetDir   = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'scxml')   || path.join('www', 'gen', 'scxml'));
 
 	buildConfig.settingsOptions.targetDir   = resolveTargetDir(appDir, appConfig.settingsOptions && appConfig.settingsOptions.targetDir? appConfig.settingsOptions.targetDir : appConfig.targetDir? path.join(appConfig.targetDir, 'config') : path.join('www', 'config'));
@@ -41,6 +43,8 @@ var processTargetDirs = function(appDir, appConfig, buildConfig){
 
 
 var compileResources = function(mmirAppConfig){
+
+	directoriesUtils.setMode('file');
 
 	var resourcesConfig = createResourcesConfig();
 

@@ -157,11 +157,11 @@ const mmirAppConfig = {
 
 // require('./utils/webpack-worker-loader-utils').apply(webpackConfig);
 require('./index').apply(mmirAppConfig).then(function(errors){
-		var errMsg = errors.join('\n');
-		var msg = '\n\n##################################################\n  Finished compiling resources'+(errMsg? ', with errors: ' +errMsg : '')+'\n#########################################################';
-		console.log(msg);
-		console.log('with results: ', errors);
-		if(errMsg){
-			process.exit(1);
-		}
+	var errMsg = errors.join('\n');
+	var msg = '\n\n##################################################\n  Finished compiling resources'+(errMsg? ', with errors: ' +errMsg : '')+'\n##################################################';
+	console.log(msg);
+	console.log('with results: ', errors);
+	if(errMsg){
+		process.exit(1);
+	}
 });
