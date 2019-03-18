@@ -56,7 +56,7 @@ var writeStateChartModel = function(_err, scCode, _map, meta){
 };
 
 var prepareCompile = function(options){
-	options.config.moduleType = 'amd';
+	options.config.moduleType = options.config.moduleType? options.config.moduleType : 'amd';
 	return fs.ensureDir(options.config.targetDir);
 }
 
