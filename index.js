@@ -1,5 +1,8 @@
 
+const fs = require('fs')
 const path = require('path');
+
+var mkdir = require('make-dir');
 
 var createBuildConfig = require('./tools/create-build-config.js');
 var createResourcesConfig = require('./tools/create-resources-config.js');
@@ -16,7 +19,7 @@ var scxmlCompiler = require('./compiler/scxml-compiler.js');
 // var toolingRootDir = __dirname;
 
 var getTargetDir = function(appConfig, mainOptions, optType){
-	return appConfig.targetDir? path.join(appConfig.targetDir, optType) : mainOptions[optType+'Options'] && mainOptions[optType+'Options'].targetDir;
+	return mainOptions[optType+'Options']? mainOptions[optType+'Options'].targetDir : appConfig.targetDir && path.join(appConfig.targetDir, optType);
 }
 
 var resolveTargetDir = function(appDir, targetDir){
@@ -31,6 +34,18 @@ var processTargetDirs = function(appDir, appConfig, buildConfig){
 	buildConfig.grammarOptions.targetDir = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'grammar') || path.join('www', 'gen', 'grammar'));
 	buildConfig.viewOptions.targetDir    = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view')    || path.join('www', 'gen', 'view'));
 	buildConfig.scxmlOptions.targetDir   = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'scxml')   || path.join('www', 'gen', 'scxml'));
+
+	buildConfig.settingsOptions.targetDir   = resolveTargetDir(appDir, appConfig.settingsOptions && appConfig.settingsOptions.targetDir? appConfig.settingsOptions.targetDir : appConfig.targetDir? path.join(appConfig.targetDir, 'config') : path.join('www', 'config'));
+}
+
+var writeDirectoriesJson = function(directories, targetDir){
+
+	mkdir.sync(targetDir);
+	fs.writeFile(path.join(targetDir, 'directories.json'), JSON.stringify(directories), 'utf8', function(err){
+		if(err){
+			console.log('ERROR writing directories.json to '+targetDir+': ', err);
+		}
+	})
 }
 
 
@@ -49,6 +64,8 @@ var compileResources = function(mmirAppConfig){
 	// var moduleRules = [];
 
 	processTargetDirs(appRootDir, mmirAppConfig, buildConfig);
+
+	writeDirectoriesJson(buildConfig.directories, buildConfig.settingsOptions.targetDir);
 
 	if(buildConfig.grammars.length > 0){
 
