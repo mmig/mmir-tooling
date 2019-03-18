@@ -99,6 +99,9 @@ var modelOptions = {
 //FIXME TEST app-configuratin
 const mmirAppConfig = {
 
+	// targetDir: path.resolve(__dirname, 'public/compiled'),
+	// targetDir: 'public/compiled',
+
 	grammars: grammarOptions,
 	views: viewOptions,
 	settings: settingOptions,

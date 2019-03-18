@@ -109,14 +109,16 @@ export interface GrammarOptions {
 	grammars?: {[grammarId: string]: GrammarEntry};
 }
 
+export type ResourceType = 'grammar' | 'view' | 'scxml';
+
 export interface BuildOptions {
 	/**
-	 * directory to which the compiled grammars (and checksum files) will be stored
+	 * directory to which the compiled resources like grammars (and checksum files) will be stored
 	 *
 	 * by default, the relative paths are resolved against the app's root directory;
 	 * if the target direcotry is missing it will be newly created.
 	 *
-	 * @default "www/gen/grammar"
+	 * @default "www/gen/<ResourceType>"
 	 */
 	targetDir?: string;
 	/**
@@ -124,6 +126,18 @@ export interface BuildOptions {
 	 * even if the up-to-date check returns TRUE
 	 */
 	force?: boolean;
+}
+
+export interface BuildAppConfig extends AppConfig {
+	/**
+	 * directory to which the compiled resources (and checksum files) will be stored:
+	 * for each resource type (e.g. grammar, view) a subdirectory will be created into
+	 * which the resources will be stored.
+	 *
+	 * By default, the relative paths are resolved against the app's root directory;
+	 * if the target direcotry is missing it will be newly created.
+	 */
+	targetDir?: string;
 }
 
 export interface GrammarBuildOptions extends GrammarOptions, BuildOptions {}
@@ -296,6 +310,8 @@ export interface RuntimeConfiguration {
 	grammarCompiler?: "jscc" | "jison" | "pegjs";
 	/** if selected language only has JSON grammar, prevents automatic compilation */
 	usePrecompiledGrammarsOnly?: boolean;
+	/** if JSON grammar is compiled, use async (i.e. web worker) compilation */
+	grammarAsyncCompileMode?: boolean;
 	/** list of grammars (IDs) which should not be automatically loaded on startup, even if compiled/JSON grammar is available for the language */
 	ignoreGrammarFiles?: Array<string>;
 

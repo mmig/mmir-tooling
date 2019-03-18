@@ -15,11 +15,22 @@ var scxmlCompiler = require('./compiler/scxml-compiler.js');
 // var rootDir = path.dirname(require.resolve('mmir-lib'));
 // var toolingRootDir = __dirname;
 
-var processTargetDirs = function(appDir, buildConfig){
+var getTargetDir = function(appConfig, mainOptions, optType){
+	return appConfig.targetDir? path.join(appConfig.targetDir, optType) : mainOptions[optType+'Options'] && mainOptions[optType+'Options'].targetDir;
+}
 
-	buildConfig.grammarOptions.targetDir = buildConfig.grammarOptions.targetDir || path.join(appDir, 'www', 'gen', 'grammar');
-	buildConfig.viewOptions.targetDir = buildConfig.viewOptions.targetDir || path.join(appDir, 'www', 'gen', 'view');
-	buildConfig.scxmlOptions.targetDir = buildConfig.scxmlOptions.targetDir || path.join(appDir, 'www', 'gen', 'scxml');
+var resolveTargetDir = function(appDir, targetDir){
+	if(!path.isAbsolute(targetDir)){
+		return path.join(appDir, targetDir);
+	}
+	return targetDir;
+}
+
+var processTargetDirs = function(appDir, appConfig, buildConfig){
+
+	buildConfig.grammarOptions.targetDir = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'grammar') || path.join('www', 'gen', 'grammar'));
+	buildConfig.viewOptions.targetDir    = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view')    || path.join('www', 'gen', 'view'));
+	buildConfig.scxmlOptions.targetDir   = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'scxml')   || path.join('www', 'gen', 'scxml'));
 }
 
 
@@ -37,7 +48,7 @@ var compileResources = function(mmirAppConfig){
 
 	// var moduleRules = [];
 
-	processTargetDirs(appRootDir, buildConfig);
+	processTargetDirs(appRootDir, mmirAppConfig, buildConfig);
 
 	if(buildConfig.grammars.length > 0){
 
