@@ -20,6 +20,8 @@ var MODULE_CODE_SUFFIX = ';\n' +
 							'if(!prepareCallback) return; setTimeout(function(){prepareCallback(null, ScxmlModel)}, 0);' +
 						'};\nmodule.exports = ScxmlModel;';
 
+var AMD_PREFIX = 'define(["module"],  function(module){\n';
+var AMD_SUFFIX = '\n});';
 
 function toError(errList, file){
 	if(Array.isArray(errList)){
@@ -79,6 +81,9 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
   var id = scxmlInfo.id;
 	var ignoreRuntimeErrors = typeof scxmlInfo.ignoreErrors === 'boolean'? scxmlInfo.ignoreErrors : (options.config && options.config.ignoreErrors === true);
 	// console.log('SCXML parsing, ignoreErrors -> ', ignoreRuntimeErrors, ', options.ignoreErrors: ', options.config, scxmlInfo)//DEBU
+	var moduleType = scxmlInfo.moduleType? scxmlInfo.moduleType : (options.config && options.config.moduleType);
+	//console.log('SCXML parsing, moduleType -> ', moduleType, ', options.config: ', options.config, scxmlInfo)//DEBU
+
 	scxml.documentStringToModel(id, content, function(err, model){
 
 		if(err){
@@ -96,6 +101,10 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 				}
 
 				var scxmlCode = MODULE_CODE_PREFIX + fnModel.toString() + MODULE_CODE_SUFFIX;
+
+				if(moduleType === 'amd'){
+					scxmlCode = AMD_PREFIX + scxmlCode + AMD_SUFFIX;
+				}
 
 				// console.log('mmir-scxml-loader: created model for '+id+'.');//DEBU
 
