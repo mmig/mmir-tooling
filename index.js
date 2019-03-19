@@ -43,7 +43,9 @@ var processTargetDirs = function(appDir, appConfig, buildConfig){
 }
 
 /**
- * HELPER disable unsupported build options
+ * HELPER disable build options that are not supported in "bare build"
+ *
+ * NOTE these may be supported in other integrations, e.g. via webpack
  *
  * @param  {any} buildConfig the build options (or sub-build options)
  * @param  {string | Array<string>} resType the build-option name or path to a sub-build option
@@ -108,7 +110,7 @@ var compileResources = function(mmirAppConfig){
 
 		tasks.push(grammarCompiler.prepareCompile(grammarLoadOptions).then(function(){
 			return grammarCompiler.compile(grammarLoadOptions);
-		}).then(function(){console.log('  completed processing grammars.');}));
+		}).then(function(res){console.log('  completed processing grammars.'); return res;}));
 
 	}
 
@@ -123,7 +125,7 @@ var compileResources = function(mmirAppConfig){
 
 		tasks.push(viewCompiler.prepareCompile(viewLoadOptions).then(function(){
 			return viewCompiler.compile(viewLoadOptions);
-		}).then(function(){console.log('  completed processing views.');}));
+		}).then(function(res){console.log('  completed processing views.'); return res;}));
 	}
 
 	if(buildConfig.states.length > 0){
@@ -136,7 +138,7 @@ var compileResources = function(mmirAppConfig){
 
 		tasks.push(scxmlCompiler.prepareCompile(stateLoadOptions).then(function(){
 			return scxmlCompiler.compile(stateLoadOptions);
-		}).then(function(){console.log('  completed processing scxml files.');}));
+		}).then(function(res){console.log('  completed processing scxml files.'); return res;}));
 	}
 
 	//TODO? impl. processing?
@@ -219,9 +221,15 @@ module.exports = {
 		cliUtils.parseCli();
 
 		mmirAppConfig = mmirAppConfig || {
+			rootPath: process.cwd(),
+			resourcesPath: 'www',
 			controllers: false,
 			helpers: false,
-			models: false
+			models: false,
+			settings: {
+				configuration: false,
+				speech: false
+			}
 		};
 		var taskList = compileResources(mmirAppConfig);
 
