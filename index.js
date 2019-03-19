@@ -42,13 +42,46 @@ var processTargetDirs = function(appDir, appConfig, buildConfig){
 	buildConfig.settingsOptions.targetDir = resolveTargetDir(appDir, appConfig.settingsOptions && appConfig.settingsOptions.targetDir? appConfig.settingsOptions.targetDir : appConfig.targetDir? path.join(appConfig.targetDir, 'config') : path.join('www', 'config'));
 }
 
+/**
+ * HELPER disable unsupported build options
+ *
+ * @param  {any} buildConfig the build options (or sub-build options)
+ * @param  {string | Array<string>} resType the build-option name or path to a sub-build option
+ */
+var checkBuildOptions = function(buildConfig, resType, resTypeMessage){
 
+	if(Array.isArray(resType)){
+		resTypeMessage = resTypeMessage || resType.join('.');
+		var optName = resType.shift();
+		if(buildConfig[optName] === false){
+			return;
+		}
+		if(!buildConfig[optName]){
+			buildConfig[optName] = {};
+		}
+		checkBuildOptions(buildConfig[optName], resType.length === 1? resType[0] : resType, resTypeMessage);
+
+	} else {
+
+		if(buildConfig[resType] !== false){
+			resTypeMessage = resTypeMessage || resType;
+			if(buildConfig[resType]) console.log('  buildOptions.'+resTypeMessage+' not supported, ignoring the options...');
+			buildConfig[resType] = false;
+		}
+	}
+};
 
 var compileResources = function(mmirAppConfig){
 
 	//set defaults specific for tooling-build
 	directoriesUtils.setMode('file');
 	mmirAppConfig.includeViewTempalates = typeof mmirAppConfig.includeViewTempalates === 'boolean'? mmirAppConfig.includeViewTempalates : true;
+	checkBuildOptions(mmirAppConfig, 'controllers');
+	checkBuildOptions(mmirAppConfig, 'helpers');
+	checkBuildOptions(mmirAppConfig, 'models');
+	checkBuildOptions(mmirAppConfig, ['settings', 'configuration']);
+	checkBuildOptions(mmirAppConfig, ['settings', 'grammar']);
+	checkBuildOptions(mmirAppConfig, ['settings', 'speech']);
 
 	var resourcesConfig = createResourcesConfig();
 
@@ -185,7 +218,11 @@ module.exports = {
 
 		cliUtils.parseCli();
 
-		mmirAppConfig = mmirAppConfig || {};
+		mmirAppConfig = mmirAppConfig || {
+			controllers: false,
+			helpers: false,
+			models: false
+		};
 		var taskList = compileResources(mmirAppConfig);
 
 		return Promise.all(taskList).then(getErrors).catch(getErrors);

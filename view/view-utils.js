@@ -13,8 +13,13 @@ var warn = logUtils.warn;
 var VirtualModulePlugin;
 function initVirtualModulePlugin(){
 	if(!VirtualModulePlugin){
-		VirtualModulePlugin = require('virtual-module-webpack-plugin');
+		try{
+			VirtualModulePlugin = require('virtual-module-webpack-plugin');
+		} catch(err){
+			warn('view-utils: failed to initialize virtual-module-webpack-plugin ', err);
+		}
 	}
+	return !!VirtualModulePlugin;
 }
 
 var isPartialView = function(name){
@@ -227,24 +232,28 @@ module.exports = {
 		appConfig.paths['mmirf/viewLoader'] = path.resolve(__dirname, '..', 'runtime', 'webpackViewLoader.js');
 
 		//add generated stub controllers if necessary:
-		if(stubCtrlMap.size > 0){
+		if(stubCtrlMap.size > 0 && appConfig.controllers !== false){
 
-			initVirtualModulePlugin();
+			if(initVirtualModulePlugin()){
 
-			if(!appConfig.webpackPlugins){
-				appConfig.webpackPlugins = [];
+				if(!appConfig.webpackPlugins){
+					appConfig.webpackPlugins = [];
+				}
+
+				stubCtrlMap.forEach(function(ctrl, name){
+					var id = ctrl.moduleName;
+					log('view-utils: adding view controller stub "'+name+'": ', id, ' -> ', ctrl);//DEBUG
+					// appConfig.paths[id] = id;// path.resolve('./viewParser/webpackGenCtrl.js');
+					// appConfig.includeModules.push(id);
+					appConfigUtils.addIncludeModule(appConfig, id, id);
+
+					directoriesUtil.addCtrl(directories, ctrl.moduleName);
+					appConfig.webpackPlugins.push(new VirtualModulePlugin(ctrl));
+				});
+
+			} else {
+				warn('view-utils: cannot add stub controllers, because of misssing package virtual-module-webpack-plugin');
 			}
-
-			stubCtrlMap.forEach(function(ctrl, name){
-				var id = ctrl.moduleName;
-				log('adding view controller stub "'+name+'": ', id, ' -> ', ctrl);//DEBUG
-				// appConfig.paths[id] = id;// path.resolve('./viewParser/webpackGenCtrl.js');
-				// appConfig.includeModules.push(id);
-				appConfigUtils.addIncludeModule(appConfig, id, id);
-
-				directoriesUtil.addCtrl(directories, ctrl.moduleName);
-				appConfig.webpackPlugins.push(new VirtualModulePlugin(ctrl));
-			});
 		}
 	},
 
