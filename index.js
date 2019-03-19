@@ -33,11 +33,11 @@ var resolveTargetDir = function(appDir, targetDir){
 
 var processTargetDirs = function(appDir, appConfig, buildConfig){
 
-	buildConfig.grammarOptions.targetDir = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'grammar') || path.join('www', 'gen', 'grammar'));
-	buildConfig.viewOptions.targetDir    = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view')    || path.join('www', 'gen', 'views'));
-	buildConfig.scxmlOptions.targetDir   = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'scxml')   || path.join('www', 'gen', 'scxml'));
+	buildConfig.grammarOptions.targetDir  = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'grammar') || path.join('www', 'gen', 'grammar'));
+	buildConfig.viewOptions.targetDir     = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view')    || path.join('www', 'gen', 'views'));
+	buildConfig.stateOptions.targetDir    = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'state')   || path.join('www', 'gen', 'state'));
 
-	buildConfig.settingsOptions.targetDir   = resolveTargetDir(appDir, appConfig.settingsOptions && appConfig.settingsOptions.targetDir? appConfig.settingsOptions.targetDir : appConfig.targetDir? path.join(appConfig.targetDir, 'config') : path.join('www', 'config'));
+	buildConfig.settingsOptions.targetDir = resolveTargetDir(appDir, appConfig.settingsOptions && appConfig.settingsOptions.targetDir? appConfig.settingsOptions.targetDir : appConfig.targetDir? path.join(appConfig.targetDir, 'config') : path.join('www', 'config'));
 }
 
 
@@ -91,16 +91,16 @@ var compileResources = function(mmirAppConfig){
 		}));
 	}
 
-	if(buildConfig.scxmlModels.length > 0){
+	if(buildConfig.states.length > 0){
 		// // compile SCXML models & include if necessary:
 
-		console.log('###### start processing '+buildConfig.scxmlModels.length+' scxml files ...');
-		// console.log('###### scxml: ',buildConfig.scxmlModels);
+		console.log('###### start processing '+buildConfig.states.length+' scxml files ...');
+		// console.log('###### scxml: ',buildConfig.states);
 
-		var scxmlLoadOptions = {mapping: buildConfig.scxmlModels, config: buildConfig.scxmlOptions};
+		var stateLoadOptions = {mapping: buildConfig.states, config: buildConfig.stateOptions};
 
-		tasks.push(scxmlCompiler.prepareCompile(scxmlLoadOptions).then(function(){
-			return scxmlCompiler.compile(scxmlLoadOptions);
+		tasks.push(scxmlCompiler.prepareCompile(stateLoadOptions).then(function(){
+			return scxmlCompiler.compile(stateLoadOptions);
 		}));
 	}
 

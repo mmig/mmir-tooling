@@ -48,15 +48,15 @@ var settingOptions = {
 	}
 };
 //FIXME TEST scxml options
-var stateMachineOptions = {
-	path: './test-data/config/statedef_large',
+var stateOptions = {
+	path: './test-data/config/states_large',
 	ignoreErrors: true,
 	// moduleType: 'amd',
 	force: true,
 	models: {
 		input: {
 			mode: 'simple',
-			file: './test-data/config/statedef_minimal/inputDescriptionSCXML.xml'
+			file: './test-data/config/states_minimal/inputDescriptionSCXML.xml'
 		},
 		dialog: {
 			// ignoreErrors: false,
@@ -106,7 +106,7 @@ const mmirAppConfig = {
 	grammars: grammarOptions,
 	views: viewOptions,
 	settings: settingOptions,
-	stateMachines: stateMachineOptions,
+	states: stateOptions,
 	configuration: {language: 'en'},
 
 	controllers: ctrlOptions,
@@ -139,14 +139,14 @@ const mmirAppConfig = {
 
 // 	config: {
 // 		'mmirf/inputManager': {
-// 				scxmlDoc: 'mmirf/scxml/input',//'config/statedef/inputDescriptionSCXML.xml'
+// 				modelUri: 'mmirf/scxml/input',//'config/states/input.xml'
 // 				// simple | mode
 // 				mode: 'extended',
 // 				//EXAMPLE: set module-specific log-level to 'info'
 // //		  logLevel: 'info'
 // 		},
 // 		'mmirf/dialogManager': {
-// 				scxmlDoc: 'mmirf/scxml/dialog',//'config/statedef/dialogDescriptionSCXML.xml'
+// 				modelUri: 'mmirf/scxml/dialog',//'config/states/dialogL.xml'
 // 				// simple | mode
 // 				mode: 'extended',
 // 				//EXAMPLE: set module-specific log-level to 'verbose'

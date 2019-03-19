@@ -71,14 +71,16 @@ function parseConfigDir(dir, parseOptions, options){
 
 			switch(dirName){
 				case 'languages':
-					if(options.grammar !== false && (!parseOptions.exclude || !parseOptions.exclude.find(function(item){ return item === 'grammar';}))){
+					if(options.grammars !== false && (!parseOptions.exclude || !parseOptions.exclude.find(function(item){ return item === 'grammar';}))){
 						options.grammars = {path: fileUtils.normalizePath(absPath)};
 					}
 					else console.log('parsing resources: excluding grammar resources for ', dirName, parseOptions.exclude);//DEBUG
 					break;
-				case 'statedef':
-					if(options.stateMachines !== false && (!parseOptions.exclude || !parseOptions.exclude.find(function(item){ return item === 'stateMachines';}))){
-						options.stateMachines = {path: fileUtils.normalizePath(absPath)};
+					// BACKWARDS COMPATIBILITY: check old/deprecated dir-name "statedef"
+				case 'statedef':		/* intentional fall-through */
+				case 'states':
+					if(options.states !== false && (!parseOptions.exclude || !parseOptions.exclude.find(function(item){ return item === 'state';}))){
+						options.states = {path: fileUtils.normalizePath(absPath)};
 					}
 					else console.log('parsing resources: excluding scxml resources for ', dirName, parseOptions.exclude);//DEBUG
 					break;

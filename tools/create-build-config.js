@@ -88,38 +88,38 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	var scxmlOptions = mmirAppConfig.stateMachines;
+	var stateOptions = mmirAppConfig.states;
 	//exmaple:
 	// {
-	// 	path: './config/statedef_large',
+	// 	path: './config/states_large',
 	// 	models: {
 	// 		input: {
 	// 			mode: 'simple',
-	// 			file: './config/statedef_minimal/inputDescriptionSCXML.xml'
+	// 			file: './config/states_minimal/input.xml'
 	// 		},
 	// 		dialog: {
 	// 			mode: 'extended'
 	// 		}
 	// 	}
 	// }
-	var scxmlModels = [];
-	if(scxmlOptions && scxmlOptions.path){
-		// console.log('including SCXML models from directory ', scxmlOptions.path);//DEBU
-		scxmlUtils.scxmlFromDir(scxmlOptions, appRootDir, scxmlModels);
+	var states = [];
+	if(stateOptions && stateOptions.path){
+		// console.log('including SCXML models from directory ', stateOptions.path);//DEBU
+		scxmlUtils.scxmlFromDir(stateOptions, appRootDir, states);
 	}
-	if(scxmlOptions && scxmlOptions.models){
-		// console.log('including SCXML models from options ', scxmlOptions.models);//DEBU
-		scxmlUtils.scxmlFromOptions(scxmlOptions, appRootDir, scxmlModels);
+	if(stateOptions && stateOptions.models){
+		// console.log('including SCXML models from options ', stateOptions.models);//DEBU
+		scxmlUtils.scxmlFromOptions(stateOptions, appRootDir, states);
 	}
 
-	if(scxmlModels.length === 0){
+	if(states.length === 0){
 		console.log('no SCXML models specified, including minimal default SCXML models for "input" and "dialog"...');//DEBUG
-		scxmlUtils.scxmlDefaults(scxmlOptions, appRootDir, scxmlModels);
+		scxmlUtils.scxmlDefaults(stateOptions, appRootDir, states);
 	}
 
-	// console.log('SCXML models: ', scxmlModels, scxmlOptions);//DEBUG
+	// console.log('SCXML models: ', states, stateOptions);//DEBUG
 
-	scxmlUtils.addScxmlToAppConfig(scxmlModels, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
+	scxmlUtils.addStatesToAppConfig(states, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
 
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -217,8 +217,8 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 		grammarOptions,
 		views,
 		viewOptions,
-		scxmlModels,
-		scxmlOptions,
+		states,
+		stateOptions,
 		implList,
 		ctrlOptions,
 		helperOptions,

@@ -39,11 +39,12 @@ export interface AppConfig {
 	 *                         /grammar.json
 	 *                         /dictionary.json
 	 *                         /speech.json
-	 *        /statedef
-	 *                 /inputDescriptionSCXML.xml
-	 *                 /dialogDescriptionSCXML.xml
+	 *        /states
+	 *                 /input.xml
+	 *                 /dialog.xml
 	 *
 	 *        /configuration.json
+	 *
 	 *  controllers/*
 	 *  helpers/*
 	 *  models/*
@@ -57,7 +58,7 @@ export interface AppConfig {
 	resourcesPathOptions?: ResourcesOptions;
 
 	grammars?: GrammarOptions | boolean;
-	stateMachines?: StateMachineOptions | boolean;
+	states?: StateOptions | boolean;
 
 	views?: ViewOptions | boolean;
 
@@ -109,7 +110,7 @@ export interface GrammarOptions {
 	grammars?: {[grammarId: string]: GrammarEntry};
 }
 
-export type ResourceType = 'grammar' | 'view' | 'scxml';
+export type ResourceType = 'grammar' | 'view' | 'state';
 
 export interface BuildOptions {
 	/**
@@ -146,6 +147,7 @@ export interface BuildAppConfig extends AppConfig {
 	 * @default true
 	 */
 	includeViewTempalates?: boolean;
+	includeStateModelXmls?: boolean;
 }
 
 export interface GrammarBuildOptions extends GrammarOptions, BuildOptions {}
@@ -154,14 +156,14 @@ export interface GrammarBuildEntry extends GrammarEntry, BuildOptions {}
 export interface ViewBuildOptions extends ViewOptions, BuildOptions {}
 export interface ViewBuildEntry extends ImplementationOptions, BuildOptions {}
 
-export interface StateMachineBuildOptions extends StateMachineOptions, BuildOptions {
+export interface StateBuildOptions extends StateOptions, BuildOptions {
 	/**
 	 * the module type of the generated/compiled state machine
 	 * @default 'amd'
 	 */
 	moduleType?: 'amd' | 'commonjs';
 }
-export interface StateMachineBuildEntry extends StateMachineEntry, BuildOptions {}
+export interface StateModelBuildEntry extends StateModelEntry, BuildOptions {}
 
 export interface GrammarEntry {
 	/** the Grammar engine that will be used to compile the executable grammar.
@@ -252,13 +254,13 @@ export type SettingsType = 'configuration' | 'dictionary' | 'grammar' | 'speech'
 
 /**
  * @example
- * var stateMachineOptions = {
- * 	path: './statedef_large',
+ * var stateOptions = {
+ * 	path: 'www/config/states',
  * 	// ignoreErrors: true,
  * 	models: {
  * 		input: {
  * 			mode: 'simple',
- * 			file: './config/statedef_minimal/inputDescriptionSCXML.xml'
+ * 			file: './alt_config/states_minimal/input.xml'
  * 		},
  * 		dialog: {
  * 			ignoreErrors: true,
@@ -267,12 +269,19 @@ export type SettingsType = 'configuration' | 'dictionary' | 'grammar' | 'speech'
  * 	}
  * };
  */
-export interface StateMachineOptions {
+export interface StateOptions {
 
 	/** file path for searching (recursively) for SCXML files (state-engines):
 	 * <pre>
-	 * path/.../dialogDescriptionSCXMLxml -> type "dialog"
-	 *         /inputDescriptionSCXMLxml  -> type "input"
+	 * path/.../dialog.xml -> type "dialog"
+	 *         /input.xml  -> type "input"
+	 * </pre>
+	 *
+	 * NOTE: for backwards compatibility, the following file names are also accepted
+	 *       and mapped to their corresponding type
+	 * <pre>
+	 *         "dialogDescriptionSCXML.xml" -> "dialog"
+	 *         "inputDescriptionSCXML.xml" -> "input"
 	 * </pre>
 	 */
 	path?: string;
@@ -287,10 +296,10 @@ export interface StateMachineOptions {
 	 */
 	ignoreErrors?: boolean;
 	/** optionally specify options for found resource, or specifying resources/locations directly */
-	models?: {dialog?: StateMachineEntry, input?: StateMachineEntry};
+	models?: {dialog?: StateModelEntry, input?: StateModelEntry};
 }
 
-export interface StateMachineEntry {
+export interface StateModelEntry {
 
 	/** if <code>true</code>, the corresponding resource will be excluded (when parsing <code>path</code>) */
 	exclude?: boolean;

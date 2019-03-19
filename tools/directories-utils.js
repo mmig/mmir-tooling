@@ -7,10 +7,10 @@ var createDirectoriesJson = function(){
 	  // "/views/calendar": ["login.ehtml"],
 	  // "/views/layouts": ["default.ehtml"],
 	  "/models": [],
-	  "/config": ["languages", "statedef", "configuration.json", "directories.json"],
+	  "/config": ["languages", "states", "configuration.json", "directories.json"],
 	  "/config/languages": [],//["en"]
 	  // "/config/languages/en": ["dictionary.json", "speech.json"],
-	  "/config/statedef": [],//["dialogDescriptionSCXML.xml", "inputDescriptionSCXML.xml"]
+	  "/config/states": [],//["dialog.xml", "input.xml"]
 	  "/helpers": [],
 	  "/gen/grammar": [],//["mmirf/grammar/en.js"]
 	  "/gen/views": []//,//["application", "calendar", "layouts"]
@@ -24,18 +24,20 @@ var cpath = "/controllers";
 var vpath = "/views";
 var mpath = "/models";
 var lpath = "/config/languages";
-var spath = "/config/statedef";
+var spath = "/config/states";
 var hpath = "/helpers";
 var gengrammars = "/gen/grammar";
 var genviews = "/gen/views";
-var confpath = "/config";
+var genstates = "/gen/state";
+// var confpath = "/config";
 
 var reViewInfo = /mmirf\/view\/([^/]+)\/([^/]+)/;
-var reCtrlInfo = /mmirf\/controller\/([^/]+)/;
+// var reCtrlInfo = /mmirf\/controller\/([^/]+)/;
 var reGrammarInfo = /mmirf\/grammar\/([^/]+)/;
 var reJsonGrammarInfo = /mmirf\/settings\/grammar\/([^/]+)/;
 var reDictionaryInfo = /mmirf\/settings\/dictionary\/([^/]+)/;
 var reSpeechConfigInfo = /mmirf\/settings\/speech\/([^/]+)/;
+var reSateModelInfo = /mmirf\/state\/([^/]+)/;
 
 var entryMode = 'id';// 'id' | 'file';
 
@@ -128,8 +130,14 @@ function addSpeechConfig(json, reqId){
 	_addPath(json, lpath + '/'  + lang, 'speech.json');
 }
 
-function addScxml(scxml, reqId){
-	_addPath(scxml, spath, reqId + '.js');
+function addStateModel(stateModel, reqId){
+	_addPath(stateModel, genstates, reqId + '.js');
+}
+
+function addStateModelXml(stateModel, reqId){
+	var m = reSateModelInfo.exec(reqId);
+	var type = m[1];
+	_addPath(stateModel, spath, type + '.xml');
 }
 
 function getLanguages(json){
@@ -146,7 +154,8 @@ module.exports = {
 	addJsonGrammar: addJsonGrammar,
 	addDictionary: addDictionary,
 	addSpeechConfig: addSpeechConfig,
-	addScxml: addScxml,
+	addStateModel: addStateModel,
+	addStateModelXml: addStateModelXml,
 	createDirectoriesJson: createDirectoriesJson,
 	getLanguages: getLanguages,
 	setMode: function(mode){
