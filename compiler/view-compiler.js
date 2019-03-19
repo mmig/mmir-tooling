@@ -9,6 +9,10 @@ var checksumUtil = require('../utils/checksum-util.js');
 
 var Promise = require('../utils/promise.js');
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+var warn = logUtils.warn;
+
 var getViewTargetPath = function(viewInfo){
 	return path.join(viewInfo.targetDir, viewInfo.id + '.js');
 }
@@ -37,27 +41,27 @@ var writeView = function(err, viewCode, _map, meta){
 	var v = meta && meta.info;
 	if(err){
 		var msg = 'ERROR compiling view '+(v? v.file : '')+': ';
-		console.log(msg, err);
+		warn(msg, err);
 		return Promise.revole(err.stack? err : new Error(msg+err));
 	}
 
 	var viewPath =  getViewTargetPath(v);
 	var checksumContent = getChecksumContent(meta.json, v.engine);
 	var checksumPath = getViewChecksumPath(v);
-	console.log('###### writing compiled view to file (length '+viewCode.length+') ', viewPath, ' -> ', checksumContent);
+	log('###### writing compiled view to file (length '+viewCode.length+') ', viewPath, ' -> ', checksumContent);
 
 	var viewDir = path.dirname(viewPath);
 	return fs.ensureDir(viewDir).then(function(){
 
 		var p1 = fs.writeFile(viewPath, viewCode, 'utf8').catch(function(err){
 			var msg = 'ERROR writing compiled view to '+ viewPath+ ': ';
-			console.log(msg, err);
+			warn(msg, err);
 			return err.stack? err : new Error(msg+err);
 		});
 
 		var p2 = fs.writeFile(checksumPath, checksumContent, 'utf8').catch(function(err){
 			var msg = 'ERROR writing checksum file for compiled view to '+checksumPath+ ': ';
-			console.log(msg, err);
+			warn(msg, err);
 			return err.stack? err : new Error(msg+err);
 		});
 
@@ -87,7 +91,7 @@ var compile = function(loadOptions){
 
 						if(err){
 							var msg = 'ERROR compiling view '+(v? v.file : '')+': ';
-							console.log(msg, err);
+							warn(msg, err);
 							return resolve(err.stack? err : new Error(msg+err));
 						}
 
@@ -104,7 +108,7 @@ var compile = function(loadOptions){
 				return checkUpToDate(v, content).then(function(isUpdateToDate){
 
 					if(isUpdateToDate){
-						console.log('compiled view is up-to-data at '+getViewTargetPath(v));
+						log('compiled view is up-to-data at '+getViewTargetPath(v));
 					} else {
 						return doCompile();
 					}
@@ -112,7 +116,7 @@ var compile = function(loadOptions){
 				}).catch(function(err){
 
 					var msg = 'ERROR compiling view '+v.file+': ';
-					console.log(msg, err);
+					warn(msg, err);
 					return err.stack? err : new Error(msg+err);
 				});
 
@@ -124,7 +128,7 @@ var compile = function(loadOptions){
 		}).catch(function(err){
 
 			var msg = 'ERROR compiling view '+v.file+': ';
-			console.log(msg, err);
+			warn(msg, err);
 			return err.stack? err : new Error(msg+err);
 		});
 

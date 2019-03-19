@@ -8,6 +8,11 @@ var checksumUtil = require('../utils/checksum-util.js');
 
 var Promise = require('../utils/promise.js');
 
+
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+var warn = logUtils.warn;
+
 var getGrammarTargetPath = function(grammarInfo){
 	return path.join(grammarInfo.targetDir, grammarInfo.id + '.js');
 }
@@ -32,7 +37,7 @@ var checkUpToDate = function(grammarInfo, jsonContent){
 
 var setPendingAsyncGrammarFinished = function(g){
 	if(!g.asyncCompile){
-		console.log('did not update pending grammar count for '+g.id+' with engine '+g.engine+', since it would have been sync-compiled.');
+		log('did not update pending grammar count for '+g.id+' with engine '+g.engine+', since it would have been sync-compiled.');
 		return;
 	}
 	grammarGen.updatePendingAsyncGrammarFinished(g, {});
@@ -45,17 +50,17 @@ var writeGrammar = function(_err, grammarCode, _map, meta){
 	var grammarPath =  getGrammarTargetPath(g);
 	var checksumContent = getChecksumContent(meta.json, g.engine);
 	var checksumPath = getGrammarChecksumPath(g);
-	console.log('###### writing compiled grammar to file (length '+grammarCode.length+') ', grammarPath, ' -> ', checksumContent);
+	log('###### writing compiled grammar to file (length '+grammarCode.length+') ', grammarPath, ' -> ', checksumContent);
 
 	return Promise.all([
 		fs.writeFile(grammarPath, grammarCode, 'utf8').catch(function(err){
 			var msg = 'ERROR writing compiled grammar to '+ viewPath+ ': ';
-			console.log(msg, err);
+			warn(msg, err);
 			return err.stack? err : new Error(msg+err);
 		}),
 		fs.writeFile(checksumPath, checksumContent, 'utf8').catch(function(err){
 			var msg = 'ERROR writing checksum file for compiled grammar to '+checksumPath+ ': ';
-			console.log(msg, err);
+			warn(msg, err);
 			return err.stack? err : new Error(msg+err);
 		})
 	]);
@@ -84,7 +89,7 @@ var compile = function(grammarLoadOptions){
 
 		var t = fs.readFile(g.file, 'utf8').then(function(content){
 
-			console.log('###### start processing grammar '+g.id+' (engine '+g.engine+', asyncCompile '+g.asyncCompile+')...');
+			log('###### start processing grammar '+g.id+' (engine '+g.engine+', asyncCompile '+g.asyncCompile+')...');
 
 			var doCompile = function(){
 				return new Promise(function(resolve, reject){
@@ -92,7 +97,7 @@ var compile = function(grammarLoadOptions){
 
 						if(err){
 							var msg = 'ERROR compiling grammar '+(g? g.file : '')+': ';
-							console.log(msg, err);
+							warn(msg, err);
 							return resolve(err.stack? err : new Error(msg+err));
 						}
 						writeGrammar(err, grammarCode, _map, meta).then(function(){
@@ -109,7 +114,7 @@ var compile = function(grammarLoadOptions){
 
 					if(isUpToDate){
 
-						console.log('compiled grammar is up-to-data at '+getGrammarTargetPath(g));
+						log('compiled grammar is up-to-data at '+getGrammarTargetPath(g));
 						setPendingAsyncGrammarFinished(g);
 
 					} else {
@@ -125,7 +130,7 @@ var compile = function(grammarLoadOptions){
 		}).catch(function(err){
 
 			var msg = 'ERROR compiling grammar '+g.file+': ';
-			console.log(msg, err);
+			warn(msg, err);
 
 			setPendingAsyncGrammarFinished(g);
 

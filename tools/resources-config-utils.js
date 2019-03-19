@@ -3,11 +3,15 @@ var fs = require('fs');
 var path = require('path');
 var fileUtils = require('../utils/filepath-utils.js');
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+// var warn = logUtils.warn;
+
 function parseRootDir(dir, parseOptions, options){
 
 	options = options || {};
 	var files = fs.readdirSync(dir);
-	// console.log('parse root dir "'+dir+'" -> ', files);
+	// log('parse root dir "'+dir+'" -> ', files);
 
 	files.forEach(function(p){
 
@@ -16,7 +20,7 @@ function parseRootDir(dir, parseOptions, options){
 
 			var dirName = path.basename(absPath).toLowerCase();
 			if(options[dirName] === false || (parseOptions.exclude && parseOptions.exclude.find(function(item){ return item === dirName;}))){
-				console.log('parsing resources: excluding resources for ', dirName, parseOptions.exclude);
+				log('parsing resources: excluding resources for ', dirName, parseOptions.exclude);
 				return;////////// EARLY EXIT ////////////////
 			}
 
@@ -45,7 +49,7 @@ function parseConfigDir(dir, parseOptions, options){
 
 	options = options || {};
 	var files = fs.readdirSync(dir);
-	// console.log('parse config dir "'+dir+'" -> ', files);
+	// log('parse config dir "'+dir+'" -> ', files);
 
 	if(!parseOptions.exclude || !parseOptions.exclude.find(function(item){ return item === 'settings';})){
 
@@ -56,13 +60,13 @@ function parseConfigDir(dir, parseOptions, options){
 			parseOptions.exclude.filter(function(item){ return /^settings\//.test(item);}).forEach(function(entry){
 				var subType = entry.substring('settings/'.length);
 
-				console.log('parsing resources: excluding settings/'+subType+' resources for ', dir, parseOptions.exclude);//DEBUG
+				log('parsing resources: excluding settings/'+subType+' resources for ', dir, parseOptions.exclude);//DEBUG
 
 				options.settings[subType] = false;
 			});
 		}
 	}
-	else console.log('parsing resources: excluding all settings resources for ', dir, parseOptions.exclude);//DEBUG
+	else log('parsing resources: excluding all settings resources for ', dir, parseOptions.exclude);//DEBUG
 
 	files.forEach(function(p){
 		var absPath = path.join(dir, p);
@@ -74,7 +78,7 @@ function parseConfigDir(dir, parseOptions, options){
 					if(options.grammars !== false && (!parseOptions.exclude || !parseOptions.exclude.find(function(item){ return item === 'grammar';}))){
 						options.grammars = {path: fileUtils.normalizePath(absPath)};
 					}
-					else console.log('parsing resources: excluding grammar resources for ', dirName, parseOptions.exclude);//DEBUG
+					else log('parsing resources: excluding grammar resources for ', dirName, parseOptions.exclude);//DEBUG
 					break;
 					// BACKWARDS COMPATIBILITY: check old/deprecated dir-name "statedef"
 				case 'statedef':		/* intentional fall-through */
@@ -82,7 +86,7 @@ function parseConfigDir(dir, parseOptions, options){
 					if(options.states !== false && (!parseOptions.exclude || !parseOptions.exclude.find(function(item){ return item === 'state';}))){
 						options.states = {path: fileUtils.normalizePath(absPath)};
 					}
-					else console.log('parsing resources: excluding scxml resources for ', dirName, parseOptions.exclude);//DEBUG
+					else log('parsing resources: excluding scxml resources for ', dirName, parseOptions.exclude);//DEBUG
 					break;
 				default:
 					return;////// EARLY EXIT //////////////

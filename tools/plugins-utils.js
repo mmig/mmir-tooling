@@ -5,6 +5,10 @@ var appConfigUtils = require('../utils/module-config-init.js');
 var settingsUtils = require('./settings-utils.js');
 var fileUtils = require('../utils/filepath-utils.js');
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+var warn = logUtils.warn;
+
 var asrCoreId = 'mmir-plugin-encoder-core.js';
 var ttsCoreId = 'audiotts.js';
 
@@ -96,7 +100,7 @@ function normalizeMediaManagerPluginConfig(configList){
 				if(id){
 					entry.config = id;
 				} else if(deprecatedImplFileIdMap[normalized]){
-					console.log('WARN plugin-utils: found deprecated media-plugin '+deprecatedImplFileIdMap[normalized]+' in configuration; this plugin will probably not work ', entry);
+					warn('WARN plugin-utils: found deprecated media-plugin '+deprecatedImplFileIdMap[normalized]+' in configuration; this plugin will probably not work ', entry);
 				}
 			}
 		}
@@ -122,7 +126,7 @@ function getConfigEnv(pluginConfig, pluginInfo, runtimeConfig){
 	if(typeof env === 'string'){
 		env = [env];
 	}
-	// console.log('########### using env', env);
+	// log('########### using env', env);
 	return env;
 }
 
@@ -138,13 +142,13 @@ function createConfigEntry(pluginConfig, pluginConfigInfo, pluginId){
 	var isAsr = isAsrPlugin(pluginId);
 	var mod = pluginConfigInfo.defaultValues && pluginConfigInfo.defaultValues.mod;
 	var type = pluginConfigInfo.defaultValues && pluginConfigInfo.defaultValues.type;
-	// console.log('#### config entry for '+pluginConfigInfo.pluginName+' default mod? ', JSON.stringify(mod));//DEBUG
+	// log('#### config entry for '+pluginConfigInfo.pluginName+' default mod? ', JSON.stringify(mod));//DEBUG
 	if(!mod){
-		// console.log('#### config entry for '+pluginConfigInfo.pluginName+' default mod? ', mod);//DEBUG
+		// log('#### config entry for '+pluginConfigInfo.pluginName+' default mod? ', mod);//DEBUG
 		if(type){
 			mod = type === 'asr'? asrCoreId : ttsCoreId;
 			if(mod === ttsCoreId && type !== 'tts'){
-				console.log('ERROR plugin-utils: plugin did not specify module-name and a plugin-type other than "asr" and "tts" (type '+type+'), cannot automatically derive module-name for config-entry of ', pluginId);
+				warn('ERROR plugin-utils: plugin did not specify module-name and a plugin-type other than "asr" and "tts" (type '+type+'), cannot automatically derive module-name for config-entry of ', pluginId);
 			}
 		} else {
 			mod = isAsr? asrCoreId : ttsCoreId;
@@ -227,7 +231,7 @@ function doApplySpeechConfigValue(name, val, lang, pluginName, speechConfigs, se
 			}
 
 			if(sc.include && sc.include !== 'inline'){
-				console.log("WARN plugin-utils: applying plugin speech-config to file setting, cannot include this as file, enforce inlining instead.");
+				warn("WARN plugin-utils: applying plugin speech-config to file setting, cannot include this as file, enforce inlining instead.");
 				sc.include = 'inline';
 			}
 		}
@@ -273,7 +277,7 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
 
 	var env = getConfigEnv(pluginConfig, pluginConfigInfo, runtimeConfig);
 
-	// console.log('#### will add '+pluginConfigInfo.pluginName+' to envs ', env, ' with entry ', confEntry);//DEBUG
+	// log('#### will add '+pluginConfigInfo.pluginName+' to envs ', env, ' with entry ', confEntry);//DEBUG
 
 	if(!runtimeConfig.mediaManager){
 		runtimeConfig.mediaManager = {};
@@ -344,7 +348,7 @@ module.exports = {
 			//        <plugin ID>/<file name>
 			binFilesPaths[fileUtils.normalizePath(modPath)] = path.normalize(path.join(path.dirname(mod), path.basename(modPath)));
 
-			// console.log('  ############### adding exported (raw) file for plugin '+pluginId+' ['+mod+'] -> ', modPath);//DEBUG
+			// log('  ############### adding exported (raw) file for plugin '+pluginId+' ['+mod+'] -> ', modPath);//DEBUG
 
 			appConfigUtils.addIncludeModule(appConfig, mod, modPath);
 
@@ -361,9 +365,9 @@ module.exports = {
 				addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, pluginId);
 			}
 		} else {
-			console.log('ERROR plugin-utils: invalid module-config.js for plugin '+pluginId+': missing field pluginName ', pluginConfigInfo);
+			warn('ERROR plugin-utils: invalid module-config.js for plugin '+pluginId+': missing field pluginName ', pluginConfigInfo);
 		}
 
-		console.log('plugin-utils: addPluginInfos() -> paths ', paths, ', workers ', workers, ', include modules ', includeModules, runtimeConfig);//DEBUG
+		log('plugin-utils: addPluginInfos() -> paths ', paths, ', workers ', workers, ', include modules ', includeModules, runtimeConfig);//DEBUG
 	}
 };

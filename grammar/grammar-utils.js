@@ -7,11 +7,15 @@ var appConfigUtils = require('../utils/module-config-init.js');
 var directoriesUtil = require('../tools/directories-utils.js');
 var configurationUtil = require('../tools/settings-utils.js');
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+var warn = logUtils.warn;
+
 function readDir(dir, list, options){
 
 	var files = fs.readdirSync(dir);
 	var dirs = [];
-	// console.log('read dir "'+dir+'" -> ', files);
+	// log('read dir "'+dir+'" -> ', files);
 
 	files.forEach(function(p){
 		var absPath = path.join(dir, p);
@@ -26,7 +30,7 @@ function readDir(dir, list, options){
 			var opt = options && options[id];
 			if(opt && (opt.exclude || opt.file)){
 				//-> ignore/exclude this grammar!
-				console.log('grammar-utils.addFromDirectory(): excluding grammar '+id+' at "'+normalized+'"!');//DEBUG
+				log('grammar-utils.addFromDirectory(): excluding grammar '+id+' at "'+normalized+'"!');//DEBUG
 				return;//////////////////// EARLY EXIT //////////////////
 			}
 
@@ -42,7 +46,7 @@ function readDir(dir, list, options){
 		}
 	});
 
-	// console.log('read sub-dirs -> ', dirs);
+	// log('read sub-dirs -> ', dirs);
 	var size = dirs.length;
 	if(size > 0){
 		for(var i = 0; i < size; ++i){
@@ -66,21 +70,21 @@ function addFromOptions(grammars, list, appRootDir){
 			entry.file = fileUtils.normalizePath(entry.file);
 
 			if(entry.id && entry.id !== id){
-				console.error('grammar-utils.addFromOptions(): entry from grammarOptions for ID "'+id+'" has differing field id with value "'+entry.id+'", overwritting the id field with "'+id+'"!');//FIXME proper webpack error/warning
+				warn('grammar-utils.addFromOptions(): entry from grammarOptions for ID "'+id+'" has differing field id with value "'+entry.id+'", overwritting the id field with "'+id+'"!');//FIXME proper webpack error/warning
 			}
 			entry.id = id;
 
 			//TODO verify existence of entry.file?
 
 			if(!contains(list, id)){
-				// console.log('grammar-utils.addFromOptions(): adding ', entry);//DEBU
+				// log('grammar-utils.addFromOptions(): adding ', entry);//DEBU
 				list.push(entry)
 			} else {
-				console.error('grammar-utils.addFromOptions(): entry from grammarOptions for ID '+id+' already exists in grammar-list, ignoring entry!');//FIXME proper webpack error/warning
+				warn('grammar-utils.addFromOptions(): entry from grammarOptions for ID '+id+' already exists in grammar-list, ignoring entry!');//FIXME proper webpack error/warning
 			}
 		}
 		// else {//DEBU
-		// 	console.log('grammar-utils.addFromOptions(): entry for '+id+' has no file set -> ignore ', g);//DEBU
+		// 	log('grammar-utils.addFromOptions(): entry for '+id+' has no file set -> ignore ', g);//DEBU
 		// }
 	}
 }
@@ -197,7 +201,7 @@ module.exports = {
 
 			if(g.async){
 				//TODO support for async execution & configuration
-				console.log('  #### grammar-utils.addGrammarsToAppConfig(): TODO set grammar "'+g.id+'" to async exeution mode');
+				warn('  grammar-utils.addGrammarsToAppConfig(): TODO set grammar "'+g.id+'" to async execution mode');
 			}
 
 			appConfigUtils.addIncludeModule(appConfig, toAliasId(g), toAliasPath(g));

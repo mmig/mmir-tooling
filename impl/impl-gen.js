@@ -1,4 +1,8 @@
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+// var warn = logUtils.warn;
+
 function getExportCodeFor(varName){
 	return '\n' +
 				// 'if(typeof module !== "undefined" && module.exports) {' +
@@ -23,7 +27,7 @@ function compile(content, implFile, options, callback, _map, _meta) {
 	});
 	var implInfo = options.mapping[i];
 
-	console.log('mmir-impl-loader: options for resource -> ', implInfo);//DEBUG
+	log('mmir-impl-loader: options for resource -> ', implInfo);//DEBUG
 
 	if(!implInfo || !implInfo.name){
 		var error;
@@ -45,12 +49,12 @@ function compile(content, implFile, options, callback, _map, _meta) {
 
 	if(implInfo.addModuleExport){
 		var name = typeof implInfo.addModuleExport === 'string'? implInfo.addModuleExport : implInfo.name;
-		console.log('mmir-impl-loader: adding module.exports for resource '+implInfo.id+' -> ', name);//DEBUG
+		log('mmir-impl-loader: adding module.exports for resource '+implInfo.id+' -> ', name);//DEBUG
 		implCode += getExportCodeFor(name);
 	}
 
 
-	// console.log('mmir-impl-loader: emitting code for '+implInfo.id+' -> ', content);//DEBUG
+	// log('mmir-impl-loader: emitting code for '+implInfo.id+' -> ', content);//DEBUG
 
 	callback(null, implCode, _map, _meta);
   return;

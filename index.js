@@ -15,6 +15,8 @@ var viewCompiler = require('./compiler/view-compiler.js');
 var scxmlCompiler = require('./compiler/scxml-compiler.js');
 var settingsCompiler = require('./compiler/settings-compiler.js');
 
+var cliUtils = require('./utils/cli-utils.js');
+
 // console.log('mmir-lib: ', require('mmir-lib'))
 
 // var rootDir = path.dirname(require.resolve('mmir-lib'));
@@ -67,13 +69,13 @@ var compileResources = function(mmirAppConfig){
 
 		// compile JSON grammars & include executables if necessary:
 
-		console.log('###### start processing '+buildConfig.grammars.length+' grammars ...');
+		console.log('start processing '+buildConfig.grammars.length+' grammars ...');
 
 		var grammarLoadOptions = {mapping: buildConfig.grammars, config: buildConfig.grammarOptions};
 
 		tasks.push(grammarCompiler.prepareCompile(grammarLoadOptions).then(function(){
 			return grammarCompiler.compile(grammarLoadOptions);
-		}));
+		}).then(function(){console.log('  completed processing grammars.');}));
 
 	}
 
@@ -81,27 +83,27 @@ var compileResources = function(mmirAppConfig){
 	if(buildConfig.views.length > 0){
 		// compile view templates & include if necessary:
 
-		console.log('###### start processing '+buildConfig.views.length+' views ...');
+		console.log('start processing '+buildConfig.views.length+' views ...');
 		// console.log('###### views: ',buildConfig.views);
 
 		var viewLoadOptions = {mapping: buildConfig.views, config: buildConfig.viewOptions};
 
 		tasks.push(viewCompiler.prepareCompile(viewLoadOptions).then(function(){
 			return viewCompiler.compile(viewLoadOptions);
-		}));
+		}).then(function(){console.log('  completed processing views.');}));
 	}
 
 	if(buildConfig.states.length > 0){
 		// // compile SCXML models & include if necessary:
 
-		console.log('###### start processing '+buildConfig.states.length+' scxml files ...');
+		console.log('start processing '+buildConfig.states.length+' scxml files ...');
 		// console.log('###### scxml: ',buildConfig.states);
 
 		var stateLoadOptions = {mapping: buildConfig.states, config: buildConfig.stateOptions};
 
 		tasks.push(scxmlCompiler.prepareCompile(stateLoadOptions).then(function(){
 			return scxmlCompiler.compile(stateLoadOptions);
-		}));
+		}).then(function(){console.log('  completed processing scxml files.');}));
 	}
 
 	//TODO? impl. processing?
@@ -180,6 +182,8 @@ module.exports = {
 	 * @param  {[type]} mmirAppConfig app-specific configuration for mmir-lib
 	 */
 	apply: function(mmirAppConfig){
+
+		cliUtils.parseCli();
 
 		mmirAppConfig = mmirAppConfig || {};
 		var taskList = compileResources(mmirAppConfig);

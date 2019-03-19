@@ -2,6 +2,9 @@ var _fs = require('fs');
 var _path = require('path');
 var reNormalize = _path.sep !== '/' ? new RegExp(_path.sep.replace(/\\/g, '\\\\'), 'g') : null;
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+
 var normalizePath = function(path) {
 	if (reNormalize) {
 		path = path.replace(reNormalize, '/');
@@ -22,7 +25,7 @@ var createFileTestFunc = function(absolutePaths, debugStr){
 		for (var i = 0, size = reTest.length; i < size; ++i) {
 			var re = reTest[i];
 			if (re.test(path)) {
-				console.log('\ttest'+debugStr+': ', path); //DEBUG
+				log('\ttest'+debugStr+': ', path); //DEBUG
 				return true;
 			};
 		}

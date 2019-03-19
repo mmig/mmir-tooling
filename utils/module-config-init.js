@@ -10,7 +10,7 @@ var path = require('path');
 var addAliasFrom = function(mmirAppConfig, alias){
 
 	if(mmirAppConfig && mmirAppConfig.paths){
-		// console.log('adding/overwriting paths with app paths: ', mmirAppConfig.paths);
+		// log('adding/overwriting paths with app paths: ', mmirAppConfig.paths);
 		// Object.assign(alias, mmirAppConfig.paths);
 		var appRoot = mmirAppConfig.rootPath || process.cwd();
 		var p;
@@ -19,7 +19,7 @@ var addAliasFrom = function(mmirAppConfig, alias){
 			alias[n] = path.isAbsolute(p)? p : path.join(appRoot, p);
 			// aliasList.push(n);
 		}
-		// console.log('set paths to -> ', alias);
+		// log('set paths to -> ', alias);
 	}
 
 	//DISABLED redirection must be handled by NormalModuleReplacementPlugin, because loadFile is not directly require'ed, but vie package (sub) path 'mmirf/util'

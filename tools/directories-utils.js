@@ -59,7 +59,7 @@ function _addPath(json, path, entry){
 
 function addCtrl(json, reqId){
 	_addPath(json, cpath, reqId + '.js');
-	// console.log('added '+reqId+' to ['+cpath+']: ', json[cpath], ', existing: ', json[cpath].find(function(item){return item === reqId+'.js'}), ' in -> ', json);
+	// log('added '+reqId+' to ['+cpath+']: ', json[cpath], ', existing: ', json[cpath].find(function(item){return item === reqId+'.js'}), ' in -> ', json);
 }
 
 function addHelper(json, reqId){

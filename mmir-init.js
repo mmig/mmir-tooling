@@ -2,7 +2,7 @@
 var path = require('path');
 var mmirLib = require('mmir-lib');
 
-// console.log('########################## mmir-loader: set start module ', mmirLib.mmir.startModule);//, ', config-paths: ', mmirLib.config.paths);
+// log('########################## mmir-loader: set start module ', mmirLib.mmir.startModule);//, ', config-paths: ', mmirLib.config.paths);
 
 var mmir = mmirLib.init(function(mmir){
 

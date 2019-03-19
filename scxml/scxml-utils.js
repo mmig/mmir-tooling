@@ -6,13 +6,17 @@ var fileUtils = require('../utils/filepath-utils.js');
 var appConfigUtils = require('../utils/module-config-init.js');
 var directoriesUtil = require('../tools/directories-utils.js');
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+var warn = logUtils.warn;
+
 var DEFAULT_MODE = 'extended';
 
 function readDir(dir, list, options){
 
 	var files = fs.readdirSync(dir);
 	var dirs = [];
-	// console.log('read dir "'+dir+'" -> ', files);//DEBU
+	// log('read dir "'+dir+'" -> ', files);//DEBU
 
 	files.forEach(function(p){
 		var absPath = path.join(dir, p);
@@ -22,14 +26,13 @@ function readDir(dir, list, options){
 		} else if(/^(dialog|input)(DescriptionSCXML)?\.xml$/i.test(p)){// BACKWARDS COMPATIBILITY: do also accept old/deprecated file names ...DescriptionSCXML.xml
 
 			var normalized = fileUtils.normalizePath(absPath);
-			console.log('scxml-utils.addFromDirectory(): extracting ID from "'+normalized+'"!');//DEBUG
 			var m = /^(dialog|input)/i.exec(p);
 			var id = m[1].toLowerCase();
 
 			var opt = options && options[id];
 			if(opt && (opt.exclude || opt.file)){
 				//-> ignore/exclude this scxml!
-				console.log('scxml-utils.addFromDirectory(): excluding scxml file for '+id+' model at "'+normalized+'"!');//DEBUG
+				log('scxml-utils.addFromDirectory(): excluding scxml file for '+id+' model at "'+normalized+'"!');//DEBUG
 				return;//////////////////// EARLY EXIT //////////////////
 			}
 
@@ -43,7 +46,7 @@ function readDir(dir, list, options){
 		}
 	});
 
-	// console.log('read sub-dirs -> ', dirs);
+	// log('read sub-dirs -> ', dirs);
 	var size = dirs.length;
 	if(size > 0){
 		for(var i = 0; i < size; ++i){
@@ -67,21 +70,21 @@ function addFromOptions(stateModels, list, appRootDir){
 			entry.file = fileUtils.normalizePath(entry.file);
 
 			if(entry.id && entry.id !== id){
-				console.error('scxml-utils.addFromOptions(): entry from modelOptions for ID "'+id+'" has differing field id with value "'+entry.id+'", overwritting the id field with "'+id+'"!');//FIXME proper webpack error/warning
+				warn('scxml-utils.addFromOptions(): entry from modelOptions for ID "'+id+'" has differing field id with value "'+entry.id+'", overwritting the id field with "'+id+'"!');//FIXME proper webpack error/warning
 			}
 			entry.id = id;
 
 			//TODO verify existence of entry.file?
 
 			if(!contains(list, id)){
-				// console.log('scxml-utils.addFromOptions(): adding ', entry);//DEBU
+				// log('scxml-utils.addFromOptions(): adding ', entry);//DEBU
 				list.push(entry)
 			} else {
-				console.error('scxml-utils.addFromOptions(): entry from modelOptions for ID '+id+' already exists in grammar-list, ignoring entry!');//FIXME proper webpack error/warning
+				warn('scxml-utils.addFromOptions(): entry from modelOptions for ID '+id+' already exists in grammar-list, ignoring entry!');//FIXME proper webpack error/warning
 			}
 		}
 		// else {//DEBU
-		// 	console.log('scxml-utils.addFromOptions(): entry for '+id+' has no file set -> ignore ', s);//DEBU
+		// 	log('scxml-utils.addFromOptions(): entry for '+id+' has no file set -> ignore ', s);//DEBU
 		// }
 	}
 }
@@ -91,7 +94,7 @@ function addDefaults(kind, list, _appRootDir){
 
 	//TODO support other types/kinds than "minimal" engines
 	if(kind && kind !== 'minimal'){
-		console.log('WARN scxml-utils: only support "minimal" for default input- and dialog-engine!');
+		warn('WARN scxml-utils: only support "minimal" for default input- and dialog-engine!');
 	}
 
 	var inputEngine = {
@@ -202,7 +205,7 @@ module.exports = {
 		//use scion runtime for compiled SCXML models instead of scion compiler/runtime
 		resources.paths['mmirf/scion'] = resources.paths['mmirf/scionRuntime'];
 
-		// console.log('scxml-utils.addStateModelsToAppConfig(): set mmirf/scion module implementation to ', appConfig.paths['mmirf/scion']);//DEBU
+		// log('scxml-utils.addStateModelsToAppConfig(): set mmirf/scion module implementation to ', appConfig.paths['mmirf/scion']);//DEBU
 
 		if(!appConfig.config){
 			appConfig.config = {};
@@ -213,7 +216,7 @@ module.exports = {
 		stateModels.forEach(function(s){
 
 			if(stateIds.has(s.id)){
-				console.log('scxml-utils: there already is a state model for "'+s.id+'", omitting state model from: "'+s.file+'"');
+				warn('scxml-utils: there already is a state model for "'+s.id+'", omitting state model from: "'+s.file+'"');
 				return;
 			}
 			stateIds.add(s.id);
@@ -231,23 +234,23 @@ module.exports = {
 			}
 			if(appConfig.config[configId].modelUri){
 				if(appConfig.config[configId].modelUri !== aliasId){
-					console.log('scxml-utils: state model for "'+s.id+'" is already set to "'+appConfig.config[configId].modelUri+'", omitting configuration to load from module ID "'+aliasId+'"');
+					warn('scxml-utils: state model for "'+s.id+'" is already set to "'+appConfig.config[configId].modelUri+'", omitting configuration to load from module ID "'+aliasId+'"');
 				}
 				// else {//DEBU
-				// 	console.log(' scxml-utils: SCXML model for "'+s.id+'" is already set to "'+aliasId+'", do nothing ...');//DEBU
+				// 	log(' scxml-utils: SCXML model for "'+s.id+'" is already set to "'+aliasId+'", do nothing ...');//DEBU
 				// }
 			} else {
-				// console.log(' scxml-utils: setting SCXML model for "'+s.id+'" to "'+aliasId+'", do nothing ...');//DEBU
+				// log(' scxml-utils: setting SCXML model for "'+s.id+'" to "'+aliasId+'", do nothing ...');//DEBU
 
 				appConfig.config[configId].modelUri = aliasId;
 			}
 
 			if(!appConfig.config[configId].mode){
-				// console.log(' scxml-utils: setting mode for SCXML model "'+s.id+'" to default mode: ', JSON.stringify(s.mode || DEFAULT_MODE));//DEBU
+				// log(' scxml-utils: setting mode for SCXML model "'+s.id+'" to default mode: ', JSON.stringify(s.mode || DEFAULT_MODE));//DEBU
 
 				appConfig.config[configId].mode = s.mode || DEFAULT_MODE;
 			} else if(s.mode) {
-				console.log('scxml-utils: SCXML model mode for "'+s.id+'" is already set to "'+appConfig.config[configId].mode+'", omitting mode-setting ', JSON.stringify(s.mode));
+				warn('scxml-utils: SCXML model mode for "'+s.id+'" is already set to "'+appConfig.config[configId].mode+'", omitting mode-setting ', JSON.stringify(s.mode));
 			}
 
 		});

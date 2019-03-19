@@ -4,6 +4,10 @@ var asyncSupportUtil = require('../utils/node-worker-support.js');
 var mmir = require('../mmir-init.js');
 var semantic = mmir.require('mmirf/semanticInterpreter');
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+// var warn = logUtils.warn;
+
 var asyncSupport = asyncSupportUtil.isAsyncSupported();
 
 //helpers for keeping track of pending grammar-compile tasks when in async compile mode
@@ -48,13 +52,13 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
   try{
     grammar = JSON.parse(content);
   } catch(err){
-		// console.error('ERROR parsing JSON grammar at '+this.resource+' -> ', JSON.stringify(content), arguments, ', [this:] ', this);//DEBUG
+		// warn('ERROR parsing JSON grammar at '+this.resource+' -> ', JSON.stringify(content), arguments, ', [this:] ', this);//DEBUG
     callback(err, null, _map, _meta);
 		return;/////////////// EARLY EXIT /////////////////
   }
-  // console.log('mmir-grammer-loader: ', JSON.stringify(grammar));
+  // log('mmir-grammer-loader: ', JSON.stringify(grammar));
 
-	console.log('mmir-grammer-loader: resource -> ', grammarFile);//DEBUG
+	log('mmir-grammer-loader: resource -> ', grammarFile);//DEBUG
 	var i = options.mapping.findIndex(function(g){
 		return g.file === grammarFile;
 	});
@@ -76,7 +80,7 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
 		return;/////////////// EARLY EXIT /////////////////
 	}
 
-	console.log('mmir-grammer-loader: resource ID at '+i+' -> ', grammarInfo.id);//DEBUG
+	log('mmir-grammer-loader: resource ID at '+i+' -> ', grammarInfo.id);//DEBUG
 
 	//TODO(?):
 			// //TODO impl. automated sync/async loading&execution for compiled grammars
@@ -89,13 +93,13 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
 			// var ignoreGrammarIds = configurationManager.get('ignoreGrammarFiles', void(0));
 
 	var engine = getEngine(grammarInfo, options);
-  // console.log('mmir-grammer-loader: setting compiler "'+engine+'" for grammar "'+grammarInfo.id+'"...');//DEBUG
+  // log('mmir-grammer-loader: setting compiler "'+engine+'" for grammar "'+grammarInfo.id+'"...');//DEBUG
 
 	// var async = grammarInfo.async || (options.config && options.config.async) || /*default: */ false;
 	// async = true;//FIXME currently WebWorker library does not handle relative paths for importScripts() correctly -> DISABLE async mode
 
 	var async = isAsyncCompile(grammarInfo, options);
-  console.log('mmir-grammer-loader: using '+(async? 'async' : 'SYNC')+' mode ('+engine+') for grammar "'+grammarInfo.id+'" ...');//DEBUG
+  log('mmir-grammer-loader: using '+(async? 'async' : 'SYNC')+' mode ('+engine+') for grammar "'+grammarInfo.id+'" ...');//DEBUG
 
   semantic.setGrammarEngine(engine, async);
 
@@ -104,26 +108,26 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
   var id = grammarInfo.id;
   semantic.createGrammar(grammar, id, function(result){
 
-    console.log('mmir-grammer-loader: grammar '+id+' compiled...');//DEBUG
+    log('mmir-grammer-loader: grammar '+id+' compiled...');//DEBUG
 
 		var grammarCode = ';' + result.js_grammar_definition;
-    // console.log('mmir-grammer-loader: grammar code size ', grammarCode.length);//DEBUG
+    // log('mmir-grammer-loader: grammar code size ', grammarCode.length);//DEBUG
 
 		// try{
 			if(async){
 				var pending = pendingAsyncGrammars;
 				--pending[engine];
-				console.log('mmir-grammer-loader: updated pending async grammar ('+engine+') for grammar "'+grammarInfo.id+'": ', pending);//DEBUG
+				log('mmir-grammer-loader: updated pending async grammar ('+engine+') for grammar "'+grammarInfo.id+'": ', pending);//DEBUG
 				if(pending[engine] <= 0){
-					console.log('mmir-grammer-loader: stopping grammer generator for '+engine+'...');//DEBUG
+					log('mmir-grammer-loader: stopping grammer generator for '+engine+'...');//DEBUG
 					mmir.require('mmirf/'+engine+'AsyncGen').destroy();
 				}
 			}
 		// } catch(err){
-		// 	console.log('could not destroy async grammar engine '+engine, err);//DEBUG
+		// 	log('could not destroy async grammar engine '+engine, err);//DEBUG
 		// }
 
-		console.log('mmir-grammer-loader: emitting grammar code for ('+engine+') for grammar "'+grammarInfo.id+'"...');//DEBUG
+		log('mmir-grammer-loader: emitting grammar code for ('+engine+') for grammar "'+grammarInfo.id+'"...');//DEBUG
 
     callback(null, grammarCode, _map, _meta);
   });
@@ -139,7 +143,7 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
 function initPendingAsyncGrammarInfo(options){
 
 	if(asyncSupport && !pendingAsyncGrammars){
-		// console.log('mmir-grammer-loader: init [ASYNC PREPARATION] options -> ', options);//DEBUG
+		// log('mmir-grammer-loader: init [ASYNC PREPARATION] options -> ', options);//DEBUG
 		var pending = createPendingAsyncGrammarsInfo();
 		if(options && options.mapping){
 			options.mapping.forEach(function(g){
@@ -149,7 +153,7 @@ function initPendingAsyncGrammarInfo(options){
 				}
 			});
 			pendingAsyncGrammars = pending;//NOTE: store into "global"/module var, since this should keep trac of all ALL pending grammar jobs, not just the current one
-			console.log('mmir-grammer-loader: PITCHing [ASYNC PREPARATION] pending grammars -> ',pendingAsyncGrammars, options.mapping);//DEBUG
+			log('mmir-grammer-loader: PITCHing [ASYNC PREPARATION] pending grammars -> ',pendingAsyncGrammars, options.mapping);//DEBUG
 		}
 	}
 }
@@ -166,11 +170,11 @@ function updatePendingAsyncGrammarFinished(grammarInfo, grammarLoadOptions){
 		var engine = getEngine(grammarInfo, grammarLoadOptions);
 		var pending = pendingAsyncGrammars;
 		--pending[engine];
-		console.log('mmir-grammer-loader: updated pending async grammar ('+engine+') for grammar "'+grammarInfo.id+'": ', pending);//DEBUG
+		log('mmir-grammer-loader: updated pending async grammar ('+engine+') for grammar "'+grammarInfo.id+'": ', pending);//DEBUG
 
 		for(var n in pending){
 			if(pending[n] <= 0 && pending[n+'Started']){
-				console.log('mmir-grammer-loader: stopping grammer generator for '+engine+'...');//DEBUG
+				log('mmir-grammer-loader: stopping grammer generator for '+engine+'...');//DEBUG
 				mmir.require('mmirf/'+engine+'AsyncGen').destroy();
 			}
 		}

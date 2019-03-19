@@ -6,6 +6,9 @@ var appConfigUtils = require('../utils/module-config-init.js');
 
 var directoriesUtil = require('../tools/directories-utils.js');
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+var warn = logUtils.warn;
 
 var VirtualModulePlugin;
 function initVirtualModulePlugin(){
@@ -23,7 +26,7 @@ function readDir(dir, list, options){
 
 	var files = fs.readdirSync(dir);
 	var dirs = [];
-	// console.log('read dir "'+dir+'" -> ', files);
+	// log('read dir "'+dir+'" -> ', files);
 
 	files.forEach(function(p){
 		var absPath = path.join(dir, p);
@@ -35,11 +38,11 @@ function readDir(dir, list, options){
 			}
 			dirs.push({dir: absPath, ctrlName: name, isLayout: isLayout});
 		} else {
-			console.log('view-utils.addFromDirectory(): unknow file in view root path: ', absPath);
+			warn('view-utils.addFromDirectory(): unknow file in view root path: ', absPath);
 		}
 	});
 
-	// console.log('read sub-dirs -> ', dirs);
+	// log('read sub-dirs -> ', dirs);
 	var size = dirs.length;
 	if(size > 0){
 		for(var i = 0; i < size; ++i){
@@ -52,12 +55,12 @@ function readSubDir(dirs, list, _options){
 
 	var dir = dirs.dir;
 	var files = fs.readdirSync(dir);
-	// console.log('read dir "'+dir+'" -> ', files);
+	// log('read dir "'+dir+'" -> ', files);
 
 	files.forEach(function(p){
 		var absPath = path.join(dir, p);
 		if(fileUtils.isDirectory(absPath)){
-			console.log('view-utils.addFromDirectory(): invalid sub-directory in view-directory: ', absPath);
+			warn('view-utils.addFromDirectory(): invalid sub-directory in view-directory: ', absPath);
 		} else if(regExprFileExt.test(absPath)) {
 
 			var normalized = fileUtils.normalizePath(absPath);
@@ -89,10 +92,10 @@ function readSubDir(dirs, list, _options){
 			});
 
 		} else {
-			console.log('view-utils.addFromDirectory(): unknown view template file: ', absPath);
+			warn('view-utils.addFromDirectory(): unknown view template file: ', absPath);
 		}
 	});
-	// console.log('results for dir "'+dir+'" -> ', ids, views);
+	// log('results for dir "'+dir+'" -> ', ids, views);
 }
 
 function toAliasPath(view){
@@ -234,7 +237,7 @@ module.exports = {
 
 			stubCtrlMap.forEach(function(ctrl, name){
 				var id = ctrl.moduleName;
-				console.log('adding view controller stub "'+name+'": ', id, ' -> ', ctrl);//DEBUG
+				log('adding view controller stub "'+name+'": ', id, ' -> ', ctrl);//DEBUG
 				// appConfig.paths[id] = id;// path.resolve('./viewParser/webpackGenCtrl.js');
 				// appConfig.includeModules.push(id);
 				appConfigUtils.addIncludeModule(appConfig, id, id);

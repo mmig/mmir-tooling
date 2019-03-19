@@ -9,6 +9,10 @@ var checksumUtil = require('../utils/checksum-util.js');
 
 var Promise = require('../utils/promise.js');
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+var warn = logUtils.warn;
+
 var getStateChartTargetPath = function(scxmlInfo){
 	return path.join(scxmlInfo.targetDir, scxmlInfo.id + '.js');
 }
@@ -39,17 +43,17 @@ var writeStateChartModel = function(_err, scCode, _map, meta){
 	var checksumContent = getChecksumContent(meta.json);
 	var checksumPath = getStateChartChecksumPath(sc);
 
-	console.log('###### writing compiled SCXML model to file (length '+scCode.length+') ', scPath, ' -> ', checksumContent);
+	log('###### writing compiled SCXML model to file (length '+scCode.length+') ', scPath, ' -> ', checksumContent);
 
 	return Promise.all([
 		fs.writeFile(scPath, scCode, 'utf8').catch(function(err){
 			var msg = 'ERROR writing compiled SCXML model to '+ scPath+ ': ';
-			console.log(msg, err);
+			warn(msg, err);
 			return err.stack? err : new Error(msg+err)
 		}),
 		fs.writeFile(checksumPath, checksumContent, 'utf8').catch(function(err){
 			var msg = 'ERROR writing checksum file for compiled SCXML model to '+checksumPath+ ': ';
-			console.log(msg, err);
+			warn(msg, err);
 			return err.stack? err : new Error(msg+err);
 		})
 	]);
@@ -70,7 +74,7 @@ var compile = function(loadOptions){
 
 		var t = fs.readFile(sc.file, 'utf8').then(function(content){
 
-			console.log('###### start processing SCXML model '+sc.id);
+			log('###### start processing SCXML model '+sc.id);
 
 			var doCompile = function(){
 				return new Promise(function(resolve, reject){
@@ -78,7 +82,7 @@ var compile = function(loadOptions){
 
 						if(err){
 							var msg = 'ERROR compiling SCXML model '+(sc? sc.file : '')+': ';
-							console.log(msg, err);
+							warn(msg, err);
 							return resolve(err.stack? err : new Error(msg+err));
 						}
 
@@ -96,7 +100,7 @@ var compile = function(loadOptions){
 				return checkUpToDate(sc, content).then(function(isUpdateToDate){
 
 					if(isUpdateToDate){
-						console.log('compiled SCXML model is up-to-data at '+getStateChartTargetPath(sc));
+						log('compiled SCXML model is up-to-data at '+getStateChartTargetPath(sc));
 					} else {
 						return doCompile();
 					}
@@ -110,7 +114,7 @@ var compile = function(loadOptions){
 		}).catch(function(err){
 
 			var msg = 'ERROR compiling SCXML model '+sc.file+': ';
-			console.log(msg, err);
+			warn(msg, err);
 			return err.stack? err : new Error(msg+err);
 		});
 

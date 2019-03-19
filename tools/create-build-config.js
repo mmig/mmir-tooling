@@ -12,6 +12,10 @@ var implUtils = require('../impl/impl-utils.js');
 var viewUtils = require('../view/view-utils.js');
 var pluginsUtil = require('../tools/plugins-utils.js');
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+var warn = logUtils.warn;
+
 var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 
 	mmirAppConfig.rootPath = mmirAppConfig.rootPath || process.cwd();
@@ -24,24 +28,24 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 
 	//parse resources directory (if specified) for detecting default mmir resouce structrue/resource options:
 	if(mmirAppConfig.resourcesPath){
-		console.log('parsing resources directory: ', mmirAppConfig.resourcesPath, ', current app-config: ', mmirAppConfig);//DEBUG
+		log('parsing resources directory: ', mmirAppConfig.resourcesPath, ', current app-config: ', mmirAppConfig);//DEBUG
 		var genAppConfig = resourceUtils.resourcePathsFrom(mmirAppConfig.resourcesPath, mmirAppConfig.resourcesPathOptions);
 		resourceUtils.mergeResourceConfigs(mmirAppConfig, genAppConfig);
-		console.log('adding results from parsing resources directory: ', genAppConfig, ' -> ', mmirAppConfig);//DEBUG
+		log('adding results from parsing resources directory: ', genAppConfig, ' -> ', mmirAppConfig);//DEBUG
 	}
 
 	var settingsOptions = mmirAppConfig.settings;
 	var settings = settingsUtil.jsonSettingsFromDir(settingsOptions, appRootDir);
-	// console.log('JSON settings: ', settings);
-	// console.log('JSON configuration setting: ', settingsUtil.getConfiguration(settings));
+	// log('JSON settings: ', settings);
+	// log('JSON configuration setting: ', settingsUtil.getConfiguration(settings));
 
 	//add configuration from mmirAppConfig for merging, if necessary
 	if(runtimeConfig){
-		// console.log('JSON configuration settings: adding & merging mmirAppConfig.configuration ', runtimeConfig);//DEBU
+		// log('JSON configuration settings: adding & merging mmirAppConfig.configuration ', runtimeConfig);//DEBU
 		settings.push(settingsUtil.createSettingsEntryFor('configuration', runtimeConfig));//<- push "mmirAppConfig.confiuration" into the end of parsed settings files
 	}
 	settingsUtil.normalizeConfigurations(settings);
-	// console.log('JSON configuration setting (merge test): ', settingsUtil.getConfiguration(settings));//DEBU
+	// log('JSON configuration setting (merge test): ', settingsUtil.getConfiguration(settings));//DEBU
 	runtimeConfig = settingsUtil.getConfiguration(settings).value;
 
 	var grammarOptions = mmirAppConfig.grammars;
@@ -81,7 +85,7 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 		grammarUtils.jsonGrammarsFromOptions(grammarOptions, appRootDir, grammars);
 	}
 
-	// console.log('JSON grammars: ', grammars, grammarOptions);
+	// log('JSON grammars: ', grammars, grammarOptions);
 
 	grammarUtils.addGrammarsToAppConfig(grammars, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
 
@@ -104,20 +108,20 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	// }
 	var states = [];
 	if(stateOptions && stateOptions.path){
-		// console.log('including SCXML models from directory ', stateOptions.path);//DEBU
+		// log('including SCXML models from directory ', stateOptions.path);//DEBU
 		scxmlUtils.scxmlFromDir(stateOptions, appRootDir, states);
 	}
 	if(stateOptions && stateOptions.models){
-		// console.log('including SCXML models from options ', stateOptions.models);//DEBU
+		// log('including SCXML models from options ', stateOptions.models);//DEBU
 		scxmlUtils.scxmlFromOptions(stateOptions, appRootDir, states);
 	}
 
 	if(states.length === 0){
-		console.log('no SCXML models specified, including minimal default SCXML models for "input" and "dialog"...');//DEBUG
+		log('no SCXML models specified, including minimal default SCXML models for "input" and "dialog"...');//DEBUG
 		scxmlUtils.scxmlDefaults(stateOptions, appRootDir, states);
 	}
 
-	// console.log('SCXML models: ', states, stateOptions);//DEBUG
+	// log('SCXML models: ', states, stateOptions);//DEBUG
 
 	scxmlUtils.addStatesToAppConfig(states, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
 
@@ -132,7 +136,7 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	if(ctrlOptions && ctrlOptions.controllers){
 		implUtils.implFromOptions('controller', ctrlOptions, appRootDir, ctrlList);
 	}
-	console.log('controllers: ', ctrlList, ctrlOptions);//DEBUG
+	log('controllers: ', ctrlList, ctrlOptions);//DEBUG
 	implUtils.addImplementationsToAppConfig(ctrlList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
 
 	var helperOptions = mmirAppConfig.helpers;
@@ -143,7 +147,7 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	if(helperOptions && helperOptions.helpers){
 		implUtils.implFromOptions('helper', helperOptions, appRootDir, helperList);
 	}
-	console.log('helpers: ', helperList, helperOptions);//DEBUG
+	log('helpers: ', helperList, helperOptions);//DEBUG
 	implUtils.addImplementationsToAppConfig(helperList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
 
 	var modelOptions = mmirAppConfig.models;
@@ -154,7 +158,7 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	if(modelOptions && modelOptions.models){
 		implUtils.implFromOptions('model', modelOptions, appRootDir, modelList);
 	}
-	console.log('models: ', modelList, modelOptions);
+	log('models: ', modelList, modelOptions);
 	implUtils.addImplementationsToAppConfig(modelList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
 	var implList = ctrlList.concat(helperList, modelList);
 
@@ -175,7 +179,7 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 
 	//TODO impl./support loading indivual views similar to grammars
 
-	// console.log('view templates: ', views);
+	// log('view templates: ', views);
 
 	viewUtils.addViewsToAppConfig(views, ctrlList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
 
@@ -187,18 +191,18 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 		includePluginList.forEach(function(plugin){
 			var id = typeof plugin === 'string'? plugin : plugin.id;
 			var pluginSettings = typeof plugin !== 'string'? plugin : {id: id};
-			console.log('adding mmir-plugin "'+id+'" ...');//DEBUG
+			log('adding mmir-plugin "'+id+'" ...');//DEBUG
 			pluginsUtil.addPluginInfos(pluginSettings, mmirAppConfig, directories, resourcesConfig, runtimeConfig, settings);
 		});
 
-		// console.log('added mmir-plugins: ', resourcesConfig.workers, mmirAppConfig);//DEBUG
+		// log('added mmir-plugins: ', resourcesConfig.workers, mmirAppConfig);//DEBUG
 	}
 
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	// console.log(' configuration.json -> ', JSON.stringify(runtimeConfig));//DEBU
-	// console.log(' ########### settings -> ', JSON.stringify(settings));//DEBU
+	// log(' configuration.json -> ', JSON.stringify(runtimeConfig));//DEBU
+	// log(' ########### settings -> ', JSON.stringify(settings));//DEBU
 	// appConfigUtils.addAppSettings(mmirAppConfig, 'mmirf/settings/configuration', runtimeConfig);
 
 	settingsUtil.addSettingsToAppConfig(settings, mmirAppConfig, directories, resourcesConfig, runtimeConfig);//, /configuration/i);
@@ -207,10 +211,10 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 
 	//FIXME TEST
 	// directoriesJsonUtils.addDictionary(directories, 'mmirf/settings/dictionary/en');
-	// console.log(' directories.json -> ', JSON.stringify(directories));//DEBU
+	// log(' directories.json -> ', JSON.stringify(directories));//DEBU
 	appConfigUtils.addAppSettings(mmirAppConfig, 'mmirf/settings/directories', directories);
 
-	// console.log('###### mmirAppConfig: '+ JSON.stringify(mmirAppConfig));
+	// log('###### mmirAppConfig: '+ JSON.stringify(mmirAppConfig));
 
 	return {
 		grammars,

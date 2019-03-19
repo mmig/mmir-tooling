@@ -1,13 +1,16 @@
 
+var logUtils = require('../utils/log-utils.js');
+// var log = logUtils.log;
+var warn = logUtils.warn;
 
 //////// async / threaded grammar compiler support: ////////////////
 var asyncSupport = false;
 try {
-	// console.log('#################### start detecting async grammar support...')
+	// log('#################### start detecting async grammar support...')
 	var Threads = require('webworker-threads');
 	var thread = Threads.create();
 	thread.eval(function testAsync(){return true;}).eval('testAsync()', function(_err, _result){
-		// console.log('#################### detected async grammar support -> ', _result, ', error? -> ', _err);
+		// log('#################### detected async grammar support -> ', _result, ', error? -> ', _err);
 		thread.destroy();
 	});
 
@@ -22,7 +25,7 @@ try {
 		asyncSupport = true;
 
 	} catch(err){
-		console.log('[INFO] could not load implementation for WebWorkers, e.g. (experimental) worker_threads or webworker-threads (>= version 8.x): cannot use WebWorkers/parallel threads for compling grammars etc.');
+		warn('[INFO] could not load implementation for WebWorkers, e.g. (experimental) worker_threads or webworker-threads (>= version 8.x): cannot use WebWorkers/parallel threads for compling grammars etc.');
 	}
 
 }

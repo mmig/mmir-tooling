@@ -6,12 +6,16 @@ const path = require('path');
 
 var Promise = require('../utils/promise.js');
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+var warn = logUtils.warn;
+
 var writeDirectoriesJson = function(directories, targetDir){
 
 	return fs.ensureDir(targetDir).then(function(){
 		return fs.writeFile(path.join(targetDir, 'directories.json'), JSON.stringify(directories), 'utf8').catch(function(err){
 			var msg = 'ERROR writing directories.json to '+targetDir+': ';
-			console.log(msg, err);
+			warn(msg, err);
 			return err.stack? err : new Error(msg+err);
 		});
 	});
@@ -32,7 +36,7 @@ var writeDictionaries = function(settings, settingsOptions){
 
 	var dictionaries = settings.filter(function(item){ return item.type === 'dictionary'});
 
-	// console.log('processing dictionaries: ', dictionaries);
+	// log('processing dictionaries: ', dictionaries);
 
 	var tasks = [];
 
@@ -48,7 +52,7 @@ var writeDictionaries = function(settings, settingsOptions){
 
 						return fs.copyFile(dict.file, targetPath).catch(function(err){
 							var msg = 'ERROR copying file to '+targetPath+': ';
-							console.log(msg, err);
+							warn(msg, err);
 							return err.stack? err : new Error(msg+err);
 						});
 
@@ -56,14 +60,14 @@ var writeDictionaries = function(settings, settingsOptions){
 
 						return fs.writeFile(targetPath, JSON.stringify(dict.value), 'utf8').catch(function(err){
 							var msg = 'ERROR writing '+targetPath+': ';
-							console.log(msg, err);
+							warn(msg, err);
 							return err.stack? err : new Error(msg+err);
 						});
 					}
 				});
 
 			} else {
-				console.log('omit writing dictionary to '+targetPath+', since it already exists');//: ', dict);
+				log('omit writing dictionary to '+targetPath+', since it already exists');//: ', dict);
 			}
 		});
 

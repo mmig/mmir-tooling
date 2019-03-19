@@ -7,6 +7,10 @@ var appConfigUtils = require('../utils/module-config-init.js');
 
 var directoriesUtil = require('./directories-utils.js');
 
+var logUtils = require('../utils/log-utils.js');
+var log = logUtils.log;
+var warn = logUtils.warn;
+
 var ALL_SPEECH_CONFIGS_TYPE = 'speech-all';
 
 /**
@@ -26,7 +30,7 @@ function readDir(dir, list, options){
 
 	var files = fs.readdirSync(dir);
 	var dirs = [];
-	// console.log('read dir "'+dir+'" -> ', files);
+	// log('read dir "'+dir+'" -> ', files);
 
 	files.forEach(function(p){
 
@@ -64,14 +68,14 @@ function readDir(dir, list, options){
 
 			//FIXME currently cannot include grammar.json as file because of json-grammar-loader TODO include same resouce multiple times with different formats(?) multi-loader?
 			if(isAdd && !isInline && type === 'grammar'){
-				console.log('WARN: settings-util: cannot include JSON grammars as file, inlining grammar source for "'+id+'" instead ...');
+				warn('WARN: settings-util: cannot include JSON grammars as file, inlining grammar source for "'+id+'" instead ...');
 				isInline = true;
 			}
 
 			if(isAdd){
 				if(type !== 'configuration' && contains(list, type, id)){
 
-					console.log('ERROR settings-utils: encountered multiple entries for '+type+' setting for ID '+id+', ignoring '+absPath);
+					warn('ERROR settings-utils: encountered multiple entries for '+type+' setting for ID '+id+', ignoring '+absPath);
 
 				} else {
 					var normalized = fileUtils.normalizePath(absPath);
@@ -88,7 +92,7 @@ function readDir(dir, list, options){
 
 	});
 
-	// console.log('read sub-dirs -> ', dirs);
+	// log('read sub-dirs -> ', dirs);
 	var size = dirs.length;
 	if(size > 0){
 		for(var i = 0; i < size; ++i){
@@ -115,13 +119,13 @@ function getIdFor(settingsFilePath){
 
 //TODO wrap try/catch -> print webpack-error
 function readJson(filePath){
-	// console.log('reading ', filePath);//DEBU
+	// log('reading ', filePath);//DEBU
 	var buffer = fs.readFileSync(filePath);
 	var enc = detectByteOrder(buffer);
 	var content = buffer.toString(enc);
 	// var content = toUtfString(buffer, enc);// buffer.toString(enc);
 	content = removeBom(content, enc);
-	// console.log('encoding '+enc+' -> ', JSON.stringify(content));//DEBU
+	// log('encoding '+enc+' -> ', JSON.stringify(content));//DEBU
 	return JSON.parse(content);
 }
 
@@ -159,10 +163,10 @@ function detectByteOrder(buffer){
 // }
 
 function removeBom(content){
-	// console.log('remove BOM? -> ', content.codePointAt(0), content.codePointAt(1), content.codePointAt(2), content.codePointAt(3), content.codePointAt(4));//DEBU
+	// log('remove BOM? -> ', content.codePointAt(0), content.codePointAt(1), content.codePointAt(2), content.codePointAt(3), content.codePointAt(4));//DEBU
 	if(content.codePointAt(0) === 65279 /*FEFF*/ || content.codePointAt(0) === 65534 /*FFFE*/){
 		content = content.substring(1);
-		// console.log('removed BOM!');//DEBU
+		// log('removed BOM!');//DEBU
 	}
 	return content;
 }
@@ -172,10 +176,10 @@ function removeBom(content){
  * @param  {SettingsEntry} s NOTE s.file MUST be an Array!
  */
 function doLoadAllFilesFor(s){
-	console.log('WARN settings-utils: encountered multiple file resources for "'+s.id+'" ('+s.type+'): cannot be included as (single) file, inlining  resources instead...');
+	warn('WARN settings-utils: encountered multiple file resources for "'+s.id+'" ('+s.type+'): cannot be included as (single) file, inlining  resources instead...');
 	s.include = 'inline';
 	if(!s.value){
-		console.log('WARN settings-utils: forced inlining for "'+s.id+'" ('+s.type+') with multiple file resources: content not loaded yet, loading file content and merging now...');
+		warn('WARN settings-utils: forced inlining for "'+s.id+'" ('+s.type+') with multiple file resources: content not loaded yet, loading file content and merging now...');
 		var content = {};
 		s.file.forEach(function(f){
 			_.merge(content, readJson(f));
@@ -203,7 +207,7 @@ function normalizeConfigurations(settingsList){
 		if(c.type === 'configuration'){
 			if(conf){
 
-				// console.log("INFO settings-utils: encountered multiple configuration.json definition: merging configuration, some values may get overwritten");//DEBU
+				// log("INFO settings-utils: encountered multiple configuration.json definition: merging configuration, some values may get overwritten");//DEBU
 
 				//if "include" was set to "file", the file contents have not been loaded yet
 				if(!conf.value){
@@ -357,12 +361,12 @@ module.exports = {
 				doLoadAllFilesFor(s);
 			}
 
-			console.log('  adding setting ('+s.include+') for '+s.type+' as ', aliasId);//DEBUG
+			log('  adding setting ('+s.include+') for '+s.type+' as ', aliasId);//DEBUG
 
 			if(s.type === 'configuration'){
 
 				if(!_.isEqual(s.value, runtimeConfig)){
-					console.log("WARN settings-utils: encountered multiple configuration.json definitions when applying to app-config: merging configuration, some values may get overwritten...");
+					warn("WARN settings-utils: encountered multiple configuration.json definitions when applying to app-config: merging configuration, some values may get overwritten...");
 					_.merge(s.value, runtimeConfig);
 				}
 				//NOTE configuration.json entry is mandatory, i.e. already set in directories
@@ -376,7 +380,7 @@ module.exports = {
 			} else if(s.type === 'speech'){
 				if(allSpeechSettings){
 					if(s.include === 'file'){
-						console.log("WARN settings-utils: applying 'speech-all' settings: cannot include file for "+s.id+", inlining instead.");
+						warn("WARN settings-utils: applying 'speech-all' settings: cannot include file for "+s.id+", inlining instead.");
 						if(!s.value){
 							s.value = readJson(s.file);
 						}
@@ -386,7 +390,7 @@ module.exports = {
 				}
 				directoriesUtil.addSpeechConfig(directories, aliasId)
 			} else if(s.type !== ALL_SPEECH_CONFIGS_TYPE) {
-				console.log("WARN settings-utils: encountered multiple unknown settings definitions when applying to app-config: ", s);
+				warn("WARN settings-utils: encountered multiple unknown settings definitions when applying to app-config: ", s);
 			}
 
 			if(s.include === 'file'){
@@ -410,7 +414,7 @@ module.exports = {
 				}
 			});
 			if(missing.length > 0){
-				// console.log("INFO settings-utils: adding missing dictionaries for : ", missing);
+				// log("INFO settings-utils: adding missing dictionaries for : ", missing);
 				this.addSettingsToAppConfig(missing, appConfig, directories, _resources, runtimeConfig, regExpExcludeType, true);
 			}
 		}

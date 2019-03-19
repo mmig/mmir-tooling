@@ -81,8 +81,6 @@ define(['mmirf/core', 'mmirf/env', 'mmirf/util/deferred', 'mmirf/resources', 'mm
 	 */
 	var mainInit = function(){
 
-//		console.log('dom ready');
-
 		//initialize the common-utils:
 		commonUtils.init()//<- load directory structure
 

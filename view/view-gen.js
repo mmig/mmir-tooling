@@ -2,6 +2,10 @@
 var mmir = require('../mmir-init.js');
 var Controller = mmir.require('mmirf/controller');
 
+var logUtils = require('../utils/log-utils.js');
+// var log = logUtils.log;
+var warn = logUtils.warn;
+
 ///////////////////////////////////////////////////////////////////////////////
 
 function getCtrl(viewInfo){
@@ -15,7 +19,7 @@ function getCtrl(viewInfo){
 	try {
 		return new Controller(name, def, constr);
 	} catch(err) {
-		console.log('WARN: deprecated Controller implementation, using context (ctx) instead of instance constructor...');
+		warn('WARN: deprecated Controller implementation, using context (ctx) instead of instance constructor...');
 		var ctx = {};
 		ctx[name] = constr;
 		return new Controller(name, def, ctx);
@@ -62,7 +66,7 @@ function compile(content, viewFile, options, callback, _map, _meta) {
 		viewInstance = new viewConstr(viewInfo.viewName, content);
 	} else {
 		var ctrl = getCtrl(viewInfo);
-		// console.log('mmir-view-loader: creating view "'+viewInfo.viewName+'" for controller "'+viewInfo.ctrlName+'" -> ', ctrl);//DEBU
+		// log('mmir-view-loader: creating view "'+viewInfo.viewName+'" for controller "'+viewInfo.ctrlName+'" -> ', ctrl);//DEBU
 		viewInstance = new viewConstr(ctrl, viewInfo.viewName, content);
 	}
 

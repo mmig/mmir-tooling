@@ -24,7 +24,7 @@ var mmirModuleBaseConfig = _.cloneDeep(require('mmir-lib/modulesBaseConfig'));
 //
 // var paths = mmirModuleBaseConfig.paths;
 
-// console.log('############## mmir module paths for webpack build: ', paths);
+// log('############## mmir module paths for webpack build: ', paths);
 
 var defaultResourcesConfig = {
 	paths: null,

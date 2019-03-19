@@ -1,6 +1,9 @@
 
 var scxml = require('@scion-scxml/scxml');
 
+// var logUtils = require('../utils/log-utils.js');
+// var log = logUtils.log;
+
 var MODULE_CODE_PREFIX = 'var ScxmlModel = ';
 
 //TODO support optional prepare() arguments? ->
@@ -51,13 +54,13 @@ function toError(errList, file){
  */
 function compile(content, scxmlFile, options, callback, _map, _meta) {
 
-	// console.log('mmir-scxml-loader: resource -> ', scxmlFile);//DEBU
+	// log('mmir-scxml-loader: resource -> ', scxmlFile);//DEBU
 	var i = options.mapping.findIndex(function(g){
 		return g.file === scxmlFile;
 	});
 	var scxmlInfo = options.mapping[i];
 
-	// console.log('mmir-scxml-loader: options for resource -> ', scxmlInfo);//DEBU
+	// log('mmir-scxml-loader: options for resource -> ', scxmlInfo);//DEBU
 
 	if(!scxmlInfo || !scxmlInfo.id){
 		var error;
@@ -75,14 +78,14 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 		return;/////////////// EARLY EXIT /////////////////
 	}
 
-	// console.log('mmir-scxml-loader: resource ID at '+i+' -> ', scxmlInfo.id);//, ', parsing content: ', content);//DEBU
+	// log('mmir-scxml-loader: resource ID at '+i+' -> ', scxmlInfo.id);//, ', parsing content: ', content);//DEBU
 
   //TODO ID optional settable via loader options?
   var id = scxmlInfo.id;
 	var ignoreRuntimeErrors = typeof scxmlInfo.ignoreErrors === 'boolean'? scxmlInfo.ignoreErrors : (options.config && options.config.ignoreErrors === true);
-	// console.log('SCXML parsing, ignoreErrors -> ', ignoreRuntimeErrors, ', options.ignoreErrors: ', options.config, scxmlInfo)//DEBU
+	// log('SCXML parsing, ignoreErrors -> ', ignoreRuntimeErrors, ', options.ignoreErrors: ', options.config, scxmlInfo)//DEBU
 	var moduleType = scxmlInfo.moduleType? scxmlInfo.moduleType : (options.config && options.config.moduleType);
-	//console.log('SCXML parsing, moduleType -> ', moduleType, ', options.config: ', options.config, scxmlInfo)//DEBU
+	//log('SCXML parsing, moduleType -> ', moduleType, ', options.config: ', options.config, scxmlInfo)//DEBU
 
 	scxml.documentStringToModel(id, content, function(err, model){
 
@@ -91,7 +94,7 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 			return;/////////////// EARLY EXIT /////////////////
 		}
 
-		// console.log('mmir-scxml-loader: successfully created model factory for '+id+'.');//DEBU
+		// log('mmir-scxml-loader: successfully created model factory for '+id+'.');//DEBU
 
 		model.prepare(function(err, fnModel) {
 
@@ -106,7 +109,7 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 					scxmlCode = AMD_PREFIX + scxmlCode + AMD_SUFFIX;
 				}
 
-				// console.log('mmir-scxml-loader: created model for '+id+'.');//DEBU
+				// log('mmir-scxml-loader: created model for '+id+'.');//DEBU
 
 		    callback(null, scxmlCode, _map, _meta);
 		});
