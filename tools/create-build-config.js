@@ -38,11 +38,15 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	var settings = settingsUtil.jsonSettingsFromDir(settingsOptions, appRootDir);
 	// log('JSON settings: ', settings);
 	// log('JSON configuration setting: ', settingsUtil.getConfiguration(settings));
+	// log('JSON runtime configuration: ', runtimeConfig);
 
 	//add configuration from mmirAppConfig for merging, if necessary
 	if(runtimeConfig){
-		// log('JSON configuration settings: adding & merging mmirAppConfig.configuration ', runtimeConfig);//DEBU
+		log('JSON configuration settings: adding & merging mmirAppConfig.configuration ', runtimeConfig);
 		settings.push(settingsUtil.createSettingsEntryFor('configuration', runtimeConfig));//<- push "mmirAppConfig.confiuration" into the end of parsed settings files
+	} else if(!settingsUtil.getConfiguration(settings)){
+		log('JSON configuration settings: adding empty default configuration');
+		settings.push(settingsUtil.createSettingsEntryFor('configuration', {}));
 	}
 	settingsUtil.normalizeConfigurations(settings);
 	// log('JSON configuration setting (merge test): ', settingsUtil.getConfiguration(settings));//DEBU
