@@ -338,12 +338,33 @@ export interface RuntimeConfiguration {
 	/** list of grammars (IDs) which should not be automatically loaded on startup, even if compiled/JSON grammar is available for the language */
 	ignoreGrammarFiles?: Array<string>;
 
+	/**
+	 * detect if compiled state-models (i.e. JS-compiled SCXML files) are present & should be used
+	 * instead of loading & compiling SCXML files at runtime
+	 * @default  true
+	 */
+	detectCompiledStateModels?: boolean;
+
 	/** name of the default layout when rendering mmir view templates: if null, no default layout will be used */
 	defaultLayoutName?: 'Default' | string | null;
 	/** if false, view templates will be (re-)compiled upon app startup */
 	usePrecompiledViews?: boolean;
 
+	/** configuration for media plugins, e.g. for speech recognition (ASR) and synthesis (TTS) */
 	mediaManager?: {plugins: {[env: string]: Array<mmir.MediaManagerPluginEntry>}};
+
+	/**
+	 * dot-separated namespace for accessing the controller implementation's constructors
+	 * (within global namespace, e.g. "app.ctrl" -> [window | self | global].app.ctrl)
+	 * @deprecated use module format (AMD / CommonJS / ...) instead
+	 */
+	controllerContext?: string;
+	/**
+	 * dot-separated namespace for accessing the model implementation's constructors
+	 * (within global namespace, e.g. "app.ctrl" -> [window | self | global].app.ctrl)
+	 * @deprecated use module format (AMD / CommonJS / ...) instead
+	 */
+	modelContext?: string;
 
 	[configField: string]: any;
 }
