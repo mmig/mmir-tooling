@@ -13,10 +13,10 @@ var createDirectoriesJson = function(){
 	  "/config/states": [],//["dialog.xml", "input.xml"]
 	  "/helpers": [],
 	  "/gen/grammar": [],//["mmirf/grammar/en.js"]
-	  "/gen/views": []//,//["application", "calendar", "layouts"]
-	  // "/gen/views/application": ["login.js"],
-	  // "/gen/views/calendar": ["login.js"],
-	  // "/gen/views/layouts": ["default.js"]
+	  "/gen/view": []//,//["application", "calendar", "layouts"]
+	  // "/gen/view/application": ["login.js"],
+	  // "/gen/view/calendar": ["login.js"],
+	  // "/gen/view/layouts": ["default.js"]
 	}
 };
 
@@ -27,7 +27,7 @@ var lpath = "/config/languages";
 var spath = "/config/states";
 var hpath = "/helpers";
 var gengrammars = "/gen/grammar";
-var genviews = "/gen/views";
+var genviews = "/gen/view";
 var genstates = "/gen/state";
 // var confpath = "/config";
 

@@ -34,7 +34,7 @@ var resolveTargetDir = function(appDir, targetDir){
 var processTargetDirs = function(appDir, appConfig, buildConfig){
 
 	buildConfig.grammarOptions.targetDir  = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'grammar') || path.join('www', 'gen', 'grammar'));
-	buildConfig.viewOptions.targetDir     = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view')    || path.join('www', 'gen', 'views'));
+	buildConfig.viewOptions.targetDir     = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view')    || path.join('www', 'gen', 'view'));
 	buildConfig.stateOptions.targetDir    = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'state')   || path.join('www', 'gen', 'state'));
 
 	buildConfig.settingsOptions.targetDir = resolveTargetDir(appDir, appConfig.settingsOptions && appConfig.settingsOptions.targetDir? appConfig.settingsOptions.targetDir : appConfig.targetDir? path.join(appConfig.targetDir, 'config') : path.join('www', 'config'));
