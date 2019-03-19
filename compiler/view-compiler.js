@@ -108,7 +108,7 @@ var compile = function(loadOptions){
 				return checkUpToDate(v, content).then(function(isUpdateToDate){
 
 					if(isUpdateToDate){
-						log('compiled view is up-to-data at '+getViewTargetPath(v));
+						log('compiled view is up-to-date at '+getViewTargetPath(v));
 					} else {
 						return doCompile();
 					}

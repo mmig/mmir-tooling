@@ -100,7 +100,7 @@ var compile = function(loadOptions){
 				return checkUpToDate(sc, content).then(function(isUpdateToDate){
 
 					if(isUpdateToDate){
-						log('compiled SCXML model is up-to-data at '+getStateChartTargetPath(sc));
+						log('compiled SCXML model is up-to-date at '+getStateChartTargetPath(sc));
 					} else {
 						return doCompile();
 					}

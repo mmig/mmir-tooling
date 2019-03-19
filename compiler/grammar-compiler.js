@@ -114,7 +114,7 @@ var compile = function(grammarLoadOptions){
 
 					if(isUpToDate){
 
-						log('compiled grammar is up-to-data at '+getGrammarTargetPath(g));
+						log('compiled grammar is up-to-date at '+getGrammarTargetPath(g));
 						setPendingAsyncGrammarFinished(g);
 
 					} else {
