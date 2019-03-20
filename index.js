@@ -78,9 +78,12 @@ var compileResources = function(mmirAppConfig){
 	//set defaults specific for tooling-build
 	directoriesUtils.setMode('file');
 	mmirAppConfig.includeViewTempalates = typeof mmirAppConfig.includeViewTempalates === 'boolean'? mmirAppConfig.includeViewTempalates : true;
-	checkBuildOptions(mmirAppConfig, 'controllers');
-	checkBuildOptions(mmirAppConfig, 'helpers');
-	checkBuildOptions(mmirAppConfig, 'models');
+
+	//NOTE need to check for controllers etc. so that they get included in directories.json
+	// checkBuildOptions(mmirAppConfig, 'controllers');
+	// checkBuildOptions(mmirAppConfig, 'helpers');
+	// checkBuildOptions(mmirAppConfig, 'models');
+
 	checkBuildOptions(mmirAppConfig, ['settings', 'configuration']);
 	checkBuildOptions(mmirAppConfig, ['settings', 'grammar']);
 	checkBuildOptions(mmirAppConfig, ['settings', 'speech']);
