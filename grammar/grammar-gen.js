@@ -190,5 +190,6 @@ module.exports = {
 	initPendingAsyncGrammarInfo: initPendingAsyncGrammarInfo,
 	getEngine: getEngine,
 	isAsyncCompile: isAsyncCompile,
-	updatePendingAsyncGrammarFinished: updatePendingAsyncGrammarFinished
+	updatePendingAsyncGrammarFinished: updatePendingAsyncGrammarFinished,
+	fileVersion: semantic.getFileVersion()
 }

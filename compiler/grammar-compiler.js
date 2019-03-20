@@ -25,13 +25,17 @@ var getChecksumContent = function(content, type){
 	return checksumUtil.createContent(content, type);
 }
 
+var getAdditionalChecksumInfo = function(grammarInfo){
+	return grammarInfo.engine + ' ' + grammarGen.fileVersion;
+}
+
 var checkUpToDate = function(grammarInfo, jsonContent){
 
 	return checksumUtil.upToDate(
 		jsonContent,
 		getGrammarChecksumPath(grammarInfo),
 		getGrammarTargetPath(grammarInfo),
-		grammarInfo.engine
+		getAdditionalChecksumInfo(grammarInfo)
 	);
 }
 
@@ -48,7 +52,7 @@ var writeGrammar = function(_err, grammarCode, _map, meta){
 	var g = meta && meta.info;
 
 	var grammarPath =  getGrammarTargetPath(g);
-	var checksumContent = getChecksumContent(meta.json, g.engine);
+	var checksumContent = getChecksumContent(meta.json, getAdditionalChecksumInfo(g));
 	var checksumPath = getGrammarChecksumPath(g);
 	log('###### writing compiled grammar to file (length '+grammarCode.length+') ', grammarPath, ' -> ', checksumContent);
 
