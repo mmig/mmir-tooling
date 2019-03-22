@@ -84,9 +84,10 @@ var compileResources = function(mmirAppConfig){
 	// checkBuildOptions(mmirAppConfig, 'helpers');
 	// checkBuildOptions(mmirAppConfig, 'models');
 
-	checkBuildOptions(mmirAppConfig, ['settings', 'configuration']);
-	checkBuildOptions(mmirAppConfig, ['settings', 'grammar']);
-	checkBuildOptions(mmirAppConfig, ['settings', 'speech']);
+	//NOTE need to check for config/** resources in order to include them in directories.json
+	// checkBuildOptions(mmirAppConfig, ['settings', 'configuration']);
+	// checkBuildOptions(mmirAppConfig, ['settings', 'grammar']);
+	// checkBuildOptions(mmirAppConfig, ['settings', 'speech']);
 
 	var resourcesConfig = createResourcesConfig();
 
