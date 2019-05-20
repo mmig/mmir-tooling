@@ -35,11 +35,11 @@ function compile(content, implFile, options, callback, _map, _meta) {
 			error = 'failed to parse implementation: empty list for impl. settings [{id: "the ID", file: "the file path", ...}, ...]';
 		}
 		else if(i === -1 || !implInfo){
-			error = 'failed to parse implementation: could not find settings for impl. in impl.-settings list: '+JSON.stringfy(options.mapping);
+			error = 'failed to parse implementation: could not find settings for impl. in impl.-settings list: '+JSON.stringify(options.mapping);
 		} else if(!implInfo.name){
-			error = 'failed to parse implementation: missing field name for impl: '+JSON.stringfy(implInfo);
+			error = 'failed to parse implementation: missing field name for impl: '+JSON.stringify(implInfo);
 		} else {
-			error = 'failed to parse implementation: invalid impl. settings in list: '+JSON.stringfy(options.mapping);
+			error = 'failed to parse implementation: invalid impl. settings in list: '+JSON.stringify(options.mapping);
 		}
 		callback(error);
 		return;/////////////// EARLY EXIT /////////////////

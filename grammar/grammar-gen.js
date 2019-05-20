@@ -70,11 +70,11 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
 			error = 'failed to parse JSON grammar: empty list for grammar settings [{id: "the ID", file: "the file path", ...}, ...]';
 		}
 		else if(i === -1 || !grammarInfo){
-			error = 'failed to parse JSON grammar: could not find settings for grammar in grammar-settings list: '+JSON.stringfy(options.mapping);
+			error = 'failed to parse JSON grammar: could not find settings for grammar in grammar-settings list: '+JSON.stringify(options.mapping);
 		} else if(!grammarInfo.id){
-			error = 'failed to parse JSON grammar: missing field id for grammar: '+JSON.stringfy(grammarInfo);
+			error = 'failed to parse JSON grammar: missing field id for grammar: '+JSON.stringify(grammarInfo);
 		} else {
-			error = 'failed to parse JSON grammar: invalid grammar settings in list: '+JSON.stringfy(options.mapping);
+			error = 'failed to parse JSON grammar: invalid grammar settings in list: '+JSON.stringify(options.mapping);
 		}
 		callback(error, null, _map, _meta);
 		return;/////////////// EARLY EXIT /////////////////

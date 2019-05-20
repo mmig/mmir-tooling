@@ -68,11 +68,11 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 			error = 'failed to parse SCXML definition: empty list for SCXML settings [{id: "the ID", file: "the file path", ...}, ...]';
 		}
 		else if(i === -1 || !scxmlInfo){
-			error = 'failed to parse SCXML definition: could not find settings for SCXML in SCXML-settings list: '+JSON.stringfy(options.mapping);
+			error = 'failed to parse SCXML definition: could not find settings for SCXML in SCXML-settings list: '+JSON.stringify(options.mapping);
 		} else if(!scxmlInfo.id){
-			error = 'failed to parse SCXML definition: missing field id for SCXML: '+JSON.stringfy(scxmlInfo);
+			error = 'failed to parse SCXML definition: missing field id for SCXML: '+JSON.stringify(scxmlInfo);
 		} else {
-			error = 'failed to parse SCXML definition: invalid SCXML settings in list: '+JSON.stringfy(options.mapping);
+			error = 'failed to parse SCXML definition: invalid SCXML settings in list: '+JSON.stringify(options.mapping);
 		}
 		callback(error, null, _map, _meta);
 		return;/////////////// EARLY EXIT /////////////////

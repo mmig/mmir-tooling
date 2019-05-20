@@ -50,11 +50,11 @@ function compile(content, viewFile, options, callback, _map, _meta) {
 			error = 'failed to parse view template: empty list for grammar settings [{id: "the ID", file: "the file path", ...}, ...]';
 		}
 		else if(i === -1 || !viewInfo){
-			error = 'failed to parse view template: could not find settings for grammar in grammar-settings list: '+JSON.stringfy(options.mapping);
+			error = 'failed to parse view template: could not find settings for grammar in grammar-settings list: '+JSON.stringify(options.mapping);
 		} else if(!viewInfo.id){
-			error = 'failed to parse view template: missing field id for grammar: '+JSON.stringfy(viewInfo);
+			error = 'failed to parse view template: missing field id for grammar: '+JSON.stringify(viewInfo);
 		} else {
-			error = 'failed to parse view template: invalid grammar settings in list: '+JSON.stringfy(options.mapping);
+			error = 'failed to parse view template: invalid grammar settings in list: '+JSON.stringify(options.mapping);
 		}
 		callback(error, null, _map, _meta);
 		return;/////////////// EARLY EXIT /////////////////
