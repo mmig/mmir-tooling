@@ -97,7 +97,7 @@ function contains(grammarList, id){
 
 
 function toAliasPath(grammar){
-	return path.normalize(grammar.file).replace(/\.json$/i, '');
+	return path.normalize(grammar.file);//DISABLED: do keep file-extension to ensure that module is found regardless of webpack resolve-configuration//.replace(/\.json$/i, '');
 }
 
 function toAliasId(grammar){
