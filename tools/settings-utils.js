@@ -126,7 +126,12 @@ function readJson(filePath){
 	// var content = toUtfString(buffer, enc);// buffer.toString(enc);
 	content = removeBom(content, enc);
 	// log('encoding '+enc+' -> ', JSON.stringify(content));//DEBU
-	return JSON.parse(content);
+	try{
+		return JSON.parse(content);
+	} catch (err){
+		logUtils.warn('cannot parse file contents as JSON from ', filePath);
+		throw err;
+	}
 }
 
 function detectByteOrder(buffer){
