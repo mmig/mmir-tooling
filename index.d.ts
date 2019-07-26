@@ -296,10 +296,17 @@ export interface StateOptions {
 	 */
 	ignoreErrors?: boolean;
 	/** optionally specify options for found resource, or specifying resources/locations directly */
-	models?: {dialog?: StateModelEntry, input?: StateModelEntry};
+	models?: {dialog?: StateModelEntry, input?: StateModelEntry, [id: string]: StateModelEntry};
 }
 
 export interface StateModelEntry {
+
+	//DISABLED should not be used -> ID will be derived from entry key of models property
+	// /** the ID for state model */
+	// id?: string;
+
+	/** the module ID for state interpreter (will be automiatically set for inputManager and dialogManager) */
+	moduleId?: string,
 
 	/** if <code>true</code>, the corresponding resource will be excluded (when parsing <code>path</code>) */
 	exclude?: boolean;

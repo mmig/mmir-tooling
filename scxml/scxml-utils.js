@@ -38,6 +38,7 @@ function readDir(dir, list, options){
 
 			list.push({
 				id: id,
+				moduleId: id === 'dialog'? 'mmirf/dialogManager' : 'mmirf/inputManager',
 				file: normalized,
 				mode: opt && opt.mode? opt.mode : DEFAULT_MODE,
 				ignoreErrors: opt && typeof opt.ignoreErrors === 'boolean'? opt.ignoreErrors : void(0),
@@ -57,7 +58,7 @@ function readDir(dir, list, options){
 
 function addFromOptions(stateModels, list, appRootDir){
 
-	var s, entry;
+	var s, entry, moduleId;
 	for(var id in stateModels){
 
 		s = stateModels[id];
@@ -76,11 +77,17 @@ function addFromOptions(stateModels, list, appRootDir){
 
 			//TODO verify existence of entry.file?
 
-			if(!contains(list, id)){
+			if(!entry.moduleId){
+				log('scxml-utils.addFromOptions(): entry from modelOptions for ID "'+id+'" has has no module ID set, using ID "'+id+'" as module ID!');
+				entry.moduleId = id;
+			}
+			moduleId = entry.moduleId;
+
+			if(!contains(list, id, moduleId)){
 				// log('scxml-utils.addFromOptions(): adding ', entry);//DEBU
 				list.push(entry)
 			} else {
-				warn('scxml-utils.addFromOptions(): entry from modelOptions for ID '+id+' already exists in grammar-list, ignoring entry!');//FIXME proper webpack error/warning
+				warn('scxml-utils.addFromOptions(): entry from modelOptions for ID '+id+' (module ID '+moduleId+') already exists in grammar-list, ignoring entry!');//FIXME proper webpack error/warning
 			}
 		}
 		// else {//DEBU
@@ -99,12 +106,14 @@ function addDefaults(kind, list, _appRootDir){
 
 	var inputEngine = {
 		id: 'input',
+		moduleId: 'mmirf/inputManager',
 		mode: 'extended',
 		file: fileUtils.normalizePath(path.resolve(__dirname, '..', 'defaultValues/inputEngine.scxml'))
 	};
 
 	var dialogEngine = {
 		id: 'dialog',
+		moduleId: 'mmirf/dialogManager',
 		mode: 'extended',
 		file: fileUtils.normalizePath(path.resolve(__dirname, '..', 'defaultValues/dialogEngine.scxml'))
 	};
@@ -112,9 +121,9 @@ function addDefaults(kind, list, _appRootDir){
 	list.push(inputEngine, dialogEngine);
 }
 
-function contains(list, id){
+function contains(list, id, moduleId){
 	return list.findIndex(function(item){
-		return item.id === id;
+		return item.id === id || item.moduleId === moduleId;
 	}) !== -1;
 }
 
@@ -228,7 +237,7 @@ module.exports = {
 				directoriesUtil.addStateModelXml(directories, aliasId);
 			}
 
-			var configId = s.id === 'input'? 'mmirf/inputManager' : 'mmirf/dialogManager';
+			var configId = s.moduleId;
 			if(!appConfig.config[configId]){
 				appConfig.config[configId] = {};
 			}
