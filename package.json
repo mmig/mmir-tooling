@@ -20,7 +20,7 @@
     "@types/fs-extra": "^5.1.0",
     "@types/lodash": "^4.14.136",
     "@types/meow": "^5.0.0",
-    "mmir-lib": "git+https://gitlab-cos.b.dfki.de/mmir/dev_mmir-lib.git#develop/wp_project_structure"
+    "mmir-lib": "git+https://github.com/mmig/mmir-lib.git"
   },
   "dependencies": {
     "@scion-scxml/scxml": "^4.3.25",
