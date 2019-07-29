@@ -1,35 +1,35 @@
 [mmir-tooling][1]
 ============
 
-This repository hold files, resources etc. for building MMIR-based applications in
-combination with Cordova.
-
-
-The repository is meant be included as a "sub-project":
-for example, this repository is included as a GIT _subtree_ in [MMIR-cordova][2]
-and [MMIR-StarterKit][3] as directory `/build` using
-
-    git subtree add --prefix build https://github.com/mmig/mmir-tooling master --squash
-
-later updates from this repository can be fetched from wihtin the referencing project using
-
-    git subtree pull --prefix build https://github.com/mmig/mmir-tooling master --squash
+This repository holds files, resources etc. for building MMIR-based applications.
 
 ----
 
 ### Dependencies
 
-The current build process requires the **[MMIR-lib][4] version 4.0.0 or later**
+The current build process requires the **[MMIR-lib][4] version 5.0.0 or later**
 
 By default the build process will assume that the MMIR-based application is
-located at `www/` and the MMIR-library files at `www/mmirf/`:
+located at `www/`:
 
-    build/<this directory>
-    ...
-    www/mmirf/*
+    www/config/
+               configuration.json
+               languages/
+                        <lang1>/grammar.json
+                               /speech.json
+                               /dictionary.json
+                        <lang2>/grammar.json
+                               /speech.json
+                               /dictionary.json
+               states/
+                      dialog.xml
+                      input.xml
     www/controller/*
     www/views/*
     ...
+
+If the `mmir` resources are located in different directories/files, they need
+to be specified in the build configuration.
 
 ### Installation Prerequisites
 
@@ -37,32 +37,90 @@ These prerequisites are required for automatically installing/setting-up the _mm
 in a MMIR project (see section _Installation_ below)
 
  * Node.js
- * Gulp CLI (command line interface)  
-   `npm install -g gulp-cli`
-   
+
 ### Installation
 
+Install `mmir-tooling` via `npm`.
 
-Running `npm install` and then `gulp` will copy the contents of directory 
-`/resources` into the parent directory, i.e. to `../`.
+### Webpack Build Integration
 
-When the contents of this repository are located in the sub-directory
+For [webpack][5]-based application, [mmir-webpack][6] can be used.
 
-    /build
+### Cordova Build Integration
 
-of a Cordova >= 5.x (CLI generated) project, running `gulp`
-of this repository (within the sub-directory, i.e. `/build`) will set
- up the resources (_"tooling"_) for building MMIR-based applications with
- Cordova >= 5.x:
-    
-    hooks/before_build/**
-    mmir-build.properties
-    mmir-build.settingsDefault
+For automatically building the `mmir` resources in a [cordova][7]-based app, the
+build-script can be included as `prepare hook`, i.e. in `config.xml`:
+```xml
+<hook type="before_prepare" src="resources/mmir5_before_prepare.js" />
+```
+
+Then create the script at `resources/mmir5_before_prepare.js` (or whatever path was specified in `config.xml`):
+```javascript
+var path = require('path');
+var buildTools = require('mmir-tooling');
+
+var doBuild = function(mmirAppConfig){
+	buildTools.apply(mmirAppConfig).then(function(errors){
+		var errMsg = errors.join('\n');
+		var msg = '\n## Finished compiling resources'+(errMsg? ', with errors: ' +errMsg : '');
+		console.log(msg);
+		if(errMsg){
+			process.exit(1);
+		}
+	});
+};
+
+module.exports = function(ctx){
+	var root = ctx.opts.projectRoot;
+	var mmirAppConfig = {
+		resourcesPath: path.join(root, 'www')
+	};
+	doBuild(mmirAppConfig);
+};
+
+```
+
+NOTE: if the `cordova` app is built with `webpack`, the [mmir-webpack][6]
+      integration should be used instead.
+
+### Manual Build Script
+
+ * install [mmir-tooling][3] via `npm`:  
+	 (re-)build resources like grammars after creation/modification, e.g. with simple script
+	```javascript
+	var path = require('path');
+	var buildTools = require('mmir-tooling');
+
+	var buildConfig = {
+	 resourcesPath: path.join(__dirname, 'www')
+	};
+
+	buildTools.apply(buildConfig).then(function(errors){
+	 var errMsg = errors.join('\n');
+	 console.log('Finished compiling resources'+(errMsg? ', with errors: ' +errMsg : ''));
+	});
+	```
+
+	The `resourcePath` will be searched for `mmir` resources that need to be built
+	(see [documentation][6] for more details).
+
+	By default, the built resources will be stored in `/www/gen/**`, or you can use
+	`targetDir` in the build configuration for specifying a different directory
+	```javascript
+	var buildConfig = {
+	 targetDir: path.join(__dirname, 'dist')
+	 resourcesPath: path.join(__dirname, 'www')
+	};
+	```
+	which would store the built resources into `/dist/gen/**`.
+
 
 ### Development
 
+TODO update this section
+
 NOTE this section is only relevant for working/developing the MMIR library (or its tooling) itself
-     (e.g. modifying contents of `www/mmirf/*`), i.e. it can be safely ignored, if the MMIR 
+     (e.g. modifying contents of `www/mmirf/*`), i.e. it can be safely ignored, if the MMIR
      library is only used.
 
 
@@ -74,6 +132,8 @@ changes in the build scripts `build/lib/mmir-build/templates/generate-[grammars|
 
 
 #### Prerequisites
+
+TODO update this section
 
 The following sections/descripts assume that the build-scripts have been installed as described in the
 section [Installation](#installation), where the contents of this directory (i.e. the mmir-tooling sources)
@@ -104,14 +164,14 @@ a requirejs shim configuration in `mainConfig.js` (see documentation of requirej
 If a vendor library is added with a shim configuration, then the helper script(*)
 
     node build/lib/mmir-build/scripts/processRequirejsShimConfig.js
-     
-must be executed which will create an AMD module for the library in `build/lib/mmir-build/mod/`. 
-This AMD library will then be used during build (i.e. `cordova prepare`) in the nodejs environment 
+
+must be executed which will create an AMD module for the library in `build/lib/mmir-build/mod/`.
+This AMD library will then be used during build (i.e. `cordova prepare`) in the nodejs environment
 (since requirejs shims do not work in nodejs).
 
 NOTE: if the license of the added libraries allow it, you could also use the AMD modules instead
       of the original library and remove the shim configuration
-      
+
 > (*): if the web-app root directory is different than `<project dir>/www`, then the direcotry needs
 >    to be added as an argument, e.g. if its located in `<project dir>/src/assets`, then run the script with
 >
@@ -128,3 +188,6 @@ If not stated otherwise, the files, resources etc. are provided under the MIT li
 [2]: https://github.com/mmig/mmir-cordova
 [3]: https://github.com/mmig/mmir-starter-kit
 [4]: https://github.com/mmig/mmir-lib
+[5]: https://webpack.js.org/
+[6]: https://github.com/mmig/mmir-webpack
+[7]: https://cordova.apache.org/
