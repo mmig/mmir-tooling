@@ -1,7 +1,7 @@
 
 var _ = require('lodash');
 
-var mmirModuleBaseConfig = _.cloneDeep(require('mmir-lib/src/modulesBaseConfig'));
+var mmirModuleBaseConfig = _.cloneDeep(require('mmir-lib/lib/modulesBaseConfig'));
 
 // //remove paths that match the ID from mmir base paths:
 // var removePathsList = ['jquery'];
