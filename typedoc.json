@@ -1,0 +1,10 @@
+{
+  "includeDeclarations": true,
+  "excludeExternals": true,
+  "exclude": ["node_modules"],
+  "excludePrivate": true,
+  "readme": "none",
+  "name": "mmir-tooling",
+  "theme": "minimal",
+  "out": "docs"
+}

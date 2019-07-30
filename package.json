@@ -12,7 +12,8 @@
     "cordova"
   ],
   "scripts": {
-    "test": "node test.js"
+    "test": "node test.js",
+    "doc": "typedoc index.d.ts"
   },
   "author": "MMIG team",
   "license": "MIT",
@@ -20,7 +21,8 @@
     "@types/fs-extra": "^8.0.0",
     "@types/lodash": "^4.14.136",
     "@types/meow": "^5.0.0",
-    "mmir-lib": "git+https://github.com/mmig/mmir-lib.git"
+    "mmir-lib": "git+https://github.com/mmig/mmir-lib.git",
+    "typedoc": "^0.15.0"
   },
   "dependencies": {
     "@scion-scxml/scxml": "^4.3.25",
