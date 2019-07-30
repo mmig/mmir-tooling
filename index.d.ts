@@ -1,8 +1,13 @@
 /// <reference types="mmir-lib" />
 import 'mmir-lib';
 
+declare module 'mmir-tooling' {
+	export function apply(buildConfig: BuildAppConfig): void;
+}
+
 /**
  * @example
+ * ```
  * var appConfig = {
  * 	//path to directory that contains classic mmir directory structure
  * 	resourcesPath: 'src/mmir',
@@ -25,6 +30,7 @@ import 'mmir-lib';
  * 	helpers: false,
  * 	//...
  * }
+ * ```
  */
 export interface AppConfig {
 
@@ -32,27 +38,27 @@ export interface AppConfig {
 	rootPath?: string;
 
 	/** specify the path to the MMIR resources directory with the default structure:
-	 *  <pre>
-	 *  config
-	 *        /languages
-	 *                  /<lang>
+	 *  ```bash
+	 *  config/
+	 *        /languages/
+	 *                  /<lang>/
 	 *                         /grammar.json
 	 *                         /dictionary.json
 	 *                         /speech.json
-	 *        /states
-	 *                 /input.xml
-	 *                 /dialog.xml
-	 *
+	 *        /states/
+	 *               /input.xml
+	 *               /dialog.xml
 	 *        /configuration.json
-	 *
 	 *  controllers/*
 	 *  helpers/*
 	 *  models/*
 	 *  views/*
-	 *  </pre>
+	 *  ```
 	 *
 	 * The path will be used to collect all available resources and create the correspondig
 	 * options for including them.
+	 *
+	 * @default "www"
 	 */
 	resourcesPath?: string;
 	resourcesPathOptions?: ResourcesOptions;
@@ -86,6 +92,7 @@ export type ModulePaths = {[moduleId: string]: string};
 
 /**
  * @example
+ * ```
  * var grammarOptions = {
  * 	path: './grammars',
  * 	engine: 'pegjs',
@@ -100,10 +107,11 @@ export type ModulePaths = {[moduleId: string]: string};
  * 		testing2: {id: '!id warning!', engine: 'jison', file: path.resolve('./grammar-test/de/grammar.json_large-example')}
  * 	}
  * };
+ * ```
  */
 export interface GrammarOptions {
 	/** file path for searching (recursively) JSON grammars within languages-subdirectory:
-	 * path/.../<grammar ID>/grammar.json
+	 * `path/.../<grammar ID>/grammar.json`
 	 */
 	path?: string;
 	/** options for handling found or specified JSON grammars */
@@ -117,14 +125,14 @@ export interface BuildOptions {
 	 * directory to which the compiled resources like grammars (and checksum files) will be stored
 	 *
 	 * by default, the relative paths are resolved against the app's root directory;
-	 * if the target direcotry is missing it will be newly created.
+	 * if the target directory is missing it will be newly created.
 	 *
-	 * @default "www/gen/<ResourceType>"
+	 * @default [[BuildAppConfig.targetDir]] + [[ResourceType]]
 	 */
 	targetDir?: string;
 	/**
 	 * if TRUE the grammar(s) will be newly created and written to the targetDir,
-	 * even if the up-to-date check returns TRUE
+	 * even if the up-to-date check returns `true`
 	 */
 	force?: boolean;
 }
@@ -136,17 +144,20 @@ export interface BuildAppConfig extends AppConfig {
 	 * which the resources will be stored.
 	 *
 	 * By default, the relative paths are resolved against the app's root directory;
-	 * if the target direcotry is missing it will be newly created.
+	 * if the target directory is missing it will be newly created.
+	 *
+	 * @default "www"
+	 * @see [[ResourceType]]
 	 */
 	targetDir?: string;
 
 	/**
-	 * if directories.json should include the view template fiels (*.ehtml)
+	 * if directories.json should include the view template fiels (`*.ehtml`)
 	 * e.g. for up-to-date test & runtime-comilation of view templates
 	 *
 	 * @default true
 	 */
-	includeViewTempalates?: boolean;
+	includeViewTemplates?: boolean;
 	includeStateModelXmls?: boolean;
 }
 
@@ -159,9 +170,9 @@ export interface ViewBuildEntry extends ImplementationOptions, BuildOptions {}
 export interface StateBuildOptions extends StateOptions, BuildOptions {
 	/**
 	 * the module type of the generated/compiled state machine
-	 * @default 'amd'
+	 * @default "amd"
 	 */
-	moduleType?: 'amd' | 'commonjs';
+	moduleType?: "amd" | "commonjs";
 }
 export interface StateModelBuildEntry extends StateModelEntry, BuildOptions {}
 
@@ -171,24 +182,24 @@ export interface GrammarEntry {
 	  */
 	engine?: "jscc" | "jison" | "pegjs";
 	/**
-	 * if <code>true</code>, and thread-webworker is available, grammar will be compiled paralelized / in a separate thread
+	 * if `true`, and thread-webworker is available, grammar will be compiled paralelized / in a separate thread
 	 * @default true
 	 */
 	asyncCompile?: boolean;
 	/**
-	 * if <code>true</code>, the corresponding grammar will be completely excluded, i.e. no executable grammar will be compiled
+	 * if `true`, the corresponding grammar will be completely excluded, i.e. no executable grammar will be compiled
 	 * from the corresponding JSON grammar
 	 */
 	exclude?: boolean;
 	/**
-	 * if <code>true</code>, the grammar will not be loaded (and registered) when the the app is initialized, i.e. needs to be
+	 * if `true`, the grammar will not be loaded (and registered) when the the app is initialized, i.e. needs to be
 	 *   "manually" loaded/initialized by app implementation and/or other mechanisms.
-	 * If omitted or <code>false</code>, the grammar will be loaded on start-up of the app,
-	 *   and then will be available e.g. via <code>mmir.semantic.interprest(<input phrase string>, <grammar-id>)</code>.
+	 * If omitted or `false`, the grammar will be loaded on start-up of the app,
+	 *   and then will be available e.g. via `mmir.semantic.interprest(<input phrase string>, <grammar-id>)`
 	 */
 	ignore?: boolean;
 	/**
-	 * for specifying the JSON grammar directly (e.g. instead or in addition of parsing <code>path</code> for grammar files):
+	 * for specifying the JSON grammar directly (e.g. instead or in addition of parsing `path` for grammar files):
 	 * the (absolute) path to the JSON grammar (from which the executable grammar will be created)
 	 */
 	file?: string;
@@ -196,6 +207,7 @@ export interface GrammarEntry {
 
 /**
  * @example
+ * ```
  *		var settingOptions = {
  *		 	path: path.resolve('./config'),
  *		 	configuration: false,
@@ -210,30 +222,31 @@ export interface GrammarEntry {
  *		 		ja: {include: 'file'}
  *		 	}
  *		 };
+ * ```
  */
 export interface SettingsOptions {
 	/** file path for searching settings:
-	 * <pre>
+	 * ```bash
 	 * path/.../<language ID>/grammar.json
 	 *                       /dictionary.json
 	 *                       /speech.json
 	 * configuration.json
-	 * </pre>
+	 * ```
 	 */
 	path?: string;
 
 	/** options for the configuration.json entry; if FALSE, the resource will be ignored */
 	configuration?: boolean | SettingsEntryOptions;
-	/** options-map for the dictionary.json entries where id is (usually) the language code; if FALSE, these resources will be ignored */
+	/** options-map for the dictionary.json entries where id is (usually) the language code; if `false`, these resources will be ignored */
 	dictionary?: boolean | {[id: string]: SettingsEntryOptions};
-	/** options-map for the grammar.json entries where id is (usually) the language code; if FALSE, these resources will be ignored */
+	/** options-map for the grammar.json entries where id is (usually) the language code; if `false`, these resources will be ignored */
 	grammar?: boolean | {[id: string]: SettingsEntryOptions};
-	/** options-map for the speech.json entries where id is (usually) the language code; if FALSE, these resources will be ignored */
+	/** options-map for the speech.json entries where id is (usually) the language code; if `false`, these resources will be ignored */
 	speech?: boolean | {[id: string]: SettingsEntryOptions};
 }
 
 export interface SettingsEntryOptions {
-	/** if <code>true</code>, the corresponding resource will be excluded (when parsing <code>path</code>) */
+	/** if `true`, the corresponding resource will be excluded (when parsing `path`) */
 	exclude?: boolean;
 
 	/**can be used to include the resource as separate file, instead of bundeling via webpack
@@ -241,7 +254,7 @@ export interface SettingsEntryOptions {
 	 */
 	include?: 'inline' | 'file';
 
-	/**  for explicitly specifying the settings-resource directly (e.g. instead or in addition of parsing <code>path</code> for settings resource files) */
+	/**  for explicitly specifying the settings-resource directly (e.g. instead or in addition of parsing `path` for settings resource files) */
 	file?: string;
 
 	/** the settings-type (should not be set manually) */
@@ -254,6 +267,7 @@ export type SettingsType = 'configuration' | 'dictionary' | 'grammar' | 'speech'
 
 /**
  * @example
+ * ```
  * var stateOptions = {
  * 	path: 'www/config/states',
  * 	// ignoreErrors: true,
@@ -268,25 +282,26 @@ export type SettingsType = 'configuration' | 'dictionary' | 'grammar' | 'speech'
  * 		}
  * 	}
  * };
+ * ```
  */
 export interface StateOptions {
 
 	/** file path for searching (recursively) for SCXML files (state-engines):
-	 * <pre>
+	 * ```bash
 	 * path/.../dialog.xml -> type "dialog"
 	 *         /input.xml  -> type "input"
-	 * </pre>
+	 * ```
 	 *
 	 * NOTE: for backwards compatibility, the following file names are also accepted
 	 *       and mapped to their corresponding type
-	 * <pre>
+	 * ```bash
 	 *         "dialogDescriptionSCXML.xml" -> "dialog"
 	 *         "inputDescriptionSCXML.xml" -> "input"
-	 * </pre>
+	 * ```
 	 */
 	path?: string;
-	/** if TRUE, runtime errors will be ignored.
-	 *  if FALSE (or omitted) the compilation will fail with an error message
+	/** if `true`, runtime errors will be ignored.
+	 *  if `false` (or omitted) the compilation will fail with an error message
 	 *  when encountering SCXML runtime errors.
 	 *
 	 * NOTE: if ignored, the runtime errors will be triggered when the state-machine
@@ -308,7 +323,7 @@ export interface StateModelEntry {
 	/** the module ID for state interpreter (will be automiatically set for inputManager and dialogManager) */
 	moduleId?: string,
 
-	/** if <code>true</code>, the corresponding resource will be excluded (when parsing <code>path</code>) */
+	/** if `true`, the corresponding resource will be excluded (when parsing `path`) */
 	exclude?: boolean;
 
 	/**
@@ -328,7 +343,7 @@ export interface StateModelEntry {
 	 */
 	ignoreErrors?: boolean;
 
-	/**  for explicitly specifying the state-machine directly (e.g. instead or in addition of parsing <code>path</code>) */
+	/**  for explicitly specifying the state-machine directly (e.g. instead or in addition of parsing `path`) */
 	file?: string;
 }
 
@@ -398,14 +413,17 @@ export type ResourceTypeName = string;
 
 export interface ViewOptions {
 	/** file path for searching view files:
+	 * ```bash
 	 * path/views/<controller ID>/*.ehtml
 	 * path/layouts/<controller ID>.ehtml
+	 * ```
 	 */
 	path?: string;
 }
 
 /**
  * @example
+ * ```
  * var ctrlOptions = {
  * 	path: './implementations_all/controllers',
  * 	controllers: {
@@ -418,11 +436,12 @@ export interface ViewOptions {
  * 		application2: false,
  * 		application3: {exclude: true},
  * 	}
- * }
+ * };
+ * ```
  */
 export interface ControllerOptions {
 	/** file path for (recursively) searching controller implementation files:
-	 * path/<controller ID>.js
+	 * `path/<controller ID>.js`
 	 */
 	path?: string;
 	controllers?: boolean | {[id: string]: ImplementationOptions};
@@ -430,17 +449,19 @@ export interface ControllerOptions {
 
 /**
  * @example
+ * ```
  * var helperOptions = {
  * 	path: './implementations_all/helpers',
  * 	addModuleExport: true,
  * 	helpers: {
  * 		calendarHelper: {exclude: false}
  * 	}
- * }
+ * };
+ * ```
  */
 export interface HelperOptions {
 	/** file path for (recursively) searching helper implementation files:
-	 * path/.../<controller ID>Helper.js
+	 * `path/.../<controller ID>Helper.js`
 	 */
 	path?: string;
 	helpers?: boolean | {[id: string]: ImplementationOptions};
@@ -448,17 +469,19 @@ export interface HelperOptions {
 
 /**
  * @example
+ * ```
  * var modelOptions = {
  * 	path: './implementations_all/models',
  * 	models: {
  * 		user: {addModuleExport: 'mmir.User'},
  * 		calendarModel: {addModuleExport: 'mmir.CalendarModel'}
  * 	}
- * }
+ * };
+ * ```
  */
 export interface ModelOptions {
 	/** file path for searching (data) model implementation files:
-	 * path/<model ID>.js
+	 * `path/<model ID>.js`
 	 */
 	path?: string;
 	models?: boolean | {[id: string]: ImplementationOptions};
@@ -466,7 +489,7 @@ export interface ModelOptions {
 
 export interface ImplementationOptions {
 
-	/** if <code>true</code>, the corresponding implementation will be excluded (when parsing <code>path</code>) */
+	/** if `true`, the corresponding implementation will be excluded (when parsing `path`) */
 	exclude?: boolean;
 
 	/** for automatically converting old-style implementations that are no CommonJS or AMD modules:
@@ -480,7 +503,7 @@ export interface ImplementationOptions {
 	 */
 	addModuleExport?: boolean | string;
 
-	/**  for explicitly specifying the implementation-file directly (e.g. instead or in addition of parsing <code>path</code>) */
+	/**  for explicitly specifying the implementation-file directly (e.g. instead or in addition of parsing `path`) */
 	file?: string;
 
 	/** the implementation's name (usually the ID with capitalized first letter) */
@@ -492,6 +515,7 @@ export interface ImplementationOptions {
 
 /**
  * @example
+ * ```
  * var includePlugins = [
  *	{id: 'mmir-plugin-asr-nuance-xhr', config: {
  *    // ctx: 'nuance',//OPTIONAL install into sub-context "nuance"
@@ -519,7 +543,8 @@ export interface ImplementationOptions {
  *    voice: {de: 'male'},
  *    language: {en: 'eng-IND'}
  *  }},
- *];
+ * ];
+ * ```
  */
 export interface PluginOptions {
 	/**
