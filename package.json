@@ -13,9 +13,10 @@
   ],
   "scripts": {
     "test": "node test.js",
-    "doc": "npm run clean-doc && npm run gen-doc",
+    "doc": "npm run clean-doc && npm run gen-doc && npm run gh-doc",
     "clean-doc": "node -e require('fs-extra').emptyDirSync('docs')",
-    "gen-doc": "typedoc index.d.ts"
+    "gen-doc": "typedoc index.d.ts",
+    "gh-doc": "node -e require('fs-extra').ensureFileSync('docs/.nojekyll')"
   },
   "author": "MMIG team",
   "license": "MIT",
