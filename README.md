@@ -1,15 +1,20 @@
-[mmir-tooling][1]
+mmir-tooling
 ============
 
-This repository holds files, resources etc. for building MMIR-based applications.
+The [mmir-tooling][1] repository holds files, resources etc. for
+building MMIR-based applications.
 
 ----
 
+### Documentation
+
+See generated [build API documentation][9] and details below.
+
 ### Dependencies
 
-The current build process requires the **[MMIR-lib][4] version 5.0.0 or later**
+The current build process requires the **[mmir-lib][4] version 5.0.0 or later**
 
-By default the build process will assume that the MMIR-based application is
+By default the build process will assume that the `mmir`-based application is
 located at `www/`:
 
     www/config/
@@ -117,71 +122,8 @@ NOTE: if the `cordova` app is built with `webpack`, the [mmir-webpack][6]
 
 ### Development
 
-TODO update this section
-
-NOTE this section is only relevant for working/developing the MMIR library (or its tooling) itself
-     (e.g. modifying contents of `www/mmirf/*`), i.e. it can be safely ignored, if the MMIR
-     library is only used.
-
-
-In general, the build process will load/extract the "raw" requirejs configuration-object (i.e. the JSON-like
-object containing the paths, shims etc.) from `mainConfig.js` and do some additional initialization that
-is specific to the execution environment (e.g. nodejs).
-Changes in `mainConfig.js` that are not contained in the JSON-like configuration object probably require
-changes in the build scripts `build/lib/mmir-build/templates/generate-[grammars|views].template`.
-
-
-#### Prerequisites
-
-TODO update this section
-
-The following sections/descripts assume that the build-scripts have been installed as described in the
-section [Installation](#installation), where the contents of this directory (i.e. the mmir-tooling sources)
-have been placed in the directory `/build` and the mmir-library has been placed in the directory `/www/mmirf`:
-
-    ...
-    /build/<contents of this directory>
-    /www/mmirf/<contents of mmir-library>
-    ...
-
-and `gulp` has been executed in `/build/`.
-
-#### Adding New Libraries
-
-After adding new libraries and/or modules, the build process may need to be updated too.
-
-This will probably be necessary, if there are changes in `mainConfig.js`, especially if the
-new library is not nodejs compatible (may need to add/implement a dummy-module that is used during build)
-or is not an AMD module and needs a requirejs shim configuration (see also section below).
-
-
-##### Adding New Vendor Libraries
-
-Vendor libraries should be "requirejs compatible" (i.e. an AMD module):
-This can be achieved either by the library itself being an AMD module, or by adding
-a requirejs shim configuration in `mainConfig.js` (see documentation of requirejs for more details).
-
-If a vendor library is added with a shim configuration, then the helper script(*)
-
-    node build/lib/mmir-build/scripts/processRequirejsShimConfig.js
-
-must be executed which will create an AMD module for the library in `build/lib/mmir-build/mod/`.
-This AMD library will then be used during build (i.e. `cordova prepare`) in the nodejs environment
-(since requirejs shims do not work in nodejs).
-
-NOTE: if the license of the added libraries allow it, you could also use the AMD modules instead
-      of the original library and remove the shim configuration
-
-> (*): if the web-app root directory is different than `<project dir>/www`, then the direcotry needs
->    to be added as an argument, e.g. if its located in `<project dir>/src/assets`, then run the script with
->
->     node build/lib/mmir-build/scripts/processRequirejsShimConfig.js src/assets
-
---
-### License
-
-If not stated otherwise, the files, resources etc. are provided under the MIT license (see also details in
-[library_origins.txt](lib/library_origins.txt))
+For including new libraries to [mmir-lib][4] (or updating/modifying existing vendor/generated libraries),
+see [mmir-lib-dev][8]
 
 
 [1]: https://github.com/mmig/mmir-tooling
@@ -191,3 +133,5 @@ If not stated otherwise, the files, resources etc. are provided under the MIT li
 [5]: https://webpack.js.org/
 [6]: https://github.com/mmig/mmir-webpack
 [7]: https://cordova.apache.org/
+[8]: https://github.com/mmig/mmir-lib-dev
+[9]: https://mmig.github.io/mmir-tooling
