@@ -13,7 +13,9 @@
   ],
   "scripts": {
     "test": "node test.js",
-    "doc": "typedoc index.d.ts"
+    "doc": "npm run clean-doc && npm run gen-doc",
+    "clean-doc": "node -e require('fs-extra').emptyDirSync('docs')",
+    "gen-doc": "typedoc index.d.ts"
   },
   "author": "MMIG team",
   "license": "MIT",
