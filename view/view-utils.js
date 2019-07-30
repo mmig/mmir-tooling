@@ -210,7 +210,7 @@ module.exports = {
 			var aliasId = toAliasId(v);
 			appConfigUtils.addIncludeModule(appConfig, aliasId, toAliasPath(v));
 			directoriesUtil.addView(directories, aliasId);
-			if(appConfig.includeViewTempalates){
+			if(appConfig.includeViewTemplates){
 				directoriesUtil.addViewTemplate(directories, aliasId);
 			}
 

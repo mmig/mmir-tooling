@@ -77,7 +77,7 @@ var compileResources = function(mmirAppConfig){
 
 	//set defaults specific for tooling-build
 	directoriesUtils.setMode('file');
-	mmirAppConfig.includeViewTempalates = typeof mmirAppConfig.includeViewTempalates === 'boolean'? mmirAppConfig.includeViewTempalates : true;
+	mmirAppConfig.includeViewTemplates = typeof mmirAppConfig.includeViewTemplates === 'boolean'? mmirAppConfig.includeViewTemplates : true;
 
 	//NOTE need to check for controllers etc. so that they get included in directories.json
 	// checkBuildOptions(mmirAppConfig, 'controllers');
