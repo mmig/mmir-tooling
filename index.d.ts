@@ -310,7 +310,12 @@ export interface StateOptions {
 	 * @default false
 	 */
 	ignoreErrors?: boolean;
-	/** optionally specify options for found resource, or specifying resources/locations directly */
+	/**
+	 * optionally specify options for found resource, or specifying resources/locations directly
+	 *
+	 * If `input` or `dialog` are missing (e.g. no resources matching them could be found),
+	 * default "minimal" state-models will be used for `inputManager` and `dialogManager`.
+	 */
 	models?: {dialog?: StateModelEntry, input?: StateModelEntry, [id: string]: StateModelEntry};
 }
 
@@ -320,7 +325,16 @@ export interface StateModelEntry {
 	// /** the ID for state model */
 	// id?: string;
 
-	/** the module ID for state interpreter (will be automiatically set for inputManager and dialogManager) */
+	/**
+	 * the module ID for state interpreter:
+	 * if the interpreter is registered, it can be `require`'d using the `moduleId`, e.g.
+	 * ```
+	 * var stateManager = mmir.require(<moduleId>);
+	 * ```
+	 *
+	 * (the `moduleId` will be automatically set for `inputManager` and `dialogManager`)
+	 *
+	 */
 	moduleId?: string,
 
 	/** if `true`, the corresponding resource will be excluded (when parsing `path`) */
@@ -383,7 +397,7 @@ export interface RuntimeConfiguration {
 	controllerContext?: string;
 	/**
 	 * dot-separated namespace for accessing the model implementation's constructors
-	 * (within global namespace, e.g. "app.ctrl" -> [window | self | global].app.ctrl)
+	 * (within global namespace, e.g. `"app.ctrl" -> [window | self | global].app.ctrl)`
 	 * @deprecated use module format (AMD / CommonJS / ...) instead
 	 */
 	modelContext?: string;
@@ -400,11 +414,11 @@ export type ModuleConfig = {[configName: string]: any} & {logLevel?: mmir.LogLev
 /** options for handling found resources when parsing the resourcesPath */
 export interface ResourcesOptions {
 	/** for automatically converting old-style implementations that are no CommonJS or AMD modules:
-	 * if true, explicitly exports the implementation resource (i.e. as module.exports)
+	 * if `true`, explicitly exports the implementation resource (i.e. as module.exports)
 	 * @see ImplementationOptions
 	 */
 	addModuleExport?: boolean;
-	/** excludes the specified resources types when parsing the resourcesPath */
+	/** excludes the specified resources types when parsing the `resourcesPath` */
 	exclude?: Array<ResourceTypeName>;
 }
 
