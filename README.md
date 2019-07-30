@@ -44,7 +44,7 @@ Install `mmir-tooling` via `npm`.
 
 ### Webpack Build Integration
 
-For [webpack][5]-based application, [mmir-webpack][6] can be used.
+For [webpack][5]-based applications, [mmir-webpack][6] can be used.
 
 ### Cordova Build Integration
 
@@ -59,8 +59,8 @@ Then create the script at `resources/mmir5_before_prepare.js` (or whatever path 
 var path = require('path');
 var buildTools = require('mmir-tooling');
 
-var doBuild = function(mmirAppConfig){
-	buildTools.apply(mmirAppConfig).then(function(errors){
+var doBuild = function(mmirBuildConfig){
+	buildTools.apply(mmirBuildConfig).then(function(errors){
 		var errMsg = errors.join('\n');
 		var msg = '\n## Finished compiling resources'+(errMsg? ', with errors: ' +errMsg : '');
 		console.log(msg);
@@ -72,10 +72,10 @@ var doBuild = function(mmirAppConfig){
 
 module.exports = function(ctx){
 	var root = ctx.opts.projectRoot;
-	var mmirAppConfig = {
+	var mmirBuildConfig = {
 		resourcesPath: path.join(root, 'www')
 	};
-	doBuild(mmirAppConfig);
+	doBuild(mmirBuildConfig);
 };
 
 ```
