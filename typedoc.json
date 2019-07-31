@@ -1,10 +1,10 @@
 {
   "includeDeclarations": true,
-  "excludeExternals": true,
-  "exclude": ["node_modules"],
+  "excludeExternals": false,
+  "exclude": ["node_modules/!(mmir-)*/**"],
   "excludePrivate": true,
   "readme": "none",
-  "name": "mmir-tooling",
-  "theme": "minimal",
+	"mode": "modules",
+  "theme": "default",
   "out": "docs"
 }

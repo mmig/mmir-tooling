@@ -6,7 +6,7 @@ building MMIR-based applications.
 
 ----
 
-### Documentation
+### API Documentation
 
 See generated [build API documentation][9] and details below.
 
@@ -36,10 +36,7 @@ located at `www/`:
 If the `mmir` resources are located in different directories/files, they need
 to be specified in the build configuration.
 
-### Installation Prerequisites
-
-These prerequisites are required for automatically installing/setting-up the _mmir-tooling_
-in a MMIR project (see section _Installation_ below)
+### Prerequisites
 
  * Node.js
 
@@ -134,4 +131,4 @@ see [mmir-lib-dev][8]
 [6]: https://github.com/mmig/mmir-webpack
 [7]: https://cordova.apache.org/
 [8]: https://github.com/mmig/mmir-lib-dev
-[9]: https://mmig.github.io/mmir-tooling
+[9]: https://mmig.github.io/mmir-tooling/modules/mmir_tooling.html

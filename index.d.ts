@@ -1,9 +1,20 @@
 /// <reference types="mmir-lib" />
-import 'mmir-lib';
 
-declare module 'mmir-tooling' {
-	export function apply(buildConfig: BuildAppConfig): void;
-}
+/**
+ * `mmir-tooling` generates/compiles/builds _mmir_ resources, e.g.
+ * grammars or state-models.
+ *
+ * @see [[apply]]
+ * @module mmir-tooling
+ */
+
+/**
+ * compiles the _mmir_ resources:
+ * configure/include/compile/generate _mmir_ resources (e.g. grammars, state-models)
+ *
+ * @param buildConfig the _mmir_ build configuration
+ */
+export function apply(buildConfig: BuildAppConfig): void;
 
 /**
  * @example
@@ -63,9 +74,33 @@ export interface AppConfig {
 	resourcesPath?: string;
 	resourcesPathOptions?: ResourcesOptions;
 
+	/**
+	 * Specify how (JSON) grammars should be parsed/included, and/or
+	 * specify additional grammars that should be included.
+	 *
+	 * Compiled grammars will be available via the [[SemanticInterpreter]].
+	 *
+	 * If `false`, grammars will be excluded/ignored.
+	 */
 	grammars?: GrammarOptions | boolean;
+	/**
+	 * Specify how (SCXML) state-machines/-models should be parsed/included, and/or
+	 * specify additional state-models that should be included.
+	 *
+	 * If `false`, state-models will be excluded/ignored.
+	 *
+	 * By default, if no state-models are include, "minimal" state-models
+	 * for the [[InputManager]] and the [[DialogManager]] will be included,
+	 * see [mmir-tooling/defaultValues](https://github.com/mmig/mmir-tooling/tree/master/defaultValues).
+	 */
 	states?: StateOptions | boolean;
 
+	/**
+	 * Specify how (mmir) views should be parsed/included, and/or
+	 * specify additional views that should be included.
+	 *
+	 * If `false`, views will be excluded/ignored.
+	 */
 	views?: ViewOptions | boolean;
 
 	// //TODO? support updating/creating settings/configuration?
@@ -159,6 +194,12 @@ export interface BuildAppConfig extends AppConfig {
 	 */
 	includeViewTemplates?: boolean;
 	includeStateModelXmls?: boolean;
+
+
+	grammars?: GrammarBuildOptions | boolean;
+	states?: StateBuildOptions | boolean;
+
+	views?: ViewBuildOptions | boolean;
 }
 
 export interface GrammarBuildOptions extends GrammarOptions, BuildOptions {}
@@ -363,27 +404,47 @@ export interface StateModelEntry {
 
 /** runtime configuration: same as config/configuration.json */
 export interface RuntimeConfiguration {
+
+	/**
+	 * The language (code) that will be used by `mmir`, e.g.
+	 * for speech synthesis (TTS) or recognition (ASR).
+	 *
+	 * Can be changed during runime with [[LanguageManager.setLanguage]]
+	 *
+	 * @default "en"
+	 */
 	language?: string;
 
 	/** grammar-compiler/-engine for compiling new grammars */
 	grammarCompiler?: "jscc" | "jison" | "pegjs";
 	/** if selected language only has JSON grammar, prevents automatic compilation */
 	usePrecompiledGrammarsOnly?: boolean;
-	/** if JSON grammar is compiled, use async (i.e. web worker) compilation */
+	/** if JSON grammar is compiled during runtime, use async (i.e. web worker) compilation */
 	grammarAsyncCompileMode?: boolean;
 	/** list of grammars (IDs) which should not be automatically loaded on startup, even if compiled/JSON grammar is available for the language */
 	ignoreGrammarFiles?: Array<string>;
 
 	/**
 	 * detect if compiled state-models (i.e. JS-compiled SCXML files) are present & should be used
-	 * instead of loading & compiling SCXML files at runtime
+	 * instead of loading & compiling SCXML files at runtime.
+	 *
+	 * NOTE this is ignored in `webpack` build (since state-models will always be pre-compiled in `webpack` builds).
+	 *
 	 * @default  true
 	 */
 	detectCompiledStateModels?: boolean;
 
-	/** name of the default layout when rendering mmir view templates: if null, no default layout will be used */
+	/**
+	 * name of the default layout definition when rendering mmir view templates: if `null`, no default layout will be used.
+	 *
+	 * @default "Default"
+	 */
 	defaultLayoutName?: 'Default' | string | null;
-	/** if false, view templates will be (re-)compiled upon app startup */
+	/**
+	 * if `false`, (mmir) view templates will be (re-)compiled upon app startup
+	 *
+	 * NOTE will be ignored in `webpack` build
+	 */
 	usePrecompiledViews?: boolean;
 
 	/** configuration for media plugins, e.g. for speech recognition (ASR) and synthesis (TTS) */
@@ -391,17 +452,23 @@ export interface RuntimeConfiguration {
 
 	/**
 	 * dot-separated namespace for accessing the controller implementation's constructors
-	 * (within global namespace, e.g. "app.ctrl" -> [window | self | global].app.ctrl)
-	 * @deprecated use module format (AMD / CommonJS / ...) instead
+	 * (within global namespace, e.g. `"app.ctrl" -> [window | self | global].app.ctrl`)
+	 * @deprecated use module format (AMD / UMD / CommonJS (only in webpack-build) / ...) instead
 	 */
 	controllerContext?: string;
 	/**
 	 * dot-separated namespace for accessing the model implementation's constructors
-	 * (within global namespace, e.g. `"app.ctrl" -> [window | self | global].app.ctrl)`
-	 * @deprecated use module format (AMD / CommonJS / ...) instead
+	 * (within global namespace, e.g. `"app.ctrl" -> [window | self | global].app.ctrl`)
+	 * @deprecated use module format (AMD / UMD / CommonJS (only in webpack-build) / ...) instead
 	 */
 	modelContext?: string;
 
+	/**
+	 * custom/additional configuration/settings:
+	 *
+	 * E.g. mmir-plugins may support additional settings (see corresponding documentation of the plugin),
+	 * or app-specific settings my be specified and used.
+	 */
 	[configField: string]: any;
 }
 
