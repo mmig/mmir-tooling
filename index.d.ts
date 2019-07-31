@@ -13,8 +13,12 @@
  * configure/include/compile/generate _mmir_ resources (e.g. grammars, state-models)
  *
  * @param buildConfig the _mmir_ build configuration
+ *
+ * @returns a promise that is resolved when compilation has completed.
+ *          If errors ocurred during compilation, the promise is resolved
+ *          with a list of errors.
  */
-export function apply(buildConfig: BuildAppConfig): void;
+export function apply(buildConfig: BuildAppConfig): Promise<Error[]>;
 
 /**
  * @example
