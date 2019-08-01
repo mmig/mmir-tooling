@@ -27,7 +27,8 @@
     "cross-var": "^1.1.0",
     "mmir-lib": "git+https://github.com/mmig/mmir-lib.git",
     "typedoc": "^0.15.0",
-    "typedoc-plugin-external-module-name": "^2.1.0"
+    "typedoc-plugin-external-module-name": "^2.1.0",
+    "typedoc-plugin-sourcefile-url": "^1.0.4"
   },
   "dependencies": {
     "@scion-scxml/scxml": "^4.3.25",

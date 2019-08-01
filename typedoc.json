@@ -6,5 +6,6 @@
   "readme": "none",
 	"mode": "modules",
   "theme": "default",
-  "out": "docs"
+  "out": "docs",
+	"sourcefile-url-map": "typedoc-sourcefile-url-map.json"
 }
