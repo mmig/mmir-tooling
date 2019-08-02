@@ -8,7 +8,7 @@ building MMIR-based applications.
 
 ### API Documentation
 
-See generated [build API documentation][9] and details below.
+See generated [API documentation][9] (or more detailed [HTML][10] documentation) and details below.
 
 ### Dependencies
 
@@ -131,4 +131,5 @@ see [mmir-lib-dev][8]
 [6]: https://github.com/mmig/mmir-webpack
 [7]: https://cordova.apache.org/
 [8]: https://github.com/mmig/mmir-lib-dev
-[9]: https://mmig.github.io/mmir-tooling/modules/mmir_tooling.html
+[9]: https://github.com/mmig/mmir-tooling/tree/master/docs/modules
+[10]: https://mmig.github.io/mmir/api-ts/modules/mmir_tooling.html
