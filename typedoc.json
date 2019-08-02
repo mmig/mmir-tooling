@@ -5,7 +5,7 @@
   "excludePrivate": true,
   "readme": "none",
 	"mode": "modules",
-  "theme": "default",
+  "theme": "markdown",
   "out": "docs",
-	"sourcefile-url-map": "typedoc-sourcefile-url-map.json"
+	"hideSources": true
 }

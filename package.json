@@ -13,10 +13,9 @@
   ],
   "scripts": {
     "test": "node test.js",
-    "doc": "npm run clean-doc && npm run gen-doc && npm run gh-doc",
+    "doc": "npm run clean-doc && npm run gen-doc",
     "clean-doc": "node -e require('fs-extra').emptyDirSync('docs')",
-    "gen-doc": "cross-var typedoc --name \"$npm_package_name $npm_package_version\" index.d.ts",
-    "gh-doc": "node -e require('fs-extra').ensureFileSync('docs/.nojekyll')"
+    "gen-doc": "cross-var typedoc --name \"$npm_package_name $npm_package_version\" index.d.ts"
   },
   "author": "MMIG team",
   "license": "MIT",
@@ -28,7 +27,7 @@
     "mmir-lib": "git+https://github.com/mmig/mmir-lib.git",
     "typedoc": "^0.15.0",
     "typedoc-plugin-external-module-name": "^2.1.0",
-    "typedoc-plugin-sourcefile-url": "^1.0.4"
+    "typedoc-plugin-markdown": "^2.1.0"
   },
   "dependencies": {
     "@scion-scxml/scxml": "^4.3.25",
