@@ -16,6 +16,16 @@ function readDir(dir, list, options){
 
 	var files = fs.readdirSync(dir);
 	var dirs = [];
+
+	//sort file list to prioritize 'dialog.xml' and 'input.xml' (i.e. put at the beginning of the list)
+	var re = /^(dialog|input)\.xml$/i
+	files.sort(function(f1, f2){
+		if(f1 === f2) return 0;
+		if(re.test(f1)) return -1;
+		if(re.test(f2)) return 1;
+		return f1.localeCompare(f2);
+	});
+
 	// log('read dir "'+dir+'" -> ', files);//DEBU
 
 	files.forEach(function(p){
@@ -23,27 +33,57 @@ function readDir(dir, list, options){
 		if(fileUtils.isDirectory(absPath)){
 			dirs.push(absPath);
 			return false;
-		} else if(/^(dialog|input)(DescriptionSCXML)?\.xml$/i.test(p)){// BACKWARDS COMPATIBILITY: do also accept old/deprecated file names ...DescriptionSCXML.xml
+		} else if(/\.xml$/i.test(p)) {
 
 			var normalized = fileUtils.normalizePath(absPath);
-			var m = /^(dialog|input)/i.exec(p);
-			var id = m[1].toLowerCase();
+
+			var defModel, id, modId;
+			if(/^(dialog|input)(DescriptionSCXML)?\.xml$/i.test(p)){// BACKWARDS COMPATIBILITY: do also accept old/deprecated file names ...DescriptionSCXML.xml
+				// -> state models for input- or dialog-manager
+				defModel = /^(dialog|input)/i.exec(p);
+				id = defModel[1].toLowerCase();
+				modId = id === 'dialog'? 'mmirf/dialogManager' : 'mmirf/inputManager';
+			} else {
+				// -> custom state models
+				id = opt && opt.id? opt.id : path.basename(p, path.extname(p));
+			}
 
 			var opt = options && options[id];
 			if(opt && (opt.exclude || opt.file)){
 				//-> ignore/exclude this scxml!
 				log('scxml-utils.addFromDirectory(): excluding scxml file for '+id+' model at "'+normalized+'"!');//DEBUG
+			}
+
+			if(opt && opt.id && opt.id !== id){
+				warn('scxml-utils.addFromDirectory(): ignoring option id "'+opt.id+'", using default id "'+id+'" for ', normalized);
+			}
+
+			if(!modId){
+				if(opt && opt.moduleId){
+					modId = opt.moduleId;
+				} else {
+					log('scxml-utils.addFromDirectory(): no moduleId specified for "'+p+'", using ID "'+id+'" as module ID!');
+					modId = id;
+				}
+			} else if(defModel && opt && opt.moduleId && opt.moduleId !== modId){
+				warn('scxml-utils.addFromDirectory(): ignoring option moduleId "'+opt.moduleId+'" for state model ID "'+id+'", using default moduleId "'+modId+'" instead!');
+			}
+
+			if(contains(list, id, modId)){
+				warn('scxml-utils.addFromDirectory(): entry for ID '+id+' (module ID '+modId+') already exists in state model-list, ignoring state model in file '+normalized);
 				return;//////////////////// EARLY EXIT //////////////////
 			}
 
 			list.push({
 				id: id,
-				moduleId: id === 'dialog'? 'mmirf/dialogManager' : 'mmirf/inputManager',
+				moduleId: modId,
 				file: normalized,
 				mode: opt && opt.mode? opt.mode : DEFAULT_MODE,
 				ignoreErrors: opt && typeof opt.ignoreErrors === 'boolean'? opt.ignoreErrors : void(0),
 				force: opt && typeof opt.force === 'boolean'? opt.force : void(0)
 			});
+		} else {
+			log('scxml-utils.addFromDirectory(): ignoring non-XML file '+absPath);//DEBUG
 		}
 	});
 
@@ -87,7 +127,7 @@ function addFromOptions(stateModels, list, appRootDir){
 				// log('scxml-utils.addFromOptions(): adding ', entry);//DEBU
 				list.push(entry)
 			} else {
-				warn('scxml-utils.addFromOptions(): entry from modelOptions for ID '+id+' (module ID '+moduleId+') already exists in grammar-list, ignoring entry!');//FIXME proper webpack error/warning
+				warn('scxml-utils.addFromOptions(): entry from modelOptions for ID '+id+' (module ID '+moduleId+') already exists in state model-list, ignoring entry!');//FIXME proper webpack error/warning
 			}
 		}
 		// else {//DEBU
@@ -145,15 +185,15 @@ module.exports = {
 	 * 																				<directory>/../input.xml
 	 * 																				...
 	 * 										options.models: OPTIONAL a map of SCXML model IDs, i.e. {[scxmlID: string]: ScxmlOption} with specific options for compiling the corresponding SCXML model:
-	 *														options.models[id].exclude {Boolean}: OPTIONAL if <code>true</code>, the corresponding SCXML model will be completely excluded, i.e. no executable grammar will be compiled
-	 *																																				from the corresponding JSON grammar
+	 *														options.models[id].exclude {Boolean}: OPTIONAL if <code>true</code>, the corresponding SCXML model will be completely excluded, i.e. no executable state model will be compiled
+	 *																																				from the corresponding SCXML state model definition
 	 *														options.models[id].mode {"extended" | "simple"}: OPTIONAL run SCXML modle in "simple" or "extended" mode,
 	 *																																				DEFAULT: "extended"
 	 * @param {String} appRootDir the root directory of the app (against which relative paths will be resolved)
 	 * @param {Array<ScxmlEntry>} [stateModels] OPTIONAL list of ScxmlEntry objects, to which the new entries (read from the options.directory) will be added
 	 * 																					if omitted, a new list will be created and returned.
 	 * 										ScxmlEntry.id {String}: the SCXML engine ID (one of "input" or "dialog")
-	 * 										ScxmlEntry.file {String}: the path to the JSON grammar (from which the executable grammar will be created)
+	 * 										ScxmlEntry.file {String}: the path to the SCXML file (from which the executable state model will be created)
 	 * 										ScxmlEntry.mode {"extended" | "simple"}: run SCXML modle in "simple" or "extended" mode, DEFAULT: "extended"
 	 * @return {Array<ScxmlEntry>} the list of ScxmlEntry objects
 	 */
