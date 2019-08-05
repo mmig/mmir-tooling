@@ -62,6 +62,9 @@ optionally specify options for found resource, or specifying resources/locations
 If `input` or `dialog` are missing (e.g. no resources matching them could be found),
 default "minimal" state-models will be used for `inputManager` and `dialogManager`.
 
+NOTE: for custom state-models whichs' files are determined by parsing [StateOptions.path](mmir_tooling.stateoptions.md#optional-path),
+      the `id` will be the file name (case sensitive, without extension).
+
 #### Type declaration:
 
 ● \[▪ **id**: *string*\]: [StateModelEntry](mmir_tooling.statemodelentry.md)
@@ -76,7 +79,7 @@ ___
 
 • **path**? : *string*
 
-file path for searching (recursively) for SCXML files (state-engines):
+file path for searching (recursively) for SCXML files (state-models):
 ```bash
 path/.../dialog.xml -> type "dialog"
         /input.xml  -> type "input"
@@ -88,3 +91,5 @@ NOTE: for backwards compatibility, the following file names are also accepted
         "dialogDescriptionSCXML.xml" -> "dialog"
         "inputDescriptionSCXML.xml" -> "input"
 ```
+
+Or custom state models (SCXML definitions) with file extension `.xml`.

@@ -331,7 +331,7 @@ export type SettingsType = 'configuration' | 'dictionary' | 'grammar' | 'speech'
  */
 export interface StateOptions {
 
-	/** file path for searching (recursively) for SCXML files (state-engines):
+	/** file path for searching (recursively) for SCXML files (state-models):
 	 * ```bash
 	 * path/.../dialog.xml -> type "dialog"
 	 *         /input.xml  -> type "input"
@@ -343,6 +343,9 @@ export interface StateOptions {
 	 *         "dialogDescriptionSCXML.xml" -> "dialog"
 	 *         "inputDescriptionSCXML.xml" -> "input"
 	 * ```
+	 *
+	 * Or custom state models (SCXML definitions) with file extension `.xml`.
+	 *
 	 */
 	path?: string;
 	/** if `true`, runtime errors will be ignored.
@@ -360,6 +363,9 @@ export interface StateOptions {
 	 *
 	 * If `input` or `dialog` are missing (e.g. no resources matching them could be found),
 	 * default "minimal" state-models will be used for `inputManager` and `dialogManager`.
+	 *
+	 * NOTE: for custom state-models whichs' files are determined by parsing [[StateOptions.path]],
+	 *       the `id` will be the file name (case sensitive, without extension).
 	 */
 	models?: {dialog?: StateModelEntry, input?: StateModelEntry, [id: string]: StateModelEntry};
 }
