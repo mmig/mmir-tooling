@@ -17,11 +17,6 @@ var settingsCompiler = require('./compiler/settings-compiler.js');
 
 var cliUtils = require('./utils/cli-utils.js');
 
-// console.log('mmir-lib: ', require('mmir-lib'))
-
-// var rootDir = path.dirname(require.resolve('mmir-lib'));
-// var toolingRootDir = __dirname;
-
 var getTargetDir = function(appConfig, mainOptions, optType){
 	return mainOptions[optType+'Options']? mainOptions[optType+'Options'].targetDir : appConfig.targetDir && path.join(appConfig.targetDir, optType);
 }
