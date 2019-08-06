@@ -25,7 +25,7 @@ try {
 		asyncSupport = true;
 
 	} catch(err){
-		warn('[INFO] could not load implementation for WebWorkers, e.g. (experimental) worker_threads or webworker-threads (>= version 8.x): cannot use WebWorkers/parallel threads for compling grammars etc.');
+		warn('[INFO] could not load implementation for WebWorkers, e.g. (experimental) worker_threads or webworker-threads (>= version 0.8.x): cannot use WebWorkers/parallel threads for compling grammars etc.');
 	}
 
 }
