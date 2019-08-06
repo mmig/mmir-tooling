@@ -12,10 +12,10 @@ var mmir = mmirLib.init(function(mmir){
 	mmir.config({
 		config: {
 			'mmirf/configurationManager': {
-			  configuration: {}
+				configuration: {}
 			},
 			'mmirf/commonUtils': {
-			  directories: {}
+				directories: {}
 			}
 		}
 	});

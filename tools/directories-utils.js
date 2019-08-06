@@ -1,22 +1,22 @@
 
 var createDirectoriesJson = function(){
 	return {
-	  "/controllers": [],//["mmirf/controller/application.js", "mmirf/controller/calendar.js"]
-	  "/views": [],//["application", "calendar", "layouts"]
-	  // "/views/application": ["login.ehtml"],
-	  // "/views/calendar": ["login.ehtml"],
-	  // "/views/layouts": ["default.ehtml"],
-	  "/models": [],
-	  "/config": ["languages", "states", "configuration.json", "directories.json"],
-	  "/config/languages": [],//["en"]
-	  // "/config/languages/en": ["dictionary.json", "speech.json"],
-	  "/config/states": [],//["dialog.xml", "input.xml"]
-	  "/helpers": [],
-	  "/gen/grammar": [],//["mmirf/grammar/en.js"]
-	  "/gen/view": []//,//["application", "calendar", "layouts"]
-	  // "/gen/view/application": ["login.js"],
-	  // "/gen/view/calendar": ["login.js"],
-	  // "/gen/view/layouts": ["default.js"]
+		"/controllers": [],//["mmirf/controller/application.js", "mmirf/controller/calendar.js"]
+		"/views": [],//["application", "calendar", "layouts"]
+		// "/views/application": ["login.ehtml"],
+		// "/views/calendar": ["login.ehtml"],
+		// "/views/layouts": ["default.ehtml"],
+		"/models": [],
+		"/config": ["languages", "states", "configuration.json", "directories.json"],
+		"/config/languages": [],//["en"]
+		// "/config/languages/en": ["dictionary.json", "speech.json"],
+		"/config/states": [],//["dialog.xml", "input.xml"]
+		"/helpers": [],
+		"/gen/grammar": [],//["mmirf/grammar/en.js"]
+		"/gen/view": []//,//["application", "calendar", "layouts"]
+		// "/gen/view/application": ["login.js"],
+		// "/gen/view/calendar": ["login.js"],
+		// "/gen/view/layouts": ["default.js"]
 	}
 };
 

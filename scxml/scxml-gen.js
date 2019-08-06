@@ -80,8 +80,8 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 
 	// log('mmir-scxml-loader: resource ID at '+i+' -> ', scxmlInfo.id);//, ', parsing content: ', content);//DEBU
 
-  //TODO ID optional settable via loader options?
-  var id = scxmlInfo.id;
+	//TODO ID optional settable via loader options?
+	var id = scxmlInfo.id;
 	var ignoreRuntimeErrors = typeof scxmlInfo.ignoreErrors === 'boolean'? scxmlInfo.ignoreErrors : (options.config && options.config.ignoreErrors === true);
 	// log('SCXML parsing, ignoreErrors -> ', ignoreRuntimeErrors, ', options.ignoreErrors: ', options.config, scxmlInfo)//DEBU
 	var moduleType = scxmlInfo.moduleType? scxmlInfo.moduleType : (options.config && options.config.moduleType);
@@ -111,12 +111,12 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 
 				// log('mmir-scxml-loader: created model for '+id+'.');//DEBU
 
-		    callback(null, scxmlCode, _map, _meta);
+				callback(null, scxmlCode, _map, _meta);
 		});
 
-  }, {reportAllErrors: !ignoreRuntimeErrors})
+	}, {reportAllErrors: !ignoreRuntimeErrors})
 
-  return;
+	return;
 };
 
 module.exports = {

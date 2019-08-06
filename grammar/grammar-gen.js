@@ -48,15 +48,15 @@ function isAsyncCompile(grammarInfo, options){
  */
 function compile(content, grammarFile, options, callback, _map, _meta) {
 
-  var grammar;
-  try{
-    grammar = JSON.parse(content);
-  } catch(err){
+	var grammar;
+	try{
+		grammar = JSON.parse(content);
+	} catch(err){
 		// warn('ERROR parsing JSON grammar at '+this.resource+' -> ', JSON.stringify(content), arguments, ', [this:] ', this);//DEBUG
-    callback(err, null, _map, _meta);
+		callback(err, null, _map, _meta);
 		return;/////////////// EARLY EXIT /////////////////
-  }
-  // log('mmir-grammer-loader: ', JSON.stringify(grammar));
+	}
+	// log('mmir-grammer-loader: ', JSON.stringify(grammar));
 
 	log('mmir-grammer-loader: resource -> ', grammarFile);//DEBUG
 	var i = options.mapping.findIndex(function(g){
@@ -93,25 +93,25 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
 			// var ignoreGrammarIds = configurationManager.get('ignoreGrammarFiles', void(0));
 
 	var engine = getEngine(grammarInfo, options);
-  // log('mmir-grammer-loader: setting compiler "'+engine+'" for grammar "'+grammarInfo.id+'"...');//DEBUG
+	// log('mmir-grammer-loader: setting compiler "'+engine+'" for grammar "'+grammarInfo.id+'"...');//DEBUG
 
 	// var async = grammarInfo.async || (options.config && options.config.async) || /*default: */ false;
 	// async = true;//FIXME currently WebWorker library does not handle relative paths for importScripts() correctly -> DISABLE async mode
 
 	var async = isAsyncCompile(grammarInfo, options);
-  log('mmir-grammer-loader: using '+(async? 'async' : 'SYNC')+' mode ('+engine+') for grammar "'+grammarInfo.id+'" ...');//DEBUG
+	log('mmir-grammer-loader: using '+(async? 'async' : 'SYNC')+' mode ('+engine+') for grammar "'+grammarInfo.id+'" ...');//DEBUG
 
-  semantic.setGrammarEngine(engine, async);
+	semantic.setGrammarEngine(engine, async);
 
 	updatePendingAsyncGrammarStarted(engine, async);
 
-  var id = grammarInfo.id;
-  semantic.createGrammar(grammar, id, function(result){
+	var id = grammarInfo.id;
+	semantic.createGrammar(grammar, id, function(result){
 
-    log('mmir-grammer-loader: grammar '+id+' compiled...');//DEBUG
+		log('mmir-grammer-loader: grammar '+id+' compiled...');//DEBUG
 
 		var grammarCode = ';' + result.js_grammar_definition;
-    // log('mmir-grammer-loader: grammar code size ', grammarCode.length);//DEBUG
+		// log('mmir-grammer-loader: grammar code size ', grammarCode.length);//DEBUG
 
 		// try{
 			if(async){
@@ -129,10 +129,10 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
 
 		log('mmir-grammer-loader: emitting grammar code for ('+engine+') for grammar "'+grammarInfo.id+'"...');//DEBUG
 
-    callback(null, grammarCode, _map, _meta);
-  });
+		callback(null, grammarCode, _map, _meta);
+	});
 
-  return;
+	return;
 };
 
 /**

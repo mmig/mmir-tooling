@@ -57,7 +57,7 @@ function compile(content, implFile, options, callback, _map, _meta) {
 	// log('mmir-impl-loader: emitting code for '+implInfo.id+' -> ', content);//DEBUG
 
 	callback(null, implCode, _map, _meta);
-  return;
+	return;
 };
 
 module.exports = {

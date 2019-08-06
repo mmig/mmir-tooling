@@ -5,18 +5,18 @@ var _ = require('lodash');
 function init(opt, helpText){
 
 	var help = helpText? helpText : `
-	  Usage
-	    <script>
+  Usage
+    <script>
 
-	  Options
-	    --help         show usage information
-	    --verbose, -v  show additional information
-	                    DEFAULT: false
+  Options
+    --help         show usage information
+    --verbose, -v  show additional information
+                    DEFAULT: false
 	`;
 
 	var options = {
 		flags: {
-	    verbose: {
+			verbose: {
 				type: 'boolean',
 				alias: 'v',
 				default: false

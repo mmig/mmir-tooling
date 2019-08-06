@@ -25,23 +25,23 @@
  */
 
 define(['mmirf/core', 'mmirf/env', 'mmirf/util/deferred', 'mmirf/resources', 'mmirf/commonUtils', 'mmirf/configurationManager', 'mmirf/languageManager'
-     , 'mmirf/semanticInterpreter',  'module'
-  ],
-  /**
-   * Initializes the MMIR framework:
-   * triggers {@link mmir.ready} when initialization has finished.
-   *
-   * @class
-   * @name main
-   * @memberof mmir
-   * @private
-   *
-   * @requires require.config
-   * @requires util/deferred
-   *
-   */
-  function(mmir, env, deferred, res, commonUtils, configurationManager, languageManager
-     , semanticInterpreter, module
+		, 'mmirf/semanticInterpreter',  'module'
+	],
+	/**
+	 * Initializes the MMIR framework:
+	 * triggers {@link mmir.ready} when initialization has finished.
+	 *
+	 * @class
+	 * @name main
+	 * @memberof mmir
+	 * @private
+	 *
+	 * @requires require.config
+	 * @requires util/deferred
+	 *
+	 */
+	function(mmir, env, deferred, res, commonUtils, configurationManager, languageManager
+		, semanticInterpreter, module
 ){
 
 	//export framework functions/objects:
