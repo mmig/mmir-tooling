@@ -11,6 +11,9 @@
     "mmir",
     "cordova"
   ],
+  "bin": {
+    "mmirinstall": "./bin/cli-mmir-install.js"
+  },
   "scripts": {
     "test": "node test.js",
     "doc": "npm run clean-doc && npm run gen-doc",
