@@ -44,7 +44,7 @@ to be specified in the build configuration.
 
 Install `mmir-tooling` via `npm`.
 
-#### Simple `mmir-lib` Installation
+#### Bare `mmir-lib` Installation
 
 If the application does not use a build-system like `webpack`, and cannot
 utilize the `node` / `npm` package directly, the `mmir-lib` library files
@@ -54,7 +54,6 @@ can be simply copied into the application directory.
 the following steps would be one way for installing the `mmir-lib` library files
 into the application directory `www/mmirf`
 ```bash
-
 # install mmir-lib
 npm install git+https://github.com/mmig/mmir-lib.git --save
 # install mmir-tooling
@@ -68,12 +67,21 @@ node_modules\.bin\mmirinstall www/mmirf
 node_modules/.bin/mmirinstall www/mmirf
 ```
 
+or as an example script entry in `package.json':
+```json
+  "scripts": {
+    "install-mmir-lib": "mmirinstall www/mmirf"
+  },
+```
+
+
 _NOTE_ if `mmir-lib` is included in a web page "as is", using its built-in
       [requirejs][11] mechanism, the library files are expected in
       the sub-directory/path `mmirf/` (w.r.t. to the including web page).
       If the library files are located somewhere different, the
       `mmir-lib` configuration needs explicitly specifiy the corresponding
       location.
+
 
 ### Webpack Build Integration
 
