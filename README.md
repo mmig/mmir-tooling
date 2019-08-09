@@ -2,7 +2,7 @@ mmir-tooling
 ============
 
 [![MIT license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/mmig/mmir-lib)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/mmig/mmir-tooling)
 
 
 The [mmir-tooling][1] repository holds files, resources etc. for
