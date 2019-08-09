@@ -1,6 +1,10 @@
 mmir-tooling
 ============
 
+[![MIT license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/mmig/mmir-lib)
+
+
 The [mmir-tooling][1] repository holds files, resources etc. for
 building [mmir][2]-based applications.
 
@@ -48,7 +52,7 @@ See sections below for integrating `mmir-lib` into
 various frameworks / build-systems.
 
 For a setup without a (supported) build-system or framework,
-see section ["Bare-bones" `mmir-lib` Integration](#bare-bones-mmir-lib-integration). 
+see section ["Bare-bones" `mmir-lib` Integration](#bare-bones-mmir-lib-integration).
 
 
 ### Webpack Build Integration
@@ -138,7 +142,7 @@ If the application does not use a build-system like `webpack`, and cannot
 utilize the `node` / `npm` package directly, the `mmir-lib` library files
 can be simply copied into the application directory:  
 copy the `mmir-lib/lib/` directory into a sub-directory `mmirf/` of the
-application directory. 
+application directory.
 
 Alternatively, `mmir-tooling` provides the simple command line tool
 `mmirinstall` for this:  
