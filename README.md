@@ -16,7 +16,7 @@ See generated [API documentation][9] (or more detailed [HTML][10] documentation)
 
 ### Dependencies
 
-The current build process requires the **[mmir-lib][3] version 5.0.0 or later**
+The current build process requires the **[mmir-lib][3] version 5.1.0 or later**
 
 By default the build process will assume that the `mmir`-based application is
 located at `www/`:
