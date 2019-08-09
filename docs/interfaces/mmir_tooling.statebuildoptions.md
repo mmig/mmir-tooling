@@ -1,4 +1,4 @@
-> **[mmir-tooling 5.0.0](../README.md)**
+> **[mmir-tooling 5.1.0](../README.md)**
 
 [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [StateBuildOptions](mmir_tooling.statebuildoptions.md) /
 
@@ -69,7 +69,7 @@ NOTE: for custom state-models whichs' files are determined by parsing [StateOpti
 
 #### Type declaration:
 
-● \[▪ **id**: *string*\]: [StateModelEntry](mmir_tooling.statemodelentry.md)
+* \[ **id**: *string*\]: [StateModelEntry](mmir_tooling.statemodelentry.md)
 
 * **dialog**? : *[StateModelEntry](mmir_tooling.statemodelentry.md)*
 

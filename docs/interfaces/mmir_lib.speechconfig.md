@@ -1,4 +1,4 @@
-> **[mmir-tooling 5.0.0](../README.md)**
+> **[mmir-tooling 5.1.0](../README.md)**
 
 [Globals](../README.md) / [mmir-lib](../modules/mmir_lib.md) / [SpeechConfig](mmir_lib.speechconfig.md) /
 
@@ -48,7 +48,7 @@ configuration settings
 
 #### Type declaration:
 
-● \[▪ **pluginId**: *string*\]: [SpeechConfigPluginEntry](mmir_lib.speechconfigpluginentry.md)
+* \[ **pluginId**: *string*\]: [SpeechConfigPluginEntry](mmir_lib.speechconfigpluginentry.md)
 
 ___
 

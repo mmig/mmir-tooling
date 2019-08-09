@@ -1,4 +1,4 @@
-> **[mmir-tooling 5.0.0](../README.md)**
+> **[mmir-tooling 5.1.0](../README.md)**
 
 [Globals](../README.md) / [mmir-lib](../modules/mmir_lib.md) / [Grammar](mmir_lib.grammar.md) /
 
@@ -39,7 +39,7 @@ ___
 
 #### Type declaration:
 
-● \[▪ **id**: *string*\]: `Array<string>`
+* \[ **id**: *string*\]: `Array<string>`
 
 ___
 
@@ -49,7 +49,7 @@ ___
 
 #### Type declaration:
 
-● \[▪ **id**: *string*\]: object
+* \[ **id**: *string*\]: object
 
 * **phrases**: *`Array<string>`*
 

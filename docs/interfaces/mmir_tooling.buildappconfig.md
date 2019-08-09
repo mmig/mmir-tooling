@@ -1,4 +1,4 @@
-> **[mmir-tooling 5.0.0](../README.md)**
+> **[mmir-tooling 5.1.0](../README.md)**
 
 [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [BuildAppConfig](mmir_tooling.buildappconfig.md) /
 
@@ -14,6 +14,7 @@
 
 ### Properties
 
+* [directoriesTargetDir](mmir_tooling.buildappconfig.md#optional-directoriestargetdir)
 * [grammars](mmir_tooling.buildappconfig.md#optional-grammars)
 * [includeStateModelXmls](mmir_tooling.buildappconfig.md#optional-includestatemodelxmls)
 * [includeViewTemplates](mmir_tooling.buildappconfig.md#optional-includeviewtemplates)
@@ -25,6 +26,20 @@
 * [views](mmir_tooling.buildappconfig.md#optional-views)
 
 ## Properties
+
+### `Optional` directoriesTargetDir
+
+• **directoriesTargetDir**? : *string*
+
+directory to which the generated `directories.json` file should be written:
+`directories.json` contains the listing of available mmir resources.
+
+NOTE if this file is not in the expected location, initialization of
+     `mmir` may fail during runtime, i.e. use this option with care!
+
+**`default`** targetDir + "/gen"
+
+___
 
 ### `Optional` grammars
 
@@ -38,14 +53,19 @@ ___
 
 • **includeStateModelXmls**? : *boolean*
 
+if `directories.json` should include the SCXML files (`*.xml`)
+e.g. for up-to-date test & runtime-compilation of state models
+
+**`default`** true
+
 ___
 
 ### `Optional` includeViewTemplates
 
 • **includeViewTemplates**? : *boolean*
 
-if directories.json should include the view template fiels (`*.ehtml`)
-e.g. for up-to-date test & runtime-comilation of view templates
+if `directories.json` should include the view template files (`*.ehtml`)
+e.g. for up-to-date test & runtime-compilation of view templates
 
 **`default`** true
 

@@ -1,4 +1,4 @@
-> **[mmir-tooling 5.0.0](../README.md)**
+> **[mmir-tooling 5.1.0](../README.md)**
 
 [Globals](../README.md) / [mmir-tooling](mmir_tooling.md) /
 
@@ -70,7 +70,7 @@ module configuration: analogous to config-entry in requirejs configuration
 
 #### Type declaration:
 
-● \[▪ **moduleId**: *string*\]: [ModuleConfig](mmir_tooling.md#moduleconfig)
+* \[ **moduleId**: *string*\]: [ModuleConfig](mmir_tooling.md#moduleconfig)
 
 ___
 
@@ -90,7 +90,7 @@ otherwise against the rootPath.
 
 #### Type declaration:
 
-● \[▪ **moduleId**: *string*\]: string
+* \[ **moduleId**: *string*\]: string
 
 ___
 
@@ -100,7 +100,7 @@ ___
 
 #### Type declaration:
 
-● \[▪ **config**: *string*\]: any
+* \[ **config**: *string*\]: any
 
 ___
 

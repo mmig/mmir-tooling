@@ -1,4 +1,4 @@
-> **[mmir-tooling 5.0.0](../README.md)**
+> **[mmir-tooling 5.1.0](../README.md)**
 
 [Globals](../README.md) / [mmir-lib](../modules/mmir_lib.md) / [Pos](mmir_lib.pos.md) /
 
@@ -22,14 +22,20 @@
 
 • **i**: *number*
 
+index
+
 ___
 
 ###  len
 
 • **len**: *number*
 
+original word length (i.e. before modification)
+
 ___
 
 ### `Optional` mlen
 
 • **mlen**? : *number*
+
+modified word legnth (i.e. after modification)

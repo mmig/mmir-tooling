@@ -1,4 +1,4 @@
-> **[mmir-tooling 5.0.0](../README.md)**
+> **[mmir-tooling 5.1.0](../README.md)**
 
 [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [GrammarOptions](mmir_tooling.grammaroptions.md) /
 
@@ -45,7 +45,7 @@ options for handling found or specified JSON grammars
 
 #### Type declaration:
 
-● \[▪ **grammarId**: *string*\]: [GrammarEntry](mmir_tooling.grammarentry.md)
+* \[ **grammarId**: *string*\]: [GrammarEntry](mmir_tooling.grammarentry.md)
 
 ___
 

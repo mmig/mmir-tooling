@@ -1,4 +1,4 @@
-> **[mmir-tooling 5.0.0](../README.md)**
+> **[mmir-tooling 5.1.0](../README.md)**
 
 [Globals](../README.md) / [mmir-lib](../modules/mmir_lib.md) / [GrammarResult](mmir_lib.grammarresult.md) /
 
@@ -52,7 +52,7 @@ ___
 
 #### Type declaration:
 
-● \[▪ **preprocName**: *string*\]: `Array<Pos>`
+* \[ **preprocName**: *string*\]: `Array<Pos>`
 
 ___
 

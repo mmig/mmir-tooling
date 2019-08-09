@@ -1,4 +1,4 @@
-> **[mmir-tooling 5.0.0](../README.md)**
+> **[mmir-tooling 5.1.0](../README.md)**
 
 [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [RuntimeConfiguration](mmir_tooling.runtimeconfiguration.md) /
 
@@ -12,7 +12,7 @@ runtime configuration: same as config/configuration.json
 
 ## Indexable
 
-● \[▪ **configField**: *string*\]: any
+* \[ **configField**: *string*\]: any
 
 custom/additional configuration/settings:
 

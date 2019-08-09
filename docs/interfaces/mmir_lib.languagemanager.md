@@ -1,4 +1,4 @@
-> **[mmir-tooling 5.0.0](../README.md)**
+> **[mmir-tooling 5.1.0](../README.md)**
 
 [Globals](../README.md) / [mmir-lib](../modules/mmir_lib.md) / [LanguageManager](mmir_lib.languagemanager.md) /
 
@@ -128,7 +128,7 @@ ___
 
 ▸ (): *object*
 
-● \[▪ **id**: *string*\]: string
+* \[ **id**: *string*\]: string
 
 ___
 
