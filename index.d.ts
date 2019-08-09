@@ -191,14 +191,30 @@ export interface BuildAppConfig extends AppConfig {
 	targetDir?: string;
 
 	/**
-	 * if directories.json should include the view template fiels (`*.ehtml`)
-	 * e.g. for up-to-date test & runtime-comilation of view templates
+	 * if `directories.json` should include the view template files (`*.ehtml`)
+	 * e.g. for up-to-date test & runtime-compilation of view templates
 	 *
 	 * @default true
 	 */
 	includeViewTemplates?: boolean;
+	/**
+	 * if `directories.json` should include the SCXML files (`*.xml`)
+	 * e.g. for up-to-date test & runtime-compilation of state models
+	 *
+	 * @default true
+	 */
 	includeStateModelXmls?: boolean;
 
+	/**
+	 * directory to which the generated `directories.json` file should be written:
+	 * `directories.json` contains the listing of available mmir resources.
+	 *
+	 * NOTE if this file is not in the expected location, initialization of
+	 *      `mmir` may fail during runtime, i.e. use this option with care!
+	 *
+	 * @default targetDir + "/gen"
+	 */
+	directoriesTargetDir?: string;
 
 	grammars?: GrammarBuildOptions | boolean;
 	states?: StateBuildOptions | boolean;

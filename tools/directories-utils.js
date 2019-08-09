@@ -7,13 +7,14 @@ var createDirectoriesJson = function(){
 		// "/views/calendar": ["login.ehtml"],
 		// "/views/layouts": ["default.ehtml"],
 		"/models": [],
-		"/config": ["languages", "states", "configuration.json", "directories.json"],
+		"/config": ["languages", "states", "configuration.json"],
 		"/config/languages": [],//["en"]
 		// "/config/languages/en": ["dictionary.json", "speech.json"],
 		"/config/states": [],//["dialog.xml", "input.xml"]
 		"/helpers": [],
-		"/gen/grammar": [],//["mmirf/grammar/en.js"]
-		"/gen/view": []//,//["application", "calendar", "layouts"]
+		"/gen": ["directories.json"],
+		// "/gen/grammar": [],//["mmirf/grammar/en.js"]
+		// "/gen/view": []//,//["application", "calendar", "layouts"]
 		// "/gen/view/application": ["login.js"],
 		// "/gen/view/calendar": ["login.js"],
 		// "/gen/view/layouts": ["default.js"]
@@ -23,13 +24,17 @@ var createDirectoriesJson = function(){
 var cpath = "/controllers";
 var vpath = "/views";
 var mpath = "/models";
+// var confpath = "/config";
 var lpath = "/config/languages";
 var spath = "/config/states";
 var hpath = "/helpers";
-var gengrammars = "/gen/grammar";
-var genviews = "/gen/view";
-var genstates = "/gen/state";
-// var confpath = "/config";
+var gpath = "/gen";
+var gensubgrammars = "/grammar";
+var gengrammars = "/gen" + gensubgrammars;
+var gensubviews = "/view";
+var genviews = "/gen" + gensubviews;
+var gensubstates = "/state";
+var genstates = "/gen" + gensubstates;
 
 var reViewInfo = /mmirf\/view\/([^/]+)\/([^/]+)/;
 // var reCtrlInfo = /mmirf\/controller\/([^/]+)/;
@@ -78,6 +83,7 @@ function addView(json, reqId){
 	var m = reViewInfo.exec(reqId);
 	var ctrlName = m[1];
 
+	_addPath(json, gpath, gensubviews);
 	_addPath(json, genviews, ctrlName);
 	_addPath(json, genviews + '/' + ctrlName, reqId + '.js');
 
@@ -98,6 +104,7 @@ function addViewTemplate(json, reqId){
 function addGrammar(json, reqId){
 	var m = reGrammarInfo.exec(reqId);
 	var lang = m[1];
+	_addPath(json, gpath, gensubgrammars);
 	_addPath(json, gengrammars, reqId + '.js');
 
 	//NOTE add language-entry to indicate that there is a resource available for the language:
@@ -130,14 +137,15 @@ function addSpeechConfig(json, reqId){
 	_addPath(json, lpath + '/'  + lang, 'speech.json');
 }
 
-function addStateModel(stateModel, reqId){
-	_addPath(stateModel, genstates, reqId + '.js');
+function addStateModel(json, reqId){
+	_addPath(json, gpath, gensubstates);
+	_addPath(json, genstates, reqId + '.js');
 }
 
-function addStateModelXml(stateModel, reqId){
+function addStateModelXml(json, reqId){
 	var m = reSateModelInfo.exec(reqId);
 	var type = m[1];
-	_addPath(stateModel, spath, type + '.xml');
+	_addPath(json, spath, type + '.xml');
 }
 
 function getLanguages(json){

@@ -10,7 +10,7 @@ var logUtils = require('../utils/log-utils.js');
 var log = logUtils.log;
 var warn = logUtils.warn;
 
-var writeDirectoriesJson = function(directories, targetDir){
+function writeDirectoriesJson(directories, targetDir){
 
 	return fs.ensureDir(targetDir).then(function(){
 		return fs.writeFile(path.join(targetDir, 'directories.json'), JSON.stringify(directories), 'utf8').catch(function(err){
@@ -32,7 +32,7 @@ var getDictionaryTargetPath = function(dictionary, targetDir){
  * @param  {Array<SettingsEntry>} settings the list of settings
  * @param  {SettingsOptions} settingsOptions the settings options
  */
-var writeDictionaries = function(settings, settingsOptions){
+function writeDictionaries(settings, settingsOptions){
 
 	var dictionaries = settings.filter(function(item){ return item.type === 'dictionary'});
 

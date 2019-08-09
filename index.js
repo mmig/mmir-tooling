@@ -18,7 +18,7 @@ var settingsCompiler = require('./compiler/settings-compiler.js');
 var cliUtils = require('./utils/cli-utils.js');
 
 var getTargetDir = function(appConfig, mainOptions, optType){
-	return mainOptions[optType+'Options']? mainOptions[optType+'Options'].targetDir : appConfig.targetDir && path.join(appConfig.targetDir, optType);
+	return mainOptions[optType+'Options'].targetDir || (appConfig.targetDir && path.join(appConfig.targetDir, 'gen', optType));
 }
 
 var resolveTargetDir = function(appDir, targetDir){
@@ -34,7 +34,17 @@ var processTargetDirs = function(appDir, appConfig, buildConfig){
 	buildConfig.viewOptions.targetDir     = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view')    || path.join('www', 'gen', 'view'));
 	buildConfig.stateOptions.targetDir    = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'state')   || path.join('www', 'gen', 'state'));
 
-	buildConfig.settingsOptions.targetDir = resolveTargetDir(appDir, appConfig.settingsOptions && appConfig.settingsOptions.targetDir? appConfig.settingsOptions.targetDir : appConfig.targetDir? path.join(appConfig.targetDir, 'config') : path.join('www', 'config'));
+	buildConfig.directoriesTargetDir = resolveTargetDir(appDir,
+		appConfig.directoriesTargetDir?
+			appConfig.directoriesTargetDir : appConfig.targetDir?
+				 path.join(appConfig.targetDir, 'gen') : path.join('www', 'gen')
+	);
+
+	buildConfig.settingsOptions.targetDir = resolveTargetDir(appDir,
+		appConfig.settingsOptions && appConfig.settingsOptions.targetDir?
+			appConfig.settingsOptions.targetDir : appConfig.targetDir?
+				path.join(appConfig.targetDir, 'config') : path.join('www', 'config')
+	);
 }
 
 /**
@@ -97,7 +107,7 @@ var compileResources = function(mmirAppConfig){
 	processTargetDirs(appRootDir, mmirAppConfig, buildConfig);
 
 	tasks.push(settingsCompiler.writeDictionaries(buildConfig.settings, buildConfig.settingsOptions));
-	tasks.push(settingsCompiler.writeDirectoriesJson(buildConfig.directories, buildConfig.settingsOptions.targetDir));
+	tasks.push(settingsCompiler.writeDirectoriesJson(buildConfig.directories, buildConfig.directoriesTargetDir));
 
 	if(buildConfig.grammars.length > 0){
 
