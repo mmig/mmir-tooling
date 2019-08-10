@@ -51,7 +51,9 @@ function readDir(dir, list, options){
 			var opt = options && options[id];
 			if(opt && (opt.exclude || opt.file)){
 				//-> ignore/exclude this scxml!
+				//  (if was not exlcuded, but file was specified -> will be added later in addFromOptions(..))
 				log('scxml-utils.addFromDirectory(): excluding scxml file for '+id+' model at "'+normalized+'"!');//DEBUG
+				return;//////////////////// EARLY EXIT //////////////////
 			}
 
 			if(opt && opt.id && opt.id !== id){
