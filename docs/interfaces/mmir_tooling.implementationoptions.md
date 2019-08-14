@@ -1,4 +1,4 @@
-> **[mmir-tooling 5.1.0](../README.md)**
+> **[mmir-tooling 5.2.0](../README.md)**
 
 [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [ImplementationOptions](mmir_tooling.implementationoptions.md) /
 
