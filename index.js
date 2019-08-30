@@ -30,9 +30,13 @@ var resolveTargetDir = function(appDir, targetDir){
 
 var processTargetDirs = function(appDir, appConfig, buildConfig){
 
-	buildConfig.grammarOptions.targetDir  = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'grammar') || path.join('www', 'gen', 'grammar'));
-	buildConfig.viewOptions.targetDir     = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view')    || path.join('www', 'gen', 'view'));
-	buildConfig.stateOptions.targetDir    = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'state')   || path.join('www', 'gen', 'state'));
+	if(typeof buildConfig.stateOptions === 'undefined'){
+		buildConfig.stateOptions = {};
+	}
+
+	if(buildConfig.grammarOptions) buildConfig.grammarOptions.targetDir  = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'grammar') || path.join('www', 'gen', 'grammar'));
+	if(buildConfig.viewOptions)    buildConfig.viewOptions.targetDir     = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view')    || path.join('www', 'gen', 'view'));
+	if(buildConfig.stateOptions)   buildConfig.stateOptions.targetDir    = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'state')   || path.join('www', 'gen', 'state'));
 
 	buildConfig.directoriesTargetDir = resolveTargetDir(appDir,
 		appConfig.directoriesTargetDir?
@@ -40,11 +44,13 @@ var processTargetDirs = function(appDir, appConfig, buildConfig){
 				 path.join(appConfig.targetDir, 'gen') : path.join('www', 'gen')
 	);
 
-	buildConfig.settingsOptions.targetDir = resolveTargetDir(appDir,
-		appConfig.settingsOptions && appConfig.settingsOptions.targetDir?
-			appConfig.settingsOptions.targetDir : appConfig.targetDir?
-				path.join(appConfig.targetDir, 'config') : path.join('www', 'config')
-	);
+	if(buildConfig.settingsOptions){
+		buildConfig.settingsOptions.targetDir = resolveTargetDir(appDir,
+			appConfig.settingsOptions && appConfig.settingsOptions.targetDir?
+				appConfig.settingsOptions.targetDir : appConfig.targetDir?
+					path.join(appConfig.targetDir, 'config') : path.join('www', 'config')
+		);
+	}
 }
 
 /**
