@@ -120,8 +120,14 @@ function addFromOptions(stateModels, list, appRootDir){
 			//TODO verify existence of entry.file?
 
 			if(!entry.moduleId){
-				log('scxml-utils.addFromOptions(): entry from modelOptions for ID "'+id+'" has has no module ID set, using ID "'+id+'" as module ID!');
-				entry.moduleId = id;
+				if(entry.id === 'dialog'){
+					entry.moduleId = 'mmirf/dialogManager';
+				} else if(entry.id === 'input'){
+					entry.moduleId = 'mmirf/inputManager';
+				} else {
+					log('scxml-utils.addFromOptions(): entry from modelOptions for ID "'+id+'" has has no module ID set, using ID "'+id+'" as module ID!');
+					entry.moduleId = id;
+				}
 			}
 			moduleId = entry.moduleId;
 
