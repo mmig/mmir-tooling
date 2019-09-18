@@ -6,6 +6,8 @@ var grammarGen = require('../grammar/grammar-gen.js');
 
 var checksumUtil = require('../utils/checksum-util.js');
 
+var configurationUtil = require('../tools/settings-utils.js');
+
 var Promise = require('../utils/promise.js');
 
 
@@ -91,9 +93,19 @@ var compile = function(grammarLoadOptions){
 
 		g.force = typeof g.force === 'boolean'? g.force : grammarLoadOptions.config.force;
 
-		var t = fs.readFile(g.file, 'utf8').then(function(content){
+
+		var t = configurationUtil.loadSettingsFrom(g.file, g.fileType, true).then(function(grammarJsonObj){
 
 			log('###### start processing grammar '+g.id+' (engine '+g.engine+', asyncCompile '+g.asyncCompile+')...');
+
+			var content;
+			try{
+				content = JSON.stringify(grammarJsonObj);
+			} catch(err){
+				var msg = 'ERROR parsing grammar definition from '+(sc? sc.file : '<UNKNOWN>')+': ';
+				warn(msg, err);
+				return resolve(err.stack? err : new Error(msg+err));
+			}
 
 			var doCompile = function(){
 				return new Promise(function(resolve, reject){

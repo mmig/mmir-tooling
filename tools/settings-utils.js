@@ -1,6 +1,7 @@
 var path = require('path');
 var fs = require('fs');
 var _ = require('lodash');
+var Promise = require('../utils/promise.js');
 var fileUtils = require('../utils/filepath-utils.js');
 
 var appConfigUtils = require('../utils/module-config-init.js');
@@ -16,10 +17,13 @@ var ALL_SPEECH_CONFIGS_TYPE = 'speech-all';
 /**
  * scan for
  *
- *  * configuration.json
- *  * <id>/dictionary.json
- *  * <id>/grammar.json
- *  * <id>/speech.json
+ *  * configuration.[json | js]
+ *  * <id>/dictionary.[json | js]
+ *  * <id>/grammar.[json | js]
+ *  * <id>/speech.[json | js]
+ *
+ * NOTE: if .js file, it MUST be a CommonJS module that exports the settings object as its only/default export, i.e.  ~ "module.exports = settingsObject;";
+ *       any dynamic code is evaluated at compile-time, i.e. the exported settings-object must not contain dynamic content
  *
  * @param  {[type]} dir [description]
  * @param  {[type]} list [description]
@@ -40,7 +44,7 @@ function readDir(dir, list, options){
 			dirs.push(absPath);
 			return false;
 
-		} else if(/(configuration|dictionary|grammar|speech)\.json$/i.test(absPath)){
+		} else if(/(configuration|dictionary|grammar|speech)\.js(on)?$/i.test(absPath)){
 
 			var id, type;
 			if(isSettingsType('configuration', absPath)){
@@ -79,11 +83,13 @@ function readDir(dir, list, options){
 
 				} else {
 					var normalized = fileUtils.normalizePath(absPath);
+					var fileType = getFileType(normalized);
 					list.push({
 						type: type,
 						id: id,
 						file: normalized,
-						value: isInline? readJson(normalized) : void(0),
+						fileType: fileType,
+						value: isInline? readSettingsFile(normalized, fileType) : void(0),
 						include: isInline? 'inline' : 'file'
 					});
 				}
@@ -110,17 +116,65 @@ function isSettingsType(type, filePath){
 }
 
 function getTypeFrom(settingsFilePath){
-	return path.basename(settingsFilePath).replace(/\.json$/, '');
+	return path.basename(settingsFilePath).replace(/\.js(on)?$/, '');
 }
 
 function getIdFor(settingsFilePath){
 	return path.basename(path.dirname(settingsFilePath));
 }
 
+function getFileType(filePath){
+	return /\.js$/i.test(filePath)? 'js' : 'json';
+}
+
+
+/**
+ * read settings file as JSON or "plain" CommonJS module and return PlainObject
+ *
+ * @param  {string} filePath the filePath
+ * @param  {'json' | 'js'} [fileType] OPTIONAL if omitted, will be derived from filePath
+ * @param  {boolean} [async] OPTIONAL (positional argument!) if settings file should be read async (which will return Promise)
+ * @return {{[field: string]: any} | Promise<{[field: string]: any}>} the settings object (or if async, a Promise that resolves to the settings object)
+ */
+function readSettingsFile(filePath, fileType, async){
+	fileType = fileType || getFileType(filePath);
+	if(fileType === 'js'){
+		return !async? requireJson(filePath) : new Promise(function(resolve){resolve(requireJson(filePath))});
+	} else {
+		return !async? readJsonSync(filePath) : readJsonAsync(filePath);
+	}
+}
+
 //TODO wrap try/catch -> print webpack-error
-function readJson(filePath){
+function requireJson(filePath){
+	try{
+		return require(filePath);
+	} catch (err){
+		logUtils.warn('cannot load module contents as JSON-like object from ', filePath);
+		throw err;
+	}
+}
+
+function readJsonSync(filePath){
 	// log('reading ', filePath);//DEBU
 	var buffer = fs.readFileSync(filePath);
+	return binToJsonObj(buffer, filePath);
+}
+
+function readJsonAsync(filePath){
+	// log('reading ', filePath);//DEBU
+	return new Promise(function(resolve, reject){
+		fs.readFile(filePath, function(err, buffer){
+			if(err){
+				return reject(err);
+			}
+			resolve(binToJsonObj(buffer, filePath));
+		});
+	});
+}
+
+//TODO wrap try/catch -> print webpack-error
+function binToJsonObj(buffer, filePath){
 	var enc = detectByteOrder(buffer);
 	var content = buffer.toString(enc);
 	// var content = toUtfString(buffer, enc);// buffer.toString(enc);
@@ -187,7 +241,7 @@ function doLoadAllFilesFor(s){
 		warn('WARN settings-utils: forced inlining for "'+s.id+'" ('+s.type+') with multiple file resources: content not loaded yet, loading file content and merging now...');
 		var content = {};
 		s.file.forEach(function(f){
-			_.merge(content, readJson(f));
+			_.merge(content, readSettingsFile(f));
 		});
 		s.value = content;
 	}
@@ -216,10 +270,10 @@ function normalizeConfigurations(settingsList){
 
 				//if "include" was set to "file", the file contents have not been loaded yet
 				if(!conf.value){
-					conf.value = readJson(conf.file);
+					conf.value = readSettingsFile(conf.file, conf.fileType);
 				}
 				if(!c.value){
-					c.value = readJson(c.file);
+					c.value = readSettingsFile(c.file, c.fileType);
 				}
 
 				//merge configuration values:
@@ -288,10 +342,10 @@ module.exports = {
 	 *
 	 * @param  {SetttingsOptions} options the settings-options with field options.path:
 	 *                                  options.path: {String} the directory to parse for JSON settings
-	 *                                  options.configuration: {Boolean | SettingsEntryOptions} options for the configuration.json entry
-	 *                                  options.dictionary: {Boolean | {[id: String]: SettingsEntryOptions}} options-map for the dictionary.json entries where id is (usually) the language code
-	 *                                  options.grammar: {Boolean | {[id: String]: SettingsEntryOptions}} options-map for the grammar.json entries where id is (usually) the language code
-	 *                                  options.speech: {Boolean | {[id: String]: SettingsEntryOptions}} options-map for the speech.json entries where id is (usually) the language code
+	 *                                  options.configuration: {Boolean | SettingsEntryOptions} options for the configuration.json (or .js) entry
+	 *                                  options.dictionary: {Boolean | {[id: String]: SettingsEntryOptions}} options-map for the dictionary.json (or .js) entries where id is (usually) the language code
+	 *                                  options.grammar: {Boolean | {[id: String]: SettingsEntryOptions}} options-map for the grammar.json (or .js) entries where id is (usually) the language code
+	 *                                  options.speech: {Boolean | {[id: String]: SettingsEntryOptions}} options-map for the speech.json (or .js) entries where id is (usually) the language code
 	 *                                   where:
 	 *                                     if Boolean: if FALSE, the corresponding JSON settings are excluded/ignored
 	 *                                     if SettingsEntryOptions:
@@ -333,7 +387,8 @@ module.exports = {
 	/** load settings file
 	 * NOTE: if updating s.value with the loaded data, need to update s.include and s.file accordingly!
 	 */
-	loadSettingsFrom: readJson,
+	loadSettingsFrom: readSettingsFile,
+	getFileType: getFileType,
 	getAllSpeechConfigsType: function(){ return ALL_SPEECH_CONFIGS_TYPE; },
 	addSettingsToAppConfig: function(settings, appConfig, directories, _resources, runtimeConfig, regExpExcludeType, ignoreMissingDictionaries){
 
@@ -387,7 +442,7 @@ module.exports = {
 					if(s.include === 'file'){
 						warn("WARN settings-utils: applying 'speech-all' settings: cannot include file for "+s.id+", inlining instead.");
 						if(!s.value){
-							s.value = readJson(s.file);
+							s.value = readSettingsFile(s.file, s.fileType);
 						}
 						s.include = 'inline';
 					}

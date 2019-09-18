@@ -6,6 +6,7 @@ var fileUtils = require('../utils/filepath-utils.js');
 var appConfigUtils = require('../utils/module-config-init.js');
 var directoriesUtil = require('../tools/directories-utils.js');
 var configurationUtil = require('../tools/settings-utils.js');
+var optionUtils = require('../tools/option-utils.js');
 
 var logUtils = require('../utils/log-utils.js');
 var log = logUtils.log;
@@ -22,9 +23,9 @@ function readDir(dir, list, options){
 		if(fileUtils.isDirectory(absPath)){
 			dirs.push(absPath);
 			return false;
-		} else if(/grammar\.json$/i.test(p)){
+		} else if(/grammar\.js(on)?$/i.test(p)){
 			var normalized = fileUtils.normalizePath(absPath);
-			var m = /\/([^/]+)\/grammar\.json$/i.exec(normalized);
+			var m = /\/([^/]+)\/grammar\.js(on)?$/i.exec(normalized);
 			var id = m[1];
 
 			var opt = options && options[id];
@@ -37,6 +38,7 @@ function readDir(dir, list, options){
 			list.push({
 				id: id,
 				file: normalized,
+				fileType: configurationUtil.getFileType(normalized),
 				engine: opt && opt.engine? opt.engine : void(0),
 				ignore: opt && opt.ignore? true : false,
 				async: opt && opt.async? true : void(0),
@@ -68,6 +70,7 @@ function addFromOptions(grammars, list, appRootDir){
 				entry.file = path.resolve(appRootDir, entry.file);
 			}
 			entry.file = fileUtils.normalizePath(entry.file);
+			entry.fileType = entry.fileType || configurationUtil.getFileType(entry.file);
 
 			if(entry.id && entry.id !== id){
 				warn('grammar-utils.addFromOptions(): entry from grammarOptions for ID "'+id+'" has differing field id with value "'+entry.id+'", overwritting the id field with "'+id+'"!');//FIXME proper webpack error/warning
@@ -124,7 +127,7 @@ module.exports = {
 	 *														                                   (and registered) when the the app is initialized, i.e. needs to be
 	 *														                                   "manually" loaded/initialized by app implementation and/or other mechanisms.
 	 *														                                   If omitted or <code>false</code>, the grammar will be loaded on start-up of the app,
-	 *														                                   and then will be available e.g. via <code>mmir.semantic.interprest(<input phrase string>, <grammar-id>)</code>.
+	 *														                                   and then will be available e.g. via <code>mmir.semantic.interpret(<input phrase string>, <grammar-id>)</code>.
 	 * @param {String} appRootDir the root directory of the app (against which relative paths will be resolved)
 	 * @param {Array<GrammarEntry>} [grammarList] OPTIONAL list of GrammarEntry objects, to which the new entries (read from the options.directory) will be added
 	 * 																					if omitted, a new list will be created and returned.
@@ -136,7 +139,7 @@ module.exports = {
 	 * 										                                   (and registered) when the the app is initialized, i.e. needs to be
 	 * 										                                   "manually" loaded/initialized by app implementation and/or other mechanisms.
 	 * 										                                   If omitted or <code>false</code>, the grammar will be loaded on start-up of the app,
-	 * 										                                   and then will be available e.g. via <code>mmir.semantic.interprest(<input phrase string>, <grammar-id>)</code>.
+	 * 										                                   and then will be available e.g. via <code>mmir.semantic.interpret(<input phrase string>, <grammar-id>)</code>.
 	 * 										GrammarEntry.async {Boolean}: OPTIONAL if <code>true</code>, and the execution environment supports Workers, then the grammar will be loaded
 	 * 																												in a Worker on app start-up, i.e. execution will be asynchronously in a worker-thread
 	 * @return {Array<GrammarEntry>} the list of GrammarEntry objects
@@ -169,7 +172,6 @@ module.exports = {
 
 		return list;
 	},
-
 	/**
 	 * add grammars to (webpack) app build configuration
 	 *
@@ -180,7 +182,7 @@ module.exports = {
 	 * 										                                   (and registered) when the the app is initialized, i.e. needs to be
 	 * 										                                   "manually" loaded/initialized by app implementation and/or other mechanisms.
 	 * 										                                   If omitted or <code>false</code>, the grammar will be loaded on start-up of the app,
-	 * 										                                   and then will be available e.g. via <code>mmir.semantic.interprest(<input phrase string>, <grammar-id>)</code>.
+	 * 										                                   and then will be available e.g. via <code>mmir.semantic.interpret(<input phrase string>, <grammar-id>)</code>.
 	 * @param  {[type]} appConfig the app configuration to which the grammars will be added
 	 * @param  {[type]} directories the directories.json representation
 	 * @param  {ResourcesConfig} _resources the resources configuration
@@ -208,5 +210,7 @@ module.exports = {
 
 			directoriesUtil.addGrammar(directories, toAliasId(g));
 		});
-	}
+	},
+	toAliasId: toAliasId,
+	toAliasPath: toAliasPath
 };

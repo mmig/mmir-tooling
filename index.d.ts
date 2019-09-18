@@ -288,21 +288,21 @@ export interface GrammarEntry {
 export interface SettingsOptions {
 	/** file path for searching settings:
 	 * ```bash
-	 * path/.../<language ID>/grammar.json
-	 *                       /dictionary.json
-	 *                       /speech.json
-	 * configuration.json
+	 * path/.../<language ID>/grammar.[json | js]
+	 *                       /dictionary.[json | js]
+	 *                       /speech.[json | js]
+	 * configuration.[json | js]
 	 * ```
 	 */
 	path?: string;
 
-	/** options for the configuration.json entry; if FALSE, the resource will be ignored */
+	/** options for the configuration.json (or .js) entry; if FALSE, the resource will be ignored */
 	configuration?: boolean | SettingsEntryOptions;
-	/** options-map for the dictionary.json entries where id is (usually) the language code; if `false`, these resources will be ignored */
+	/** options-map for the dictionary.json (or .js) entries where id is (usually) the language code; if `false`, these resources will be ignored */
 	dictionary?: boolean | {[id: string]: SettingsEntryOptions};
-	/** options-map for the grammar.json entries where id is (usually) the language code; if `false`, these resources will be ignored */
+	/** options-map for the grammar.json (or .js) entries where id is (usually) the language code; if `false`, these resources will be ignored */
 	grammar?: boolean | {[id: string]: SettingsEntryOptions};
-	/** options-map for the speech.json entries where id is (usually) the language code; if `false`, these resources will be ignored */
+	/** options-map for the speech.json (or .js) entries where id is (usually) the language code; if `false`, these resources will be ignored */
 	speech?: boolean | {[id: string]: SettingsEntryOptions};
 }
 
@@ -318,10 +318,20 @@ export interface SettingsEntryOptions {
 	/**  for explicitly specifying the settings-resource directly (e.g. instead or in addition of parsing `path` for settings resource files) */
 	file?: string;
 
-	/** the settings-type (should not be set manually) */
+	/** the settings-type _(should not be set manually)_ */
 	type?: SettingsType;
-	/** the ID for the settings-resources (should not be set manually) */
+	/** the ID for the settings-resources _(should not be set manually)_ */
 	id?: string;
+	/** the settings-file-type _(should not be set manually)_:\
+	 * derived from the file-extension, either "json" or "js".
+	 *
+	 * If .js file, it MUST be a CommonJS module that exports the settings object as its only/default export, i.e.\
+	 * ```javascript
+	 * module.exports = settingsObject;
+	 * ```
+	 * any dynamic code is evaluated at compile-time, i.e. the exported settings-object must not contain dynamic content
+	 */
+	fileType?: SettingsType;
 }
 
 export type SettingsType = 'configuration' | 'dictionary' | 'grammar' | 'speech';
@@ -447,8 +457,12 @@ export interface RuntimeConfiguration {
 	usePrecompiledGrammarsOnly?: boolean;
 	/** if JSON grammar is compiled during runtime, use async (i.e. web worker) compilation */
 	grammarAsyncCompileMode?: boolean;
-	/** list of grammars (IDs) which should not be automatically loaded on startup, even if compiled/JSON grammar is available for the language */
-	ignoreGrammarFiles?: Array<string>;
+	/**
+	 * list of grammars (IDs) which should not be automatically loaded on startup, even if compiled/JSON grammar is available for the language
+	 *
+	 * If `true`, no file compiled grammars will be loaded on start-up (i.e. all IDs will be ignored for start-up)
+	 */
+	ignoreGrammarFiles?: Array<string> | true;
 
 	/**
 	 * detect if compiled state-models (i.e. JS-compiled SCXML files) are present & should be used
