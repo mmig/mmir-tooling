@@ -5,6 +5,7 @@ var fileUtils = require('../utils/filepath-utils.js');
 
 var appConfigUtils = require('../utils/module-config-init.js');
 var directoriesUtil = require('../tools/directories-utils.js');
+var optionUtils = require('../tools/option-utils.js');
 
 var logUtils = require('../utils/log-utils.js');
 var log = logUtils.log;
@@ -103,10 +104,6 @@ function addFromOptions(implMap, list, appRootDir, generalOptions){
 				entry.type = 'controller';
 			}
 
-			if(typeof entry.addModuleExport === 'undefined'){
-				entry.addModuleExport = generalOptions.addModuleExport || false;
-			}
-
 			//TODO verify existence of entry.file?
 
 			if(!contains(list, id, entry.type)){
@@ -193,6 +190,28 @@ module.exports = {
 		addFromOptions(options[mode + 's'], list, appRootDir, options);
 
 		return list;
+	},
+
+	/**
+	 * apply the "global" options from `options` or default values to the entries
+	 * from `implList` if its corresponding options-field is not explicitly specified.
+	 *
+	 * @param  {ImplOptions} options the implementation options
+	 * @param  {{Array<ImplEntry>}} implList
+	 * @return {{Array<ImplEntry>}}
+	 */
+	applyDefaultOptions: function(options, implList){
+
+		implList.forEach(function(impl){
+			[
+				{name: 'addModuleExport', defaultValue: false}
+			].forEach(function(fieldInfo){
+				optionUtils.applySetting(fieldInfo.name, impl, options, fieldInfo.defaultValue);
+			});
+
+		});
+
+		return implList;
 	},
 
 	/**

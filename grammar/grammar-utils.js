@@ -173,6 +173,31 @@ module.exports = {
 		return list;
 	},
 	/**
+	 * apply the "global" options from `options` or default values to the entries
+	 * from `grammarList` if its corresponding options-field is not explicitly specified.
+	 *
+	 * @param  {GrammarOptions} options the grammar options
+	 * @param  {{Array<GrammarEntry>}} grammarList
+	 * @return {{Array<GrammarEntry>}}
+	 */
+	applyDefaultOptions: function(options, grammarList){
+
+		grammarList.forEach(function(g){
+			[
+				{name: 'engine', defaultValue: 'jscc'},
+				{name: 'ignore', defaultValue: false},
+				{name: 'async', defaultValue: false},
+				{name: 'asyncCompile', defaultValue: void(0)},
+				{name: 'force', defaultValue: false}
+			].forEach(function(fieldInfo){
+				optionUtils.applySetting(fieldInfo.name, g, options, fieldInfo.defaultValue);
+			});
+
+		});
+
+		return grammarList;
+	},
+	/**
 	 * add grammars to (webpack) app build configuration
 	 *
 	 * @param  {Array<GrammarEntry>} grammars list of GrammarEntry objects:

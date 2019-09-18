@@ -5,6 +5,7 @@ var fileUtils = require('../utils/filepath-utils.js');
 
 var appConfigUtils = require('../utils/module-config-init.js');
 var directoriesUtil = require('../tools/directories-utils.js');
+var optionUtils = require('../tools/option-utils.js');
 
 var logUtils = require('../utils/log-utils.js');
 var log = logUtils.log;
@@ -236,6 +237,30 @@ module.exports = {
 		addDefaults(kind, list, appRootDir);
 
 		return list;
+	},
+
+	/**
+	 * apply the "global" options from `options` or default values to the entries
+	 * from `stateModels` if its corresponding options-field is not explicitly specified.
+	 *
+	 * @param  {ScxmlOptions} options the state-models options
+	 * @param  {{Array<ScxmlEntry>}} stateModels
+	 * @return {{Array<ScxmlEntry>}}
+	 */
+	applyDefaultOptions: function(options, stateModels){
+
+		stateModels.forEach(function(st){
+			[
+				{name: 'mode', defaultValue: DEFAULT_MODE},
+				{name: 'ignoreErrors', defaultValue: false},
+				{name: 'force', defaultValue: false}
+			].forEach(function(fieldInfo){
+				optionUtils.applySetting(fieldInfo.name, st, options, fieldInfo.defaultValue);
+			});
+
+		});
+
+		return stateModels;
 	},
 
 	/**

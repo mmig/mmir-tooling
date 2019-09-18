@@ -5,6 +5,7 @@ var fileUtils = require('../utils/filepath-utils.js');
 var appConfigUtils = require('../utils/module-config-init.js');
 
 var directoriesUtil = require('../tools/directories-utils.js');
+// var optionUtils = require('../tools/option-utils.js');
 
 var logUtils = require('../utils/log-utils.js');
 var log = logUtils.log;
@@ -182,6 +183,30 @@ module.exports = {
 		readDir(dir, list, options);
 
 		return list;
+	},
+
+	/**
+	 * apply the "global" options from `options` or default values to the entries
+	 * from `viewList` if its corresponding options-field is not explicitly specified.
+	 *
+	 * @param  {ViewOptions} options the view options
+	 * @param  {{Array<ViewEntry>}} viewList
+	 * @return {{Array<ViewEntry>}}
+	 */
+	applyDefaultOptions: function(_options, viewList){
+
+		//TODO impl. if/when addFromOpitions is implemented...
+		// viewList.forEach(function(v){
+		// 	[
+		// 		{name: 'ignoreErrors', defaultValue: false},
+		// 		{name: 'force', defaultValue: false}
+		// 	].forEach(function(fieldInfo){
+		// 		optionUtils.applySetting(fieldInfo.name, v, options, fieldInfo.defaultValue);
+		// 	});
+		//
+		// });
+
+		return viewList;
 	},
 
 	/**

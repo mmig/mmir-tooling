@@ -88,6 +88,9 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	if(grammarOptions && grammarOptions.grammars){
 		grammarUtils.jsonGrammarsFromOptions(grammarOptions, appRootDir, grammars);
 	}
+	if(grammars.length > 0){
+		grammarUtils.applyDefaultOptions(grammarOptions || {}, grammars);
+	}
 
 	// log('JSON grammars: ', grammars, grammarOptions);
 
@@ -124,6 +127,7 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 		log('no SCXML models specified, including minimal default SCXML models for "input" and "dialog"...');//DEBUG
 		scxmlUtils.scxmlDefaults(stateOptions, appRootDir, states);
 	}
+	scxmlUtils.applyDefaultOptions(stateOptions, states);
 
 	// log('SCXML models: ', states, stateOptions);//DEBUG
 
@@ -140,6 +144,9 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	if(ctrlOptions && ctrlOptions.controllers){
 		implUtils.implFromOptions('controller', ctrlOptions, appRootDir, ctrlList);
 	}
+	if(ctrlList.length > 0){
+		implUtils.applyDefaultOptions(ctrlOptions || {}, ctrlList);
+	}
 	log('controllers: ', ctrlList, ctrlOptions);//DEBUG
 	implUtils.addImplementationsToAppConfig(ctrlList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
 
@@ -150,6 +157,9 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	}
 	if(helperOptions && helperOptions.helpers){
 		implUtils.implFromOptions('helper', helperOptions, appRootDir, helperList);
+	}
+	if(helperList.length > 0){
+		implUtils.applyDefaultOptions(helperOptions || {}, helperList);
 	}
 	log('helpers: ', helperList, helperOptions);//DEBUG
 	implUtils.addImplementationsToAppConfig(helperList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
@@ -162,9 +172,15 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	if(modelOptions && modelOptions.models){
 		implUtils.implFromOptions('model', modelOptions, appRootDir, modelList);
 	}
+	if(modelList.length > 0){
+		implUtils.applyDefaultOptions(modelOptions || {}, modelList);
+	}
 	log('models: ', modelList, modelOptions);
 	implUtils.addImplementationsToAppConfig(modelList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
 	var implList = ctrlList.concat(helperList, modelList);
+
+
+
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
@@ -179,6 +195,9 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	var views = [];
 	if(viewOptions && viewOptions.path){
 		views = viewUtils.viewTemplatesFromDir(viewOptions.path, appRootDir);
+	}
+	if(views.length > 0){
+		implUtils.applyDefaultOptions(viewOptions || {}, views);
 	}
 
 	//TODO impl./support loading indivual views similar to grammars
