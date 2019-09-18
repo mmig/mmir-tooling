@@ -47,11 +47,11 @@ define([
 	 * @param  {Function} createViewKey
 	 *          the PresentationManager's helper function for creating keys to be used when
 	 *          adding views to <code>_views</code>:<br>
-	 *          <code>createViewKey(ctrl: {Controller|String}, view: {View|String}) : {String}</code>
+	 *          <code>createViewKey(ctrl: {mmir.ctrl.Controller|String}, view: {mmir.view.View|String}) : {String}</code>
 	 * @param  {Function} createPartialKey
 	 *          the PresentationManager's helper function for creating keys to be used when
 	 *          adding partials to <code>_partials</code>:<br>
-	 *          <code>createPartialKey(partial: {Partial|String}, view: {View|String}) : {String}</code>
+	 *          <code>createPartialKey(partial: {mmir.view.Partial|String}, view: {mmir.view.View|String}) : {String}</code>
 	 * @return {Promise}
 	 *          a deferred promise that gets resolved when the views (layouts, and partials) are loaded
 	 *
@@ -89,7 +89,7 @@ define([
 		 * The logger for the PresentationManager.
 		 *
 		 * @private
-		 * @type Logger
+		 * @type mmir.tools.Logger
 		 * @memberOf ViewLoader.init
 		 */
 		var logger = Logger.create(module);//initialize with requirejs-module information
@@ -104,7 +104,6 @@ define([
 		 * HELPER get the (webpack) module ID for the default layout
 		 *
 		 * @private
-		 * @type Logger
 		 * @memberOf ViewLoader.init
 		 */
 		function getDefaultLayoutId(defaultLayoutName){
@@ -132,7 +131,6 @@ define([
 		 * HELPER load the default layout
 		 *
 		 * @private
-		 * @type Logger
 		 * @memberOf ViewLoader.init
 		 */
 		function loadDefaultLayout(){
@@ -161,7 +159,6 @@ define([
 		 * @param  {String} ctrlName (for debug output) the controller to which the infoList belongs
 		 *
 		 * @private
-		 * @type Logger
 		 * @memberOf ViewLoader.init
 		 */
 		function loadViews(infoList, viewType, ctrlName){
