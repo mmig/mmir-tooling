@@ -14,6 +14,9 @@ var warn = logUtils.warn;
 
 var ALL_SPEECH_CONFIGS_TYPE = 'speech-all';
 
+var CONFIG_IGNORE_GRAMMAR_FILES = 'ignoreGrammarFiles';
+var CONFIG_GRAMMAR_ASYNC_EXEC = 'grammarAsyncExecMode';
+
 /**
  * scan for
  *
@@ -322,20 +325,37 @@ function toAliasId(settings){
 	return 'mmirf/settings/' + settings.type + (settings.id? '/' + settings.id : '');//FIXME formalize IDs for loading views in webpack (?)
 }
 
+function addToConfigList(runtimeConfiguration, configListName, entry){
+
+	//NOTE: special treatment for value TRUE:
+	//     in case a config-list is set to TRUE, it means that
+	//     it should be interpreted, as if the config-list contains
+	//     all possible values, e.g. for "ignoreGrammarFiles" -> do ignore ALL grammar files
+	if(runtimeConfiguration[configListName] === true){
+		return;
+	}
+
+	var exists = false;
+	if(!runtimeConfiguration[configListName]){
+		runtimeConfiguration[configListName] = [];
+	} else {
+		exists = containsEntry(runtimeConfiguration[configListName], entry);
+	}
+
+	if(!exists){
+		runtimeConfiguration[configListName].push(entry);
+	}
+}
+
 module.exports = {
 
 	setGrammarIgnored: function(runtimeConfiguration, grammarId){
 
-		var exists = false;
-		if(!runtimeConfiguration.ignoreGrammarFiles){
-			runtimeConfiguration.ignoreGrammarFiles = [];
-		} else {
-			exists = containsEntry(runtimeConfiguration.ignoreGrammarFiles, grammarId);
-		}
+		addToConfigList(runtimeConfiguration, CONFIG_IGNORE_GRAMMAR_FILES, grammarId);
+	},
+	setGrammarAsyncExec: function(runtimeConfiguration, grammarId){
 
-		if(!exists){
-			runtimeConfiguration.ignoreGrammarFiles.push(grammarId);
-		}
+		addToConfigList(runtimeConfiguration, CONFIG_GRAMMAR_ASYNC_EXEC, grammarId);
 	},
 	/**
 	 * parse for JSON settings files
@@ -479,5 +499,7 @@ module.exports = {
 			}
 		}
 
-	}
+	},
+	configEntryIgnoreGrammar: CONFIG_IGNORE_GRAMMAR_FILES,
+	configEntryAsyncExecGrammar: CONFIG_GRAMMAR_ASYNC_EXEC,
 };

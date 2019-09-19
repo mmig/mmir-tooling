@@ -30,9 +30,18 @@ var addAliasFrom = function(mmirAppConfig, alias){
 
 }
 
+function contains(list, entry){
+	return list.findIndex(function(item){
+		return item === entry;
+	}) !== -1;
+}
 
 function toAliasPath(moduleFilePath){
 	return path.normalize(moduleFilePath);
+}
+
+function registerModuleId(appConfig, id, file){
+	doRegisterModuleId(appConfig, id, file);
 }
 
 function addAutoLoadModule(appConfig, id, file){
@@ -45,17 +54,25 @@ function addIncludeModule(appConfig, id, file){
 
 function doAddModule(appConfig, includeType, id, file){
 
-	if(!appConfig.paths){
-		appConfig.paths = {};
+	if(file){
+		doRegisterModuleId(appConfig, id, file);
 	}
 
 	if(!appConfig[includeType]){
 		appConfig[includeType] = [];
 	}
 
-	var id = id;
+	if(!contains(appConfig[includeType], id)){
+		appConfig[includeType].push(id);
+	}
+}
+
+function doRegisterModuleId(appConfig, id, file){
+
+	if(!appConfig.paths){
+		appConfig.paths = {};
+	}
 	appConfig.paths[id] = toAliasPath(file);
-	appConfig[includeType].push(id);
 }
 
 function addAppSettings(appConfig, id, settings){
@@ -86,7 +103,11 @@ module.exports = {
 	},
 	addAliasFrom: addAliasFrom,
 
+	/** add alias (i.e. "lookup information" for module ID -> file) for module */
+	registerModuleId: registerModuleId,
+	/** add alias (i.e. "lookup information") for module AND include module in main script */
 	addIncludeModule: addIncludeModule,
+	/** add alias (i.e. "lookup information") for module AND "auto-load" module in main script during initialization */
 	addAutoLoadModule: addAutoLoadModule,
 	addAppSettings: addAppSettings
 }

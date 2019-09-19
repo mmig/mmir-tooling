@@ -70,16 +70,7 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	// 	}
 	// };
 
-	//TODO(?):
-			// mmir.semantic = semanticInterpreter;
-			// /** set synchronous/asynchronous compile-mode for grammar compilation
-			//  * @see mmir.SemanticInterpreter#setEngineCompileMode
-			//  * @type Boolean
-			//  * @memberOf main */
-			// var grammarCompileMode = configurationManager.get('grammarAsyncCompileMode');
-			// if(typeof grammarCompileMode !== 'undefined'){
-			// 	semanticInterpreter.setEngineCompileMode(grammarCompileMode);
-			// }
+	grammarOptions = grammarUtils.parseRuntimeConfigurationForOptions(grammarOptions, runtimeConfig);
 
 	var grammars = [];
 	if(grammarOptions && grammarOptions.path){
@@ -197,7 +188,22 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 		views = viewUtils.viewTemplatesFromDir(viewOptions.path, appRootDir);
 	}
 	if(views.length > 0){
+
+		//check layout / default-layout:
+		if(views.findIndex(function(viewEntry){return viewEntry.viewImpl === 'mmirf/layout'}) === -1){
+			warn('mmir-build-config: found views, but no layout -> must have at least 1 default layout!');
+			//TODO add stub default-layout template in this case!!!
+			//TODO check that either layouts/default.ehtml is present, or that runtimeConfig.defaultLayoutName is set, and that the corresponding layouts/<defaultLayoutName>.ehtml is present
+			//TODO ... or throw error, stopping the build-process in this case?
+		}
+
 		implUtils.applyDefaultOptions(viewOptions || {}, views);
+
+	} else {
+		if(runtimeConfig.defaultLayoutName){
+			warn('mmir-build-config: could not find any views, but runtime configuration "defaultLayoutName" is set to '+JSON.stringify(runtimeConfig.defaultLayoutName)+', disabling defaultLayoutName!');
+		}
+		runtimeConfig.defaultLayoutName = null;
 	}
 
 	//TODO impl./support loading indivual views similar to grammars

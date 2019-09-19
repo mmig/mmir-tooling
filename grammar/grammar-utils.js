@@ -6,6 +6,7 @@ var fileUtils = require('../utils/filepath-utils.js');
 var appConfigUtils = require('../utils/module-config-init.js');
 var directoriesUtil = require('../tools/directories-utils.js');
 var configurationUtil = require('../tools/settings-utils.js');
+var settingsUtil = require('../tools/settings-utils.js');
 var optionUtils = require('../tools/option-utils.js');
 
 var logUtils = require('../utils/log-utils.js');
@@ -92,6 +93,139 @@ function addFromOptions(grammars, list, appRootDir){
 	}
 }
 
+function parseRuntimeConfigurationForOptions(options, config){
+
+	// console.log('START parseRuntimeConfigurationForOptions: ', config , '\n -> \n', options);
+
+	if(config){
+
+		var val, gopt;
+
+		var CONFIG_ASYNC_EXEC_GRAMMAR = settingsUtil.configEntryAsyncExecGrammar;
+		if(val = config[CONFIG_ASYNC_EXEC_GRAMMAR]){
+
+			if(val === true){
+
+				if(isApplyRuntimeConfigOption(options, null, true, 'encountered runtime setting true for "'+CONFIG_ASYNC_EXEC_GRAMMAR+'"')){
+					if(options === true || !options){
+						options = {};
+					}
+					options.async = true;
+				}
+
+			} else if(Array.isArray(val)){
+
+				if(isApplyRuntimeConfigOption(options, null, true, 'encountered list for runtime setting "'+CONFIG_ASYNC_EXEC_GRAMMAR+'"')){
+
+					if(options === true || !options){
+						options = {};
+					}
+
+					if(!options.grammars){
+						options.grammars = {};
+					}
+					gopt = options.grammars;
+
+					val.forEach(function(grammarId){
+
+						if(isApplyRuntimeConfigOption(gopt[grammarId], grammarId, true, 'encountered list entry "'+grammarId+'" for runtime setting "'+CONFIG_ASYNC_EXEC_GRAMMAR+'"')){
+							if(gopt[grammarId] === true || !gopt[grammarId]){
+								gopt[grammarId] = {};
+							}
+							gopt[grammarId].async = true;
+						}
+
+					});
+				}
+
+			} else {
+				warn('grammar-utils.parseRuntimeConfigurationForOptions(): cannot convert runtime setting for "'+CONFIG_ASYNC_EXEC_GRAMMAR+'": must be Array<string> or true, but encountered ', val);//FIXME proper webpack error/warning
+			}
+		}
+
+		var CONFIG_IGNORE_GRAMMAR = settingsUtil.configEntryIgnoreGrammar;
+		if(val = config[CONFIG_IGNORE_GRAMMAR]){
+
+			if(val === true){
+
+				if(isApplyRuntimeConfigOption(options, null, false, 'encountered runtime setting true for "'+CONFIG_IGNORE_GRAMMAR+'"')){
+					if(options === true || !options){
+						options = {};
+					}
+					options.ignore = true;
+				}
+
+			} else if(Array.isArray(val)){
+
+				if(isApplyRuntimeConfigOption(options, null, false, 'encountered list for runtime setting "'+CONFIG_IGNORE_GRAMMAR+'"')){
+
+					if(options === true || !options){
+						options = {};
+					}
+
+					if(!options.grammars){
+						options.grammars = {};
+					}
+					gopt = options.grammars;
+
+					val.forEach(function(grammarId){
+
+						if(isApplyRuntimeConfigOption(gopt[grammarId], grammarId, false, 'encountered list entry "'+grammarId+'" for runtime setting "'+CONFIG_IGNORE_GRAMMAR+'"')){
+							if(gopt[grammarId] === true || !gopt[grammarId]){
+								gopt[grammarId] = {};
+							}
+							gopt[grammarId].ignore = true;
+							if(gopt[grammarId].async){
+								warn('grammar-utils.parseRuntimeConfigurationForOptions(): trying to apply runtime setting "'+CONFIG_IGNORE_GRAMMAR+'" for list entry "'+grammarId+'" to GrammarOptions['+grammarId+'], but option is already set to async=true: ignore-setting will have no effect!');//FIXME proper webpack error/warning
+							}
+						}
+
+					});
+				}
+
+			} else {
+				warn('grammar-utils.parseRuntimeConfigurationForOptions(): cannot convert runtime setting for "'+CONFIG_IGNORE_GRAMMAR+'": must be Array<string> or true, but encountered ', val);//FIXME proper webpack error/warning
+			}
+		}
+
+		// console.log('DONE parseRuntimeConfigurationForOptions: ', config , '\n -> \n', options);
+	}
+
+	return options;
+}
+
+/**
+ * HELPER check, if runtime-configuration setting should/can be applied to GrammarOption
+ *
+ * Prints warning, in case setting can/should not be applied.
+ *
+ * @param  {GrammarOption} options the GrammarOption, either the root GrammarOptions, or a GrammarOptions.grammar[id] object
+ * @param  {string | null} optionId the ID, if options is a GrammarOptions.grammar[id] object
+ * @param  {boolean | null} invalidIgnoreValue if NULL, do no check, otherwise the invalid value for GrammarOption.ignore, i.e. in which case the runtime setting can NOT be applied
+ * @param  {string} descRuntimeSetting description for the runtime setting, for print the warning-message in case the runtime setting cannot be applied
+ * @return {Boolean} whether or not the runtime setting can/should be applied
+ */
+function isApplyRuntimeConfigOption(options, optionId, invalidIgnoreValue, descRuntimeSetting){
+
+	var errDetails;
+	if(options === false){
+		errDetails = ' is set to false';
+	} else {
+		if(!options){
+			return true;
+		} else if(invalidIgnoreValue !== null && options.ignore === invalidIgnoreValue){
+			errDetails = '.ignore is set to ' + (!invalidIgnoreValue);
+		} else if(options.exclude === true){
+			errDetails = '.exclude is set to true';
+		} else {
+			return true;
+		}
+	}
+
+	warn('grammar-utils.parseRuntimeConfigurationForOptions(): '+ descRuntimeSetting +', but GrammarOptions'+(optionId? '['+optionId+']' : '')+errDetails+' -> ignoring runtime setting!');//FIXME proper webpack error/warning
+	return false;
+}
+
 function contains(grammarList, id){
 	return grammarList.findIndex(function(item){
 		return item.id === id;
@@ -110,7 +244,8 @@ function toAliasId(grammar){
 module.exports = {
 
 	/**
-	 * [description]
+	 * parse directories for JSON grammars and create/return GrammarEntry list
+	 *
 	 * @param  {GrammarOptions} options the grammar options where
 	 * 										options.path: REQUIRED the directory from which to add the grammars, and has the following structure:
 	 * 																				<directory>/<grammar-id-1>/grammar.json
@@ -157,7 +292,7 @@ module.exports = {
 		return list;
 	},
 	/**
-	 * add grammars form options.grammar map {[grammarID: string]: GrammarOption}, if the GrammarOption has a <code>file</code> field set.
+	 * add grammars from options.grammar map {[grammarID: string]: GrammarOption}, if the GrammarOption has a <code>file</code> field set.
 	 * @param  {GrammarOptions} options the grammar options with field options.grammars
 	 * @param {String} appRootDir the root directory of the app (against which relative paths will be resolved)
 	 * @param  {{Array<GrammarEntry>}} [grammarList] OPTIONAL
@@ -172,6 +307,13 @@ module.exports = {
 
 		return list;
 	},
+	/**
+	 * parse RuntimeConfiguration for grammar-related settings and "convert" them to the corresponding GrammarOptions
+	 * @param  {GrammarOptions} options the grammar options
+	 * @param  {RuntimeConfiguration} config the runtime configuration settings
+	 * @return {GrammarOptions} the grammar options with new/modified options from RuntimeConfiguration
+	 */
+	parseRuntimeConfigurationForOptions: parseRuntimeConfigurationForOptions,
 	/**
 	 * apply the "global" options from `options` or default values to the entries
 	 * from `grammarList` if its corresponding options-field is not explicitly specified.
@@ -227,11 +369,22 @@ module.exports = {
 			}
 
 			if(g.async){
-				//TODO support for async execution & configuration
-				warn('  grammar-utils.addGrammarsToAppConfig(): TODO set grammar "'+g.id+'" to async execution mode');
-			}
 
-			appConfigUtils.addIncludeModule(appConfig, toAliasId(g), toAliasPath(g));
+				//add configuration entry initializing grammar for async-execution:
+				configurationUtil.setGrammarAsyncExec(runtimeConfiguration, g.id);
+				//add alias information, but do not require inclusion in "main thread script"
+				// (i.e. inclusion only mandatory in async-exec-Worker script):
+				appConfigUtils.registerModuleId(appConfig, toAliasId(g), toAliasPath(g));
+
+				//include internal mmir-lib module asyncGrammar for async-grammar-execution:
+				appConfigUtils.addIncludeModule(appConfig, 'mmirf/asyncGrammar');
+
+			} else {
+
+				//do add alias information (for require'ing via ID instead of relative/absolute file path),
+				// and register module ID for inclusion in "main thread script"
+				appConfigUtils.addIncludeModule(appConfig, toAliasId(g), toAliasPath(g));
+			}
 
 			directoriesUtil.addGrammar(directories, toAliasId(g));
 		});

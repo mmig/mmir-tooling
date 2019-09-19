@@ -458,6 +458,12 @@ export interface RuntimeConfiguration {
 	 * If `true`, no file compiled grammars will be loaded on start-up (i.e. all IDs will be ignored for start-up)
 	 */
 	ignoreGrammarFiles?: Array<string> | true;
+	/**
+	 * list of (compiled) grammars (IDs) which should be initialized for asynchronous execution, i.e. should be exectuted in WebWorker/thread
+	 *
+	 * If `true`, all (compiled) grammar will be initialized for asynchronous execution.
+	 */
+	grammarAsyncExecMode?: Array<string> | true;
 
 	/**
 	 * detect if compiled state-models (i.e. JS-compiled SCXML files) are present & should be used
