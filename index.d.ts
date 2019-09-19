@@ -259,9 +259,33 @@ export interface GrammarOption {
 	 *   and then will be available e.g. via `mmir.semantic.interprest(<input phrase string>, <grammar-id>)`
 	 */
 	ignore?: boolean;
+	/**
+	 * grammar-execution (during runtime) will be asynchronous in a WebWorker/thread
+	 *
+	 * NOTE: invocations must always provide a callback, for async-exec grammars
+	 * @example
+	 * mmir.semantic.interpret('this is my test phrase', function(result){
+	 * 	// do something with grammar execution result
+	 * })
+	 */
+	async?: boolean;
+	/**
+	 * An "initialization phrase" for the grammar, in case of async-exection:
+	 * this phrase will be immediately interpreted, after grammar has been loaded for async-execution in the WebWorkers
+	 * (for large grammars, this may reduce delays for subsequent calls, by fully initializing the grammar)
+	 *
+	 * NOTE will have no effect, if option [[async]] is not `true`
+	 */
+	initPhrase?: string;
 }
 
 export interface GrammarEntry extends GrammarOption {
+	/**
+	 * the grammar ID
+	 *
+	 * WARNING will be automatically set -- if it is manully set, it may get overwritten!
+	 */
+	id?: string;
 	/**
 	 * for specifying the JSON grammar directly (e.g. instead or in addition of parsing `path` for grammar files):
 	 * the (absolute) path to the JSON grammar (from which the executable grammar will be created)
@@ -462,8 +486,12 @@ export interface RuntimeConfiguration {
 	 * list of (compiled) grammars (IDs) which should be initialized for asynchronous execution, i.e. should be exectuted in WebWorker/thread
 	 *
 	 * If `true`, all (compiled) grammar will be initialized for asynchronous execution.
+	 *
+	 * If list, an additional "initialization-phrase" may be specified by using `{id: string, phrase: string}`:
+	 * a phrase that should be immediately interpreted, after grammar has been loaded in the WebWorkers
+	 * (for large grammars, this may reduce delays for subsequent calls, by fully initializing the grammar)
 	 */
-	grammarAsyncExecMode?: Array<string> | true;
+	grammarAsyncExecMode?: Array<string> | Array<{id: string, phrase: string}> | true;
 
 	/**
 	 * detect if compiled state-models (i.e. JS-compiled SCXML files) are present & should be used

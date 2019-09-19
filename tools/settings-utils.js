@@ -256,9 +256,17 @@ function contains(list, settingsType, settingsId){
 	}) !== -1;
 }
 
+/**
+ * check if value is contained in list
+ *
+ * @param  {Array<string|&{id: string}>} list
+ * @param  {string|&{id: string}} value
+ * @return {boolean}
+ */
 function containsEntry(list, value){
+	var id = typeof value === 'string'? value : value.id;
 	return list.findIndex(function(item){
-		return item === value;
+		return ((typeof item === 'string'? item : item.id) === id);
 	}) !== -1;
 }
 
@@ -353,9 +361,9 @@ module.exports = {
 
 		addToConfigList(runtimeConfiguration, CONFIG_IGNORE_GRAMMAR_FILES, grammarId);
 	},
-	setGrammarAsyncExec: function(runtimeConfiguration, grammarId){
+	setGrammarAsyncExec: function(runtimeConfiguration, grammarIdOrEntry){
 
-		addToConfigList(runtimeConfiguration, CONFIG_GRAMMAR_ASYNC_EXEC, grammarId);
+		addToConfigList(runtimeConfiguration, CONFIG_GRAMMAR_ASYNC_EXEC, grammarIdOrEntry);
 	},
 	/**
 	 * parse for JSON settings files

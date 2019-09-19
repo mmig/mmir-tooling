@@ -43,6 +43,7 @@ function readDir(dir, list, options){
 				engine: opt && opt.engine? opt.engine : void(0),
 				ignore: opt && opt.ignore? true : false,
 				async: opt && opt.async? true : void(0),
+				initPhrase: opt && opt.initPhrase? opt.initPhrase : void(0),
 				asyncCompile: opt && typeof opt.asyncCompile === 'boolean'? opt.asyncCompile : void(0),
 				force: opt && typeof opt.force === 'boolean'? opt.force : void(0)
 			});
@@ -126,13 +127,17 @@ function parseRuntimeConfigurationForOptions(options, config){
 					}
 					gopt = options.grammars;
 
-					val.forEach(function(grammarId){
+					val.forEach(function(grammarEntry){
 
+						var grammarId = typeof grammarEntry === 'string'? grammarEntry : grammarEntry.id;
 						if(isApplyRuntimeConfigOption(gopt[grammarId], grammarId, true, 'encountered list entry "'+grammarId+'" for runtime setting "'+CONFIG_ASYNC_EXEC_GRAMMAR+'"')){
 							if(gopt[grammarId] === true || !gopt[grammarId]){
 								gopt[grammarId] = {};
 							}
 							gopt[grammarId].async = true;
+							if(grammarEntry && grammarEntry.phrase){
+								gopt[grammarId].initPhrase = grammarEntry.phrase;
+							}
 						}
 
 					});
@@ -277,6 +282,9 @@ module.exports = {
 	 * 										                                   and then will be available e.g. via <code>mmir.semantic.interpret(<input phrase string>, <grammar-id>)</code>.
 	 * 										GrammarEntry.async {Boolean}: OPTIONAL if <code>true</code>, and the execution environment supports Workers, then the grammar will be loaded
 	 * 																												in a Worker on app start-up, i.e. execution will be asynchronously in a worker-thread
+	 * 										GrammarEntry.initPhrase {String}: OPTIONAL an initalization phrase that will be executed, if grammar is set for async-execution
+	 * 										GrammarEntry.asyncCompile {Boolean}: OPTIONAL if <code>true</code>, and the build environment supports Workers, then the grammar will be compiled
+	 * 																												in a Worker (during build)
 	 * @return {Array<GrammarEntry>} the list of GrammarEntry objects
 	 */
 	jsonGrammarsFromDir: function(options, appRootDir, grammarList){
@@ -329,6 +337,7 @@ module.exports = {
 				{name: 'engine', defaultValue: 'jscc'},
 				{name: 'ignore', defaultValue: false},
 				{name: 'async', defaultValue: false},
+				{name: 'initPhrase', defaultValue: void(0)},
 				{name: 'asyncCompile', defaultValue: void(0)},
 				{name: 'force', defaultValue: false}
 			].forEach(function(fieldInfo){
@@ -371,7 +380,8 @@ module.exports = {
 			if(g.async){
 
 				//add configuration entry initializing grammar for async-execution:
-				configurationUtil.setGrammarAsyncExec(runtimeConfiguration, g.id);
+				var entry = g.initPhrase? {id: g.id, phrase: g.initPhrase} : g.id;
+				configurationUtil.setGrammarAsyncExec(runtimeConfiguration, entry);
 				//add alias information, but do not require inclusion in "main thread script"
 				// (i.e. inclusion only mandatory in async-exec-Worker script):
 				appConfigUtils.registerModuleId(appConfig, toAliasId(g), toAliasPath(g));
