@@ -148,7 +148,7 @@ export type ModulePaths = {[moduleId: string]: string};
  * };
  * ```
  */
-export interface GrammarOptions {
+export interface GrammarOptions extends GrammarOption {
 	/** file path for searching (recursively) JSON grammars within languages-subdirectory:
 	 * `path/.../<grammar ID>/grammar.json`
 	 */
@@ -226,7 +226,7 @@ export interface GrammarBuildOptions extends GrammarOptions, BuildOptions {}
 export interface GrammarBuildEntry extends GrammarEntry, BuildOptions {}
 
 export interface ViewBuildOptions extends ViewOptions, BuildOptions {}
-export interface ViewBuildEntry extends ImplementationOptions, BuildOptions {}
+export interface ViewBuildEntry extends ViewEntry, BuildOptions {}
 
 export interface StateBuildOptions extends StateOptions, BuildOptions {
 	/**
@@ -237,7 +237,7 @@ export interface StateBuildOptions extends StateOptions, BuildOptions {
 }
 export interface StateModelBuildEntry extends StateModelEntry, BuildOptions {}
 
-export interface GrammarEntry {
+export interface GrammarOption {
 	/** the Grammar engine that will be used to compile the executable grammar.
 	  * @default "jscc"
 	  */
@@ -259,6 +259,9 @@ export interface GrammarEntry {
 	 *   and then will be available e.g. via `mmir.semantic.interprest(<input phrase string>, <grammar-id>)`
 	 */
 	ignore?: boolean;
+}
+
+export interface GrammarEntry extends GrammarOption {
 	/**
 	 * for specifying the JSON grammar directly (e.g. instead or in addition of parsing `path` for grammar files):
 	 * the (absolute) path to the JSON grammar (from which the executable grammar will be created)
@@ -341,21 +344,21 @@ export type SettingsType = 'configuration' | 'dictionary' | 'grammar' | 'speech'
  * ```
  * var stateOptions = {
  * 	path: 'www/config/states',
- * 	// ignoreErrors: true,
+ * 	ignoreErrors: true,
  * 	models: {
  * 		input: {
  * 			mode: 'simple',
  * 			file: './alt_config/states_minimal/input.xml'
  * 		},
  * 		dialog: {
- * 			ignoreErrors: true,
+ * 			ignoreErrors: false,
  * 			mode: 'extended'
  * 		}
  * 	}
  * };
  * ```
  */
-export interface StateOptions {
+export interface StateOptions extends StateModelOption {
 
 	/** file path for searching (recursively) for SCXML files (state-models):
 	 * ```bash
@@ -374,16 +377,6 @@ export interface StateOptions {
 	 *
 	 */
 	path?: string;
-	/** if `true`, runtime errors will be ignored.
-	 *  if `false` (or omitted) the compilation will fail with an error message
-	 *  when encountering SCXML runtime errors.
-	 *
-	 * NOTE: if ignored, the runtime errors will be triggered when the state-machine
-	 *       enters the corresponing state during runtime!
-	 *
-	 * @default false
-	 */
-	ignoreErrors?: boolean;
 	/**
 	 * optionally specify options for found resource, or specifying resources/locations directly
 	 *
@@ -396,7 +389,7 @@ export interface StateOptions {
 	models?: {dialog?: StateModelEntry, input?: StateModelEntry, [id: string]: StateModelEntry};
 }
 
-export interface StateModelEntry {
+export interface StateModelOption {
 
 	//DISABLED should not be used -> ID will be derived from entry key of models property
 	// /** the ID for state model */
@@ -423,8 +416,8 @@ export interface StateModelEntry {
 	 */
 	mode?: "extended" | "simple";
 
-	/** if TRUE, runtime errors will be ignored.
-	 *  if FALSE (or omitted) the compilation will fail with an error message
+	/** if `true`, runtime errors will be ignored.
+	 *  if `false` (or omitted) the compilation will fail with an error message
 	 *  when encountering SCXML runtime errors.
 	 *
 	 * NOTE: if ignored, the runtime errors will be triggered when the state-machine
@@ -433,7 +426,9 @@ export interface StateModelEntry {
 	 * @default false
 	 */
 	ignoreErrors?: boolean;
+}
 
+export interface StateModelEntry extends StateModelOption {
 	/**  for explicitly specifying the state-machine directly (e.g. instead or in addition of parsing `path`) */
 	file?: string;
 }
@@ -522,7 +517,7 @@ export type ModuleConfig = {[configName: string]: any} & {logLevel?: mmir.LogLev
 export interface ResourcesOptions {
 	/** for automatically converting old-style implementations that are no CommonJS or AMD modules:
 	 * if `true`, explicitly exports the implementation resource (i.e. as module.exports)
-	 * @see ImplementationOptions
+	 * @see ImplementationEntry
 	 */
 	addModuleExport?: boolean;
 	/** excludes the specified resources types when parsing the `resourcesPath` */
@@ -540,6 +535,16 @@ export interface ViewOptions {
 	 * ```
 	 */
 	path?: string;
+}
+
+export interface ViewEntry {
+	id: string;
+	ctrlName: string;
+	viewName: string;
+	file: string;
+	viewImpl: 'mmirf/layout' | 'mmirf/partial' | 'mmirf/view';
+	isLayout: boolean;
+	isPartial: boolean;
 }
 
 /**
@@ -560,12 +565,12 @@ export interface ViewOptions {
  * };
  * ```
  */
-export interface ControllerOptions {
+export interface ControllerOptions extends ImplementationOption {
 	/** file path for (recursively) searching controller implementation files:
 	 * `path/<controller ID>.js`
 	 */
 	path?: string;
-	controllers?: boolean | {[id: string]: ImplementationOptions};
+	controllers?: boolean | {[id: string]: ImplementationEntry};
 }
 
 /**
@@ -580,12 +585,12 @@ export interface ControllerOptions {
  * };
  * ```
  */
-export interface HelperOptions {
+export interface HelperOptions extends ImplementationOption {
 	/** file path for (recursively) searching helper implementation files:
 	 * `path/.../<controller ID>Helper.js`
 	 */
 	path?: string;
-	helpers?: boolean | {[id: string]: ImplementationOptions};
+	helpers?: boolean | {[id: string]: ImplementationEntry};
 }
 
 /**
@@ -600,15 +605,15 @@ export interface HelperOptions {
  * };
  * ```
  */
-export interface ModelOptions {
+export interface ModelOptions extends ImplementationOption {
 	/** file path for searching (data) model implementation files:
 	 * `path/<model ID>.js`
 	 */
 	path?: string;
-	models?: boolean | {[id: string]: ImplementationOptions};
+	models?: boolean | {[id: string]: ImplementationEntry};
 }
 
-export interface ImplementationOptions {
+export interface ImplementationOption {
 
 	/** if `true`, the corresponding implementation will be excluded (when parsing `path`) */
 	exclude?: boolean;
@@ -623,6 +628,9 @@ export interface ImplementationOptions {
 	 * If string, the specified string will be used for the export.
 	 */
 	addModuleExport?: boolean | string;
+}
+
+export interface ImplementationEntry extends ImplementationOption {
 
 	/**  for explicitly specifying the implementation-file directly (e.g. instead or in addition of parsing `path`) */
 	file?: string;
