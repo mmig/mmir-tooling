@@ -7,6 +7,7 @@ var fileUtils = require('../utils/filepath-utils.js');
 var appConfigUtils = require('../utils/module-config-init.js');
 
 var directoriesUtil = require('./directories-utils.js');
+var optionUtils = require('./option-utils.js');
 
 var logUtils = require('../utils/log-utils.js');
 var log = logUtils.log;
@@ -59,6 +60,7 @@ function readDir(dir, list, options){
 
 			var isAdd = true;
 			var isInline = true;
+			var isForce;//default for force: undefined
 
 			if(options){
 
@@ -69,14 +71,9 @@ function readDir(dir, list, options){
 				} else if(options[type] && (!id || options[type][id])){
 					var conf = id? options[type][id] : options[type];
 					isAdd = !conf.exclude;
-					isInline = !/file/i.test(conf.include);
+					isInline = typeof conf.include !== 'undefined'? !/file/i.test(conf.include) : isInline;
+					isForce = conf.force;
 				}
-			}
-
-			//FIXME currently cannot include grammar.json as file because of json-grammar-loader TODO include same resouce multiple times with different formats(?) multi-loader?
-			if(isAdd && !isInline && type === 'grammar'){
-				warn('WARN: settings-util: cannot include JSON grammars as file, inlining grammar source for "'+id+'" instead ...');
-				isInline = true;
 			}
 
 			if(isAdd){
@@ -93,7 +90,8 @@ function readDir(dir, list, options){
 						file: normalized,
 						fileType: fileType,
 						value: isInline? readSettingsFile(normalized, fileType) : void(0),
-						include: isInline? 'inline' : 'file'
+						include: isInline? 'inline' : 'file',
+						force: isForce
 					});
 				}
 			}
@@ -355,6 +353,23 @@ function addToConfigList(runtimeConfiguration, configListName, entry){
 	}
 }
 
+/**
+ * check if settings entry should be excluded
+ *
+ * @param  {SettingsType} settingsType
+ * @param  {Array<SettingsType>|RegExp} [excludeTypePattern] if not specified, always returns FALSE
+ * @return {Boolean} TRUE if settings should be excluded
+ */
+function isExclude(settingsType, excludeTypePattern){
+	if(!excludeTypePattern){
+		return false;
+	}
+	if(Array.isArray(excludeTypePattern) ){
+		return containsEntry(excludeTypePattern, settingsType);
+	}
+	return excludeTypePattern.test(settingsType);
+}
+
 module.exports = {
 
 	setGrammarIgnored: function(runtimeConfiguration, grammarId){
@@ -418,7 +433,28 @@ module.exports = {
 	loadSettingsFrom: readSettingsFile,
 	getFileType: getFileType,
 	getAllSpeechConfigsType: function(){ return ALL_SPEECH_CONFIGS_TYPE; },
-	addSettingsToAppConfig: function(settings, appConfig, directories, _resources, runtimeConfig, regExpExcludeType, ignoreMissingDictionaries){
+	/**
+	 * apply the "global" options from `options` or default values to the entries
+	 * from `settingsList` if its corresponding options-field is not explicitly specified.
+	 *
+	 * @param  {SetttingsOptions} options the settings options
+	 * @param  {{Array<SettingsEntry>}} settingsList
+	 * @return {{Array<SettingsEntry>}}
+	 */
+	applyDefaultOptions: function(options, settingsList){
+		settingsList.forEach(function(g){
+			[
+				{name: 'include', defaultValue: 'inline'},
+				{name: 'force', defaultValue: false},
+			].forEach(function(fieldInfo){
+				optionUtils.applySetting(fieldInfo.name, g, options, fieldInfo.defaultValue);
+			});
+
+		});
+
+		return settingsList;
+	},
+	addSettingsToAppConfig: function(settings, appConfig, directories, _resources, runtimeConfig, settingsOptions, ignoreMissingDictionaries){
 
 		if(!settings || settings.length < 1){
 			return;
@@ -435,11 +471,12 @@ module.exports = {
 			settings.splice(iall, 1);
 		}
 
+		var regExpExcludeType = settingsOptions.excludeTypePattern;
 		var dicts = ignoreMissingDictionaries? null : new Map();
 
 		settings.forEach(function(s){
 
-			if(regExpExcludeType && regExpExcludeType.test(s.type)){
+			if(isExclude(s.type, regExpExcludeType)){
 				return;
 			}
 
@@ -490,12 +527,12 @@ module.exports = {
 
 
 		//ensure that for each language there is a (possibly empty) dictionary
-		if(!ignoreMissingDictionaries && (!regExpExcludeType || !regExpExcludeType.test('dictionary'))){
+		if(!ignoreMissingDictionaries && !isExclude('dictionary', regExpExcludeType)){
 			var languages = directoriesUtil.getLanguages(directories);
 			var missing = [];
 			languages.forEach(function(l){
 				var dict = dicts.get(l);
-				if(!dict){
+				if(!dict && settingsOptions.dictionary !== false){
 					var dictEntry = createSettingsEntryFor('dictionary', {}, l);
 					missing.push(dictEntry);
 					settings.push(dictEntry)
@@ -503,11 +540,12 @@ module.exports = {
 			});
 			if(missing.length > 0){
 				// log("INFO settings-utils: adding missing dictionaries for : ", missing);
-				this.addSettingsToAppConfig(missing, appConfig, directories, _resources, runtimeConfig, regExpExcludeType, true);
+				this.addSettingsToAppConfig(missing, appConfig, directories, _resources, runtimeConfig, settingsOptions, true);
 			}
 		}
 
 	},
+	isExcludeType: isExclude,
 	configEntryIgnoreGrammar: CONFIG_IGNORE_GRAMMAR_FILES,
 	configEntryAsyncExecGrammar: CONFIG_GRAMMAR_ASYNC_EXEC,
 };

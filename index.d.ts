@@ -107,9 +107,36 @@ export interface AppConfig {
 	 */
 	views?: ViewOptions | boolean;
 
-	// //TODO? support updating/creating settings/configuration?
-	// settings?: SettingsOptions;
-	// configuration?: RuntimeConfiguration;
+	/**
+	 * Specify how (mmir) configuration and settings should be parsed/included,
+	 * and/or specify additional settings that should be included.
+	 *
+	 * The `mmir` configuration/settings are the resources that are by default
+	 * located in the mmir `config/` directory
+	 * (with exception of the `states` sub-directory; for those instead use [[WebpackAppConfig.states]]):
+	 *  ```bash
+	 *  config/
+	 *        /languages/
+	 *                  /<lang>/
+	 *                         /grammar.json
+	 *                         /dictionary.json
+	 *                         /speech.json
+	 *        /states/
+	 *               /input.xml
+	 *               /dialog.xml
+	 *        /configuration.json
+	 * ```
+	 * (NOTE the `config/states/` sub-directory is handled/configured via the the [[#states]] option)
+	 */
+	settings?: SettingsOptions | boolean;
+	/**
+	 * Specify additional (mmir) runtime configuration values,
+	 * e.g. in addition to `config/configuration.json`.
+	 *
+	 * In case of conflicts, these settings will override settings in
+	 * `config/configuration.json`,
+	 */
+	configuration?: RuntimeConfiguration;
 
 	// //TODO support plugin-integration via options? would need to create/update configuration.json and settings/speech/<lang>
 	// includePlugins?: Array<PluginOptions>;
@@ -170,8 +197,8 @@ export interface BuildOptions {
 	 */
 	targetDir?: string;
 	/**
-	 * if TRUE the grammar(s) will be newly created and written to the targetDir,
-	 * even if the up-to-date check returns `true`
+	 * if TRUE the targets will be newly created and written to the targetDir,
+	 * even if the existence or up-to-date check returns `true`
 	 */
 	force?: boolean;
 }
@@ -220,13 +247,40 @@ export interface BuildAppConfig extends AppConfig {
 	states?: StateBuildOptions | boolean;
 
 	views?: ViewBuildOptions | boolean;
+
+	/** NOTE settings files may be written to the (settings) targetDir if
+	 * (1) the [[SettingsBuildOptions.include]] option is set to 'file'
+	 * (2) if the file already exists in the targetDir it is overwritten if the [[SettingsBuildOptions.force]] option is enabled
+	 *
+	 * The include and force option can be set either in the SettingsBuildOptions, or in the specific SettingsBuildEntry/ies.
+	 */
+	settings?: SettingsBuildOptions | boolean;
+	/** NOTE only takes effect, if settings options inlcude (or in its sub-option) is set 'file'
+	 * (and possibly force, to enable overwriting existing files), so that settings files will be written
+	 */
+	configuration?: RuntimeConfiguration;
 }
 
-export interface GrammarBuildOptions extends GrammarOptions, BuildOptions {}
+export interface GrammarBuildOptions extends GrammarOptions, BuildOptions {
+	/** @override */
+	grammars?: {[grammarId: string]: GrammarBuildEntry};
+}
 export interface GrammarBuildEntry extends GrammarEntry, BuildOptions {}
 
 export interface ViewBuildOptions extends ViewOptions, BuildOptions {}
 export interface ViewBuildEntry extends ViewEntry, BuildOptions {}
+
+export interface SettingsBuildOptions extends SettingsOptions, BuildOptions {
+	/** @override */
+	configuration?: boolean | SettingsBuildEntry;
+	/** @override */
+	dictionary?: boolean | {[id: string]: SettingsBuildEntry};
+	/** @override */
+	grammar?: boolean | {[id: string]: SettingsBuildEntry};
+	/** @override */
+	speech?: boolean | {[id: string]: SettingsBuildEntry};
+}
+export interface SettingsBuildEntry extends SettingsEntryOptions, BuildOptions {}
 
 export interface StateBuildOptions extends StateOptions, BuildOptions {
 	/**
@@ -323,6 +377,12 @@ export interface SettingsOptions {
 	 */
 	path?: string;
 
+	/**
+	 * pattern for excluding settings:
+	 * if pattern matches SettingsEntryOptions.type, the settings will be excluded
+	 */
+	excludeTypePattern?: RegExp | Array<SettingsType>;
+
 	/** options for the configuration.json (or .js) entry; if FALSE, the resource will be ignored */
 	configuration?: boolean | SettingsEntryOptions;
 	/** options-map for the dictionary.json (or .js) entries where id is (usually) the language code; if `false`, these resources will be ignored */
@@ -358,7 +418,7 @@ export interface SettingsEntryOptions {
 	 * ```
 	 * any dynamic code is evaluated at compile-time, i.e. the exported settings-object must not contain dynamic content
 	 */
-	fileType?: SettingsType;
+	fileType?: 'js' | 'json';
 }
 
 export type SettingsType = 'configuration' | 'dictionary' | 'grammar' | 'speech';

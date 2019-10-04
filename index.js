@@ -112,7 +112,9 @@ var compileResources = function(mmirAppConfig){
 
 	processTargetDirs(appRootDir, mmirAppConfig, buildConfig);
 
-	tasks.push(settingsCompiler.writeDictionaries(buildConfig.settings, buildConfig.settingsOptions));
+	tasks.push(settingsCompiler.prepareWriteSettings(buildConfig.settings, buildConfig.settingsOptions).then(function(){
+		return settingsCompiler.writeSettings(buildConfig.settings, buildConfig.settingsOptions);
+	}));
 	tasks.push(settingsCompiler.writeDirectoriesJson(buildConfig.directories, buildConfig.directoriesTargetDir));
 
 	if(buildConfig.grammars.length > 0){
