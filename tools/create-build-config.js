@@ -49,8 +49,17 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 		settings.push(settingsUtil.createSettingsEntryFor('configuration', {}));
 	}
 	settingsUtil.normalizeConfigurations(settings);
-	// log('JSON configuration setting (merge test): ', settingsUtil.getConfiguration(settings));//DEBU
-	runtimeConfig = settingsUtil.getConfiguration(settings).value;
+	var runtimeConfigEntry = settingsUtil.getConfiguration(settings);
+	// log('JSON configuration setting (merge test): ', runtimeConfigEntry);//DEBU
+	if(!runtimeConfigEntry.value){
+		if(runtimeConfigEntry.file){
+			runtimeConfigEntry.value = settingsUtil.loadSettingsFrom(runtimeConfigEntry.file, runtimeConfigEntry.fileType);
+		} else {
+			warn('could not read configuration settings from file: using empty configuration');
+			runtimeConfigEntry.value = {};
+		}
+	}
+	runtimeConfig = runtimeConfigEntry.value;
 
 	var grammarOptions = mmirAppConfig.grammars;
 	//exmaple:
@@ -234,7 +243,7 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	// log(' ########### settings -> ', JSON.stringify(settings));//DEBU
 	// appConfigUtils.addAppSettings(mmirAppConfig, 'mmirf/settings/configuration', runtimeConfig);
 
-	settingsUtil.addSettingsToAppConfig(settings, mmirAppConfig, directories, resourcesConfig, runtimeConfig);//, /configuration/i);
+	settingsUtil.addSettingsToAppConfig(settings, mmirAppConfig, directories, resourcesConfig, runtimeConfig, settingsOptions);
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
