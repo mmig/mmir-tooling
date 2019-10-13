@@ -229,11 +229,6 @@ function doApplySpeechConfigValue(name, val, lang, pluginName, speechConfigs, se
 				//NOTE will crash, if file is a list ... for now, no support for file-list speech-configs!
 				sc.value = settingsUtils.loadSettingsFrom(sc.file);
 			}
-
-			if(sc.include && sc.include !== 'inline'){
-				warn("WARN plugin-utils: applying plugin speech-config to file setting, cannot include this as file, enforce inlining instead.");
-				sc.include = 'inline';
-			}
 		}
 
 		sc.value.plugins = sc.value.plugins || {};
