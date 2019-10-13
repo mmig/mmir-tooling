@@ -126,7 +126,7 @@ export interface AppConfig {
 	 *               /dialog.xml
 	 *        /configuration.json
 	 * ```
-	 * (NOTE the `config/states/` sub-directory is handled/configured via the the [[#states]] option)
+	 * (NOTE the `config/states/` sub-directory is handled/configured via the the [[states]] option)
 	 */
 	settings?: SettingsOptions | boolean;
 	/**
@@ -781,7 +781,34 @@ export interface PluginOptions {
 	 * configuration for the plugin: specific fields/values depending on the plugin
 	 * NOTE some plugins require credentials, e.g. "appId" and "appKey"
 	 */
-	config?: {[language: string]: mmir.SimpleSpeechConfig} | PluginConfig;
+	config?: PluginConfig | TTSPluginSpeechConfig;
 }
 
 export type PluginConfig = {[config: string]: any};
+
+/**
+ * Additional configuration for speech output (TTS: Text To Speech) for mmir plugins:
+ * extend configuration specified in (language specific) `speech.json`.
+ *
+ * NOTE for applying a value to all speech configurations (i.e. for language codes):
+ * use a simple string
+ *  <pre>
+ *  {voice: 'female'}
+ *  </pre>
+ * or, if combined with specific settings, use "__apply-to-all-configs__" as language code
+ *  <pre>
+ *  {voice: {
+ *  	en: 'Hedda',
+ *  	'__apply-to-all-configs__': 'male'
+ *  }}
+ *  </pre>
+ *  which would set "Hedda" as voice for "en", and voice "male" for all other language codes
+ */
+export interface TTSPluginSpeechConfig extends mmir.SimpleSpeechConfig  {
+	/** local with 2-letter language- and country-code, separated with "-", e.g. "de-DE" or "en-US" */
+	language?: string | {[languageCode: string]: string};
+	/** local with 3-letter language- and country-code, separated with "-", e.g. "deu-DEU" or "eng-USA" */
+	long?: string | {[languageCode: string]: string};
+	/** voice name or feature (may not be supported by selected TTS plugin) */
+	voice?: 'male' | 'female' | string | {[languageCode: string]: 'male' | 'female' | string};
+}
