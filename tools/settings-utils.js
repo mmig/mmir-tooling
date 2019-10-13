@@ -13,6 +13,11 @@ var logUtils = require('../utils/log-utils.js');
 var log = logUtils.log;
 var warn = logUtils.warn;
 
+var defaultSettingsConfiguration = require('../defaultValues/settings/configuration.js');
+var defaultSettingsDictionary = require('../defaultValues/settings/dictionary.js');
+var defaultSettingsGrammar = require('../defaultValues/settings/grammar.js');
+var defaultSettingsSpeech = require('../defaultValues/settings/speech.js');
+
 var ALL_SPEECH_CONFIGS_TYPE = 'speech-all';
 
 var CONFIG_IGNORE_GRAMMAR_FILES = 'ignoreGrammarFiles';
@@ -236,15 +241,15 @@ function removeBom(content){
  * @param  {SettingsEntry} s NOTE s.file MUST be an Array!
  */
 function doLoadAllFilesFor(s){
-	warn('WARN settings-utils: encountered multiple file resources for "'+s.id+'" ('+s.type+'): cannot be included as (single) file, inlining  resources instead...');
-	s.include = 'inline';
 	if(!s.value){
-		warn('WARN settings-utils: forced inlining for "'+s.id+'" ('+s.type+') with multiple file resources: content not loaded yet, loading file content and merging now...');
+		warn('WARN settings-utils: forced merging for "'+s.id+'" ('+s.type+') with multiple file resources: content not loaded yet, loading file content and merging now...');
 		var content = {};
 		s.file.forEach(function(f){
 			_.merge(content, readSettingsFile(f));
 		});
 		s.value = content;
+	} else {
+		log('settings-utils: multiple file resources for "'+s.id+'" ('+s.type+') already merged to ', s.value);
 	}
 }
 
@@ -316,7 +321,7 @@ function normalizeConfigurations(settingsList){
  * @return {SettingsEntry} the settings-entry
  */
 function createSettingsEntryFor(type, value, id){
-	return {type: type, file: 'settings://'+type+'/options' + (id? '/'+id : ''), include: 'inline', value: value, id: id};
+	return {type: type, file: 'settings://'+type+'/options' + (id? '/'+id : ''), include: void(0), value: value, id: id};
 }
 
 function getConfiguration(settingsList){
@@ -325,6 +330,29 @@ function getConfiguration(settingsList){
 
 function getSettings(settingsList, type){
 	return settingsList.filter(function(item){ return item.type === type});
+}
+
+/**
+ * HELPER create default for settings type
+ *
+ * @param  {SettingsType} type the type of settings object, e.g. "speech" or "configuration"
+ * @param  {String} id if more than 1 settings-entry for this type can exist, its ID
+ * @return {nay} the (default) settings value for id
+ */
+function createDefaultSettingsFor(type, id){
+	switch(type){
+		case 'configuration':
+			return defaultSettingsConfiguration.getDefault();
+		case 'dictionary':
+			return defaultSettingsDictionary.getDefault(id);
+		case 'grammar':
+			return defaultSettingsGrammar.getDefault(id);
+		case 'speech':
+			return defaultSettingsSpeech.getDefault(id);
+	}
+
+	warn("WARN settings-utils.createDefaultSettingsFor(): encountered unknown settings type "+type+" (id: "+id+"), using empty object as default value");
+	return {};
 }
 
 function toAliasId(settings){
@@ -424,6 +452,7 @@ module.exports = {
 	// 	return list;
 	// },
 	createSettingsEntryFor: createSettingsEntryFor,
+	createDefaultSettingsFor: createDefaultSettingsFor,
 	normalizeConfigurations: normalizeConfigurations,
 	getConfiguration: getConfiguration,
 	getSettingsFor: getSettings,
@@ -505,13 +534,16 @@ module.exports = {
 			} else if(s.type === 'speech'){
 				if(allSpeechSettings){
 					if(s.include === 'file'){
-						warn("WARN settings-utils: applying 'speech-all' settings: cannot include file for "+s.id+", inlining instead.");
 						if(!s.value){
 							s.value = readSettingsFile(s.file, s.fileType);
+							log("  settings-utils: applying 'speech-all' settings: did load file resource for "+s.id+": ", s.value);
 						}
-						s.include = 'inline';
 					}
-					_.merge(s.value, allSpeechSettings.value);
+					//NOTE the speech-all settings are treat "weak", i.e. they should not overwrite other setting
+					// (1) merge into a temporary speech-config, where s.value overwrites speech-all settings if necessary
+					// (2) "apply" temporary speech-config to s
+					var temp = _.merge({}, allSpeechSettings.value, s.value);
+					_.merge(s.value, temp);
 				}
 				directoriesUtil.addSpeechConfig(directories, aliasId)
 			} else if(s.type !== ALL_SPEECH_CONFIGS_TYPE) {
@@ -533,7 +565,7 @@ module.exports = {
 			languages.forEach(function(l){
 				var dict = dicts.get(l);
 				if(!dict && settingsOptions.dictionary !== false){
-					var dictEntry = createSettingsEntryFor('dictionary', {}, l);
+					var dictEntry = createSettingsEntryFor('dictionary', createDefaultSettingsFor('dictionary', dict.id), l);
 					missing.push(dictEntry);
 					settings.push(dictEntry)
 				}
