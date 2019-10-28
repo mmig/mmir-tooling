@@ -565,7 +565,7 @@ module.exports = {
 			languages.forEach(function(l){
 				var dict = dicts.get(l);
 				if(!dict && settingsOptions.dictionary !== false){
-					var dictEntry = createSettingsEntryFor('dictionary', createDefaultSettingsFor('dictionary', dict.id), l);
+					var dictEntry = createSettingsEntryFor('dictionary', createDefaultSettingsFor('dictionary', l), l);
 					missing.push(dictEntry);
 					settings.push(dictEntry)
 				}
