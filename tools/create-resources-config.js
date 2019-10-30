@@ -31,7 +31,7 @@ var defaultResourcesConfig = {
 
 	// paths for web worker entry points (i.e. new Worker(<path>)):
 	workers: [
-		'workers/ScionQueueWorker.js',
+		'workers/scionQueueWorker.js',
 		'workers/asyncGrammarWorker.js',
 		'workers/jisonCompiler.js',
 		'workers/jsccCompiler.js',
