@@ -301,6 +301,100 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
 	//TODO add/apply configuration for core-dependency mmir-plugin-encoder-core ~> silence-detection, if specified
 }
 
+function addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfig, pluginConfigInfo, pluginId){
+
+	if(pluginConfigInfo.buildConfig){
+		//NOTE if no pluginConfigInfo.buildConfig is specified, then the plugin does not support build-config settings, so pluginBuildConfig will also be ignored!
+
+		console.log('plugin-utils.addBuildConfig: applying plugin\'s build configuration ', pluginConfigInfo.buildConfig, )
+
+		var bconfig = pluginConfigInfo.buildConfig;
+		var usedPluginBuildConfigKeys = new Set();
+
+		Object.keys(bconfig).forEach(function(key){
+
+			var val = bconfig[key];
+			if(typeof val === 'undefined'){
+				return;
+			}
+
+			if(typeof appConfig[key] === 'undefined'){
+				if(pluginBuildConfig && typeof pluginBuildConfig[key] !== 'undefined'){
+					_.merge(val, pluginBuildConfig[key]);
+					usedPluginBuildConfigKeys.add(key);
+				}
+				appConfig[key] = val;
+			} else if(appConfig[key] && typeof appConfig[key] === 'object' && val && typeof val === 'object'){
+				//if both build-configs are valid objects:
+				if(pluginBuildConfig && typeof pluginBuildConfig[key] !== 'undefined'){
+					//user-supplied plugin-specific build-config overrides general user-supplied build-config:
+					_.merge(appConfig[key], pluginBuildConfig[key]);
+					usedPluginBuildConfigKeys.add(key);
+				}
+				//... then merge appConfig's value into the plugin's build config
+				//  (i.e. user-supplied build-configuration overrides plugin-build-configuration when merging)
+				_.merge(val, appConfig[key]);
+				appConfig[key] = val;
+			} else if(pluginBuildConfig && typeof pluginBuildConfig[key] !== 'undefined'){
+				_.merge(appConfig[key], pluginBuildConfig[key]);
+				usedPluginBuildConfigKeys.add(key);
+			}
+			//else: use value of appConfig[key] (i.e. user-supplied build-configuration overrides plugin-build-configuration)
+		});
+
+		//lastly: add config-settings from pluginBuildConfig that were not applied yet:
+		if(pluginBuildConfig){
+			Object.keys(pluginBuildConfig).forEach(function(key){
+
+				if(usedPluginBuildConfigKeys.has(key)){
+					return;
+				}
+
+				var val = pluginBuildConfig[key];
+				if(typeof val === 'undefined'){
+					return;
+				}
+
+				if(typeof appConfig[key] === 'undefined'){
+					appConfig[key] = val;
+				} else if(appConfig[key] && typeof appConfig[key] === 'object' && val && typeof val === 'object'){
+					//if both build-configs are valid objects: plugin-specific user-supplied config is merged, but overrides general user-supplied build-config:
+					_.merge(appConfig[key], val);
+				} else {
+					//otherwise: plugin-specific user-supplied config overrides general user-supplied build-config:
+					appConfig[key] = pluginBuildConfig[key];
+				}
+			});
+		}
+	} else if(pluginBuildConfig){
+		warn('WARN plugin-utils: encountered user-specified build-configuration for plugin '+pluginId+', but plugin does not not support build-configuration, ignoring user build config ', pluginBuildConfig);
+	}
+
+	//TODO transfere requirejs config unto runtimeConfig?
+	// if(!runtimeConfig.config){
+	// 	runtimeConfig.config = {};
+	// }
+	// var pConfig = runtimeConfig.config;
+	// var pList, cEntry;
+	// env.forEach(function(e){
+	// 	pList = pConfig[e];
+	// 	// if(pList){
+	// 	// 	normalizeMediaManagerPluginConfig(pList);
+	// 	// 	cEntry = getPluginEntryFrom(confEntry, pList);
+	// 	// 	if(cEntry){
+	// 	// 		_.merge(cEntry, confEntry);
+	// 	// 	} else {
+	// 	// 		pConfig[e].push(confEntry);
+	// 	// 	}
+	// 	// } else {
+	// 	// 	//FIXME this whould also require to add defaults like audio-output
+	// 	// 	pConfig[e] = [confEntry]
+	// 	// }
+	// });
+
+
+}
+
 module.exports = {
 	addPluginInfos: function(pluginSettings, appConfig, _directories, resourcesConfig, runtimeConfig, settings){
 
@@ -311,6 +405,7 @@ module.exports = {
 
 		var pluginId = pluginSettings.id;
 		var pluginConfig = pluginSettings.config;
+		var pluginBuildConfig = pluginSettings.build;
 		var mode = pluginSettings.mode;
 
 		var pluginInfo = require(pluginId + '/module-ids.gen.js');
@@ -355,9 +450,11 @@ module.exports = {
 			if(Array.isArray(pluginConfigInfo.pluginName)){
 				pluginConfigInfo.pluginName.forEach(function(pluginName){
 					addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo.plugins[pluginName], pluginId);
+					addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfig, pluginConfigInfo.plugins[pluginName], pluginId);//FIXME TODO
 				});
 			} else {
 				addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, pluginId);
+				addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfig, pluginConfigInfo, pluginId);//FIXME TODO
 			}
 		} else {
 			warn('ERROR plugin-utils: invalid module-config.js for plugin '+pluginId+': missing field pluginName ', pluginConfigInfo);
