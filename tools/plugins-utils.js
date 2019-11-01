@@ -107,11 +107,19 @@ function normalizeMediaManagerPluginConfig(configList){
 	});
 }
 
+function getConfigDefaultValue(configName, pluginInfo){
+	return pluginInfo.defaultValues && pluginInfo.defaultValues[configName];
+}
+
+function getSpeechConfigDefaultValue(configName, pluginInfo){
+	return pluginInfo.defaultSpeechValues && pluginInfo.defaultSpeechValues[configName];
+}
+
 function getConfigEnv(pluginConfig, pluginInfo, runtimeConfig){
 
 	var env = pluginConfig && pluginConfig.env;
-	if(!env && pluginInfo.defaultValues && pluginInfo.defaultValues.env){
-		env = pluginInfo.defaultValues.env;
+	if(!env && getConfigDefaultValue('env', pluginInfo)){
+		env = getConfigDefaultValue('env', pluginInfo);
 		if(!Array.isArray(env)){
 			env = [env];
 		}
@@ -140,8 +148,8 @@ function getConfigEnv(pluginConfig, pluginInfo, runtimeConfig){
  */
 function createConfigEntry(pluginConfig, pluginConfigInfo, pluginId){
 	var isAsr = isAsrPlugin(pluginId);
-	var mod = pluginConfigInfo.defaultValues && pluginConfigInfo.defaultValues.mod;
-	var type = pluginConfigInfo.defaultValues && pluginConfigInfo.defaultValues.type;
+	var mod = getConfigDefaultValue('mod', pluginConfigInfo);
+	var type = getConfigDefaultValue('type', pluginConfigInfo);
 	// log('#### config entry for '+pluginConfigInfo.pluginName+' default mod? ', JSON.stringify(mod));//DEBUG
 	if(!mod){
 		// log('#### config entry for '+pluginConfigInfo.pluginName+' default mod? ', mod);//DEBUG
@@ -177,10 +185,15 @@ function applyPluginSpeechConfig(pluginConfig, settings, pluginConfigInfo){
 	var speechConfs = pluginConfigInfo.speechConfig;
 	if(speechConfs){
 
-		var applyList = [];
+		var applyList = [], defaultVal;
 		speechConfs.forEach(function(sc){
 			if(pluginConfig[sc]){
 				applyList.push({name: sc, value: pluginConfig[sc]});
+			} else {
+				defaultVal = getSpeechConfigDefaultValue(sc, pluginConfigInfo);
+				if(typeof defaultVal !== 'undefined' && defaultVal !== null){
+					applyList.push({name: sc, value: defaultVal});
+				}
 			}
 		});
 
