@@ -281,37 +281,42 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
 		applyPluginSpeechConfig(pluginConfig, settings, pluginConfigInfo);
 	}
 
-	var confEntry = createConfigEntry(pluginConfig, pluginConfigInfo, pluginId);
+	var pluginType = getConfigDefaultValue('type', pluginConfigInfo);
+	if(pluginType !== 'custom'){
+		//-> media plugin, e.g. "asr" or "tts" or "audio"
+		//   (for "custom" plugins: do not create mediaManager entry, inlcude the exported module (already done in addPluginInfos()))
+		var confEntry = createConfigEntry(pluginConfig, pluginConfigInfo, pluginId);
 
-	var env = getConfigEnv(pluginConfig, pluginConfigInfo, runtimeConfig);
+		var env = getConfigEnv(pluginConfig, pluginConfigInfo, runtimeConfig);
 
-	// log('#### will add '+pluginConfigInfo.pluginName+' to envs ', env, ' with entry ', confEntry);//DEBUG
+		// log('#### will add '+pluginConfigInfo.pluginName+' to envs ', env, ' with entry ', confEntry);//DEBUG
 
-	if(!runtimeConfig.mediaManager){
-		runtimeConfig.mediaManager = {};
-	}
-	if(!runtimeConfig.mediaManager.plugins){
-		runtimeConfig.mediaManager.plugins = {};
-	}
-	var pConfig = runtimeConfig.mediaManager.plugins;
-	var pList, cEntry;
-	env.forEach(function(e){
-		pList = pConfig[e];
-		if(pList){
-			normalizeMediaManagerPluginConfig(pList);
-			cEntry = getPluginEntryFrom(confEntry, pList);
-			if(cEntry){
-				_.merge(cEntry, confEntry);
-			} else {
-				pConfig[e].push(confEntry);
-			}
-		} else {
-			//FIXME this whould also require to add defaults like audio-output
-			pConfig[e] = [confEntry]
+		if(!runtimeConfig.mediaManager){
+			runtimeConfig.mediaManager = {};
 		}
-	});
+		if(!runtimeConfig.mediaManager.plugins){
+			runtimeConfig.mediaManager.plugins = {};
+		}
+		var pConfig = runtimeConfig.mediaManager.plugins;
+		var pList, cEntry;
+		env.forEach(function(e){
+			pList = pConfig[e];
+			if(pList){
+				normalizeMediaManagerPluginConfig(pList);
+				cEntry = getPluginEntryFrom(confEntry, pList);
+				if(cEntry){
+					_.merge(cEntry, confEntry);
+				} else {
+					pConfig[e].push(confEntry);
+				}
+			} else {
+				//FIXME this whould also require to add defaults like audio-output
+				pConfig[e] = [confEntry]
+			}
+		});
 
-	//TODO add/apply configuration for core-dependency mmir-plugin-encoder-core ~> silence-detection, if specified
+		//TODO add/apply configuration for core-dependency mmir-plugin-encoder-core ~> silence-detection, if specified
+	}
 }
 
 function addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfig, pluginConfigInfo, pluginId){
