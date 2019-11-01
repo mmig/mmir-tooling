@@ -61,6 +61,23 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	}
 	runtimeConfig = runtimeConfigEntry.value;
 
+	/////////////////////////////////////////////////////////////////////////////////////
+
+	var includePluginList = mmirAppConfig.includePlugins;
+	if(includePluginList){
+
+		includePluginList.forEach(function(plugin){
+			var id = typeof plugin === 'string'? plugin : plugin.id;
+			var pluginSettings = typeof plugin !== 'string'? plugin : {id: id};
+			log('adding mmir-plugin "'+id+'" ...');//DEBUG
+			pluginsUtil.addPluginInfos(pluginSettings, mmirAppConfig, directories, resourcesConfig, runtimeConfig, settings);
+		});
+
+		// log('added mmir-plugins: ', resourcesConfig.workers, mmirAppConfig);//DEBUG
+	}
+
+	/////////////////////////////////////////////////////////////////////////////////////
+
 	var grammarOptions = mmirAppConfig.grammars;
 	//exmaple:
 	// var grammarOptions = {
@@ -220,22 +237,6 @@ var createBuildConfig = function(mmirAppConfig, resourcesConfig){
 	// log('view templates: ', views);
 
 	viewUtils.addViewsToAppConfig(views, ctrlList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
-
-	/////////////////////////////////////////////////////////////////////////////////////
-
-	var includePluginList = mmirAppConfig.includePlugins;
-	if(includePluginList){
-
-		includePluginList.forEach(function(plugin){
-			var id = typeof plugin === 'string'? plugin : plugin.id;
-			var pluginSettings = typeof plugin !== 'string'? plugin : {id: id};
-			log('adding mmir-plugin "'+id+'" ...');//DEBUG
-			pluginsUtil.addPluginInfos(pluginSettings, mmirAppConfig, directories, resourcesConfig, runtimeConfig, settings);
-		});
-
-		// log('added mmir-plugins: ', resourcesConfig.workers, mmirAppConfig);//DEBUG
-	}
-
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
