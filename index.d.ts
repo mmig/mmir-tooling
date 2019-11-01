@@ -782,6 +782,14 @@ export interface PluginOptions {
 	 * NOTE some plugins require credentials, e.g. "appId" and "appKey"
 	 */
 	config?: PluginConfig | TTSPluginSpeechConfig;
+	/**
+	 * if supported by plugin:
+	 * custom build options.
+	 *
+	 * NOTE if the plugin does not support custom build configuration, this
+	 *      will be ignored.
+	 */
+	buildConfig?: AppConfig;
 }
 
 export type PluginConfig = {[config: string]: any};
