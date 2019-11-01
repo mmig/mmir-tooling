@@ -303,12 +303,16 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
 
 function addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfig, pluginConfigInfo, pluginId){
 
-	if(pluginConfigInfo.buildConfig){
+	if(Array.isArray(pluginConfigInfo.buildConfigs) && pluginConfigInfo.buildConfigs.length > 0){
 		//NOTE if no pluginConfigInfo.buildConfig is specified, then the plugin does not support build-config settings, so pluginBuildConfig will also be ignored!
 
-		console.log('plugin-utils.addBuildConfig: applying plugin\'s build configuration ', pluginConfigInfo.buildConfig, )
+		// console.log('plugin-utils.addBuildConfig: applying plugin\'s build configuration ', pluginConfigInfo.buildConfigs)
 
-		var bconfig = pluginConfigInfo.buildConfig;
+		var bconfigList = pluginConfigInfo.buildConfigs;
+		var bconfig = bconfigList[0];
+		for(var i=1, size = bconfigList.length; i < size; ++i){
+			_.merge(bconfig, bconfigList[i]);
+		}
 		var usedPluginBuildConfigKeys = new Set();
 
 		Object.keys(bconfig).forEach(function(key){
