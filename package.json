@@ -1,6 +1,6 @@
 {
   "name": "mmir-tooling",
-  "version": "5.2.0",
+  "version": "6.0.0",
   "description": "Build tools for MMIR projects",
   "directories": {},
   "repository": {
@@ -28,7 +28,7 @@
     "@types/meow": "^5.0.0",
     "cross-var": "^1.1.0",
     "eclint": "^2.8.1",
-    "mmir-lib": "^5.2.0",
+    "mmir-lib": "^6.0.0",
     "typedoc": "^0.15.0",
     "typedoc-plugin-external-module-name": "^2.1.0",
     "typedoc-plugin-markdown": "^2.2.6"
