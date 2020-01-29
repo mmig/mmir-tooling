@@ -1,6 +1,4 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [AppConfig](mmir_tooling.appconfig.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [AppConfig](mmir_tooling.appconfig.md)
 
 # Interface: AppConfig
 
@@ -34,20 +32,34 @@ var appConfig = {
 
 * **AppConfig**
 
-  * [BuildAppConfig](mmir_tooling.buildappconfig.md)
+  ↳ [BuildAppConfig](mmir_tooling.buildappconfig.md)
 
 ## Index
 
 ### Properties
 
+* [configuration](mmir_tooling.appconfig.md#optional-configuration)
 * [grammars](mmir_tooling.appconfig.md#optional-grammars)
 * [resourcesPath](mmir_tooling.appconfig.md#optional-resourcespath)
 * [resourcesPathOptions](mmir_tooling.appconfig.md#optional-resourcespathoptions)
 * [rootPath](mmir_tooling.appconfig.md#optional-rootpath)
+* [settings](mmir_tooling.appconfig.md#optional-settings)
 * [states](mmir_tooling.appconfig.md#optional-states)
 * [views](mmir_tooling.appconfig.md#optional-views)
 
 ## Properties
+
+### `Optional` configuration
+
+• **configuration**? : *[RuntimeConfiguration](mmir_tooling.runtimeconfiguration.md)*
+
+Specify additional (mmir) runtime configuration values,
+e.g. in addition to `config/configuration.json`.
+
+In case of conflicts, these settings will override settings in
+`config/configuration.json`,
+
+___
 
 ### `Optional` grammars
 
@@ -102,6 +114,32 @@ ___
 • **rootPath**? : *string*
 
 used for resolving non-absolute paths: the absolute path to the app's root/sources directory (if omitted the current working directory is used for resolving non-absolute paths)
+
+___
+
+### `Optional` settings
+
+• **settings**? : *[SettingsOptions](mmir_tooling.settingsoptions.md) | boolean*
+
+Specify how (mmir) configuration and settings should be parsed/included,
+and/or specify additional settings that should be included.
+
+The `mmir` configuration/settings are the resources that are by default
+located in the mmir `config/` directory
+(with exception of the `states` sub-directory; for those instead use [[WebpackAppConfig.states]]):
+ ```bash
+ config/
+       /languages/
+                 /<lang>/
+                        /grammar.json
+                        /dictionary.json
+                        /speech.json
+       /states/
+              /input.xml
+              /dialog.xml
+       /configuration.json
+```
+(NOTE the `config/states/` sub-directory is handled/configured via the the [states](mmir_tooling.appconfig.md#optional-states) option)
 
 ___
 

@@ -1,29 +1,40 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [StateBuildOptions](mmir_tooling.statebuildoptions.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [StateBuildOptions](mmir_tooling.statebuildoptions.md)
 
 # Interface: StateBuildOptions
 
 ## Hierarchy
 
-* [StateOptions](mmir_tooling.stateoptions.md)
+  ↳ [StateOptions](mmir_tooling.stateoptions.md)
 
 * [BuildOptions](mmir_tooling.buildoptions.md)
 
-  * **StateBuildOptions**
+  ↳ **StateBuildOptions**
 
 ## Index
 
 ### Properties
 
+* [exclude](mmir_tooling.statebuildoptions.md#optional-exclude)
 * [force](mmir_tooling.statebuildoptions.md#optional-force)
 * [ignoreErrors](mmir_tooling.statebuildoptions.md#optional-ignoreerrors)
+* [mode](mmir_tooling.statebuildoptions.md#optional-mode)
 * [models](mmir_tooling.statebuildoptions.md#optional-models)
+* [moduleId](mmir_tooling.statebuildoptions.md#optional-moduleid)
 * [moduleType](mmir_tooling.statebuildoptions.md#optional-moduletype)
 * [path](mmir_tooling.statebuildoptions.md#optional-path)
 * [targetDir](mmir_tooling.statebuildoptions.md#optional-targetdir)
 
 ## Properties
+
+### `Optional` exclude
+
+• **exclude**? : *boolean*
+
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[exclude](mmir_tooling.statebuildoptions.md#optional-exclude)*
+
+if `true`, the corresponding resource will be excluded (when parsing `path`)
+
+___
 
 ### `Optional` force
 
@@ -31,8 +42,8 @@
 
 *Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[force](mmir_tooling.buildoptions.md#optional-force)*
 
-if TRUE the grammar(s) will be newly created and written to the targetDir,
-even if the up-to-date check returns `true`
+if TRUE the targets will be newly created and written to the targetDir,
+even if the existence or up-to-date check returns `true`
 
 ___
 
@@ -40,7 +51,7 @@ ___
 
 • **ignoreErrors**? : *boolean*
 
-*Inherited from [StateOptions](mmir_tooling.stateoptions.md).[ignoreErrors](mmir_tooling.stateoptions.md#optional-ignoreerrors)*
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[ignoreErrors](mmir_tooling.statebuildoptions.md#optional-ignoreerrors)*
 
 if `true`, runtime errors will be ignored.
  if `false` (or omitted) the compilation will fail with an error message
@@ -53,11 +64,23 @@ NOTE: if ignored, the runtime errors will be triggered when the state-machine
 
 ___
 
+### `Optional` mode
+
+• **mode**? : *"extended" | "simple"*
+
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[mode](mmir_tooling.statebuildoptions.md#optional-mode)*
+
+run SCXML model in "simple" or "extended" mode
+
+**`default`** "extended"
+
+___
+
 ### `Optional` models
 
 • **models**? : *object*
 
-*Inherited from [StateOptions](mmir_tooling.stateoptions.md).[models](mmir_tooling.stateoptions.md#optional-models)*
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[models](mmir_tooling.statebuildoptions.md#optional-models)*
 
 optionally specify options for found resource, or specifying resources/locations directly
 
@@ -77,6 +100,22 @@ NOTE: for custom state-models whichs' files are determined by parsing [StateOpti
 
 ___
 
+### `Optional` moduleId
+
+• **moduleId**? : *string*
+
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[moduleId](mmir_tooling.statebuildoptions.md#optional-moduleid)*
+
+the module ID for state interpreter:
+if the interpreter is registered, it can be `require`'d using the `moduleId`, e.g.
+```
+var stateManager = mmir.require(<moduleId>);
+```
+
+(the `moduleId` will be automatically set for `inputManager` and `dialogManager`)
+
+___
+
 ### `Optional` moduleType
 
 • **moduleType**? : *"amd" | "commonjs"*
@@ -91,7 +130,7 @@ ___
 
 • **path**? : *string*
 
-*Inherited from [StateOptions](mmir_tooling.stateoptions.md).[path](mmir_tooling.stateoptions.md#optional-path)*
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[path](mmir_tooling.statebuildoptions.md#optional-path)*
 
 file path for searching (recursively) for SCXML files (state-models):
 ```bash

@@ -1,14 +1,14 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [StateModelEntry](mmir_tooling.statemodelentry.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [StateModelEntry](mmir_tooling.statemodelentry.md)
 
 # Interface: StateModelEntry
 
 ## Hierarchy
 
-* **StateModelEntry**
+* [StateModelOption](mmir_tooling.statemodeloption.md)
 
-  * [StateModelBuildEntry](mmir_tooling.statemodelbuildentry.md)
+  ↳ **StateModelEntry**
+
+  ↳ [StateModelBuildEntry](mmir_tooling.statemodelbuildentry.md)
 
 ## Index
 
@@ -26,6 +26,8 @@
 
 • **exclude**? : *boolean*
 
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[exclude](mmir_tooling.statebuildoptions.md#optional-exclude)*
+
 if `true`, the corresponding resource will be excluded (when parsing `path`)
 
 ___
@@ -42,8 +44,10 @@ ___
 
 • **ignoreErrors**? : *boolean*
 
-if TRUE, runtime errors will be ignored.
- if FALSE (or omitted) the compilation will fail with an error message
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[ignoreErrors](mmir_tooling.statebuildoptions.md#optional-ignoreerrors)*
+
+if `true`, runtime errors will be ignored.
+ if `false` (or omitted) the compilation will fail with an error message
  when encountering SCXML runtime errors.
 
 NOTE: if ignored, the runtime errors will be triggered when the state-machine
@@ -57,6 +61,8 @@ ___
 
 • **mode**? : *"extended" | "simple"*
 
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[mode](mmir_tooling.statebuildoptions.md#optional-mode)*
+
 run SCXML model in "simple" or "extended" mode
 
 **`default`** "extended"
@@ -66,6 +72,8 @@ ___
 ### `Optional` moduleId
 
 • **moduleId**? : *string*
+
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[moduleId](mmir_tooling.statebuildoptions.md#optional-moduleid)*
 
 the module ID for state interpreter:
 if the interpreter is registered, it can be `require`'d using the `moduleId`, e.g.

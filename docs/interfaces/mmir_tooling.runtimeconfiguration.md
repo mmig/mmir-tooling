@@ -1,6 +1,4 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [RuntimeConfiguration](mmir_tooling.runtimeconfiguration.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [RuntimeConfiguration](mmir_tooling.runtimeconfiguration.md)
 
 # Interface: RuntimeConfiguration
 
@@ -27,6 +25,7 @@ or app-specific settings my be specified and used.
 * [defaultLayoutName](mmir_tooling.runtimeconfiguration.md#optional-defaultlayoutname)
 * [detectCompiledStateModels](mmir_tooling.runtimeconfiguration.md#optional-detectcompiledstatemodels)
 * [grammarAsyncCompileMode](mmir_tooling.runtimeconfiguration.md#optional-grammarasynccompilemode)
+* [grammarAsyncExecMode](mmir_tooling.runtimeconfiguration.md#optional-grammarasyncexecmode)
 * [grammarCompiler](mmir_tooling.runtimeconfiguration.md#optional-grammarcompiler)
 * [ignoreGrammarFiles](mmir_tooling.runtimeconfiguration.md#optional-ignoregrammarfiles)
 * [language](mmir_tooling.runtimeconfiguration.md#optional-language)
@@ -79,6 +78,20 @@ if JSON grammar is compiled during runtime, use async (i.e. web worker) compilat
 
 ___
 
+### `Optional` grammarAsyncExecMode
+
+• **grammarAsyncExecMode**? : *Array‹string› | Array‹object› | true*
+
+list of (compiled) grammars (IDs) which should be initialized for asynchronous execution, i.e. should be exectuted in WebWorker/thread
+
+If `true`, all (compiled) grammar will be initialized for asynchronous execution.
+
+If list, an additional "initialization-phrase" may be specified by using `{id: string, phrase: string}`:
+a phrase that should be immediately interpreted, after grammar has been loaded in the WebWorkers
+(for large grammars, this may reduce delays for subsequent calls, by fully initializing the grammar)
+
+___
+
 ### `Optional` grammarCompiler
 
 • **grammarCompiler**? : *"jscc" | "jison" | "pegjs"*
@@ -89,9 +102,11 @@ ___
 
 ### `Optional` ignoreGrammarFiles
 
-• **ignoreGrammarFiles**? : *`Array<string>`*
+• **ignoreGrammarFiles**? : *Array‹string› | true*
 
 list of grammars (IDs) which should not be automatically loaded on startup, even if compiled/JSON grammar is available for the language
+
+If `true`, no file compiled grammars will be loaded on start-up (i.e. all IDs will be ignored for start-up)
 
 ___
 

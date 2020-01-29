@@ -1,6 +1,4 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [PluginOptions](mmir_tooling.pluginoptions.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [PluginOptions](mmir_tooling.pluginoptions.md)
 
 # Interface: PluginOptions
 
@@ -44,15 +42,28 @@ var includePlugins = [
 
 ### Properties
 
+* [buildConfig](mmir_tooling.pluginoptions.md#optional-buildconfig)
 * [config](mmir_tooling.pluginoptions.md#optional-config)
 * [id](mmir_tooling.pluginoptions.md#id)
 * [mode](mmir_tooling.pluginoptions.md#optional-mode)
 
 ## Properties
 
+### `Optional` buildConfig
+
+• **buildConfig**? : *[AppConfig](mmir_tooling.appconfig.md)*
+
+if supported by plugin:
+custom build options.
+
+NOTE if the plugin does not support custom build configuration, this
+     will be ignored.
+
+___
+
 ### `Optional` config
 
-• **config**? : *object | [PluginConfig](../modules/mmir_tooling.md#pluginconfig)*
+• **config**? : *[PluginConfig](../modules/mmir_tooling.md#pluginconfig) | [TTSPluginSpeechConfig](mmir_tooling.ttspluginspeechconfig.md)*
 
 configuration for the plugin: specific fields/values depending on the plugin
 NOTE some plugins require credentials, e.g. "appId" and "appKey"

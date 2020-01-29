@@ -1,6 +1,4 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [BuildAppConfig](mmir_tooling.buildappconfig.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [BuildAppConfig](mmir_tooling.buildappconfig.md)
 
 # Interface: BuildAppConfig
 
@@ -8,12 +6,13 @@
 
 * [AppConfig](mmir_tooling.appconfig.md)
 
-  * **BuildAppConfig**
+  ↳ **BuildAppConfig**
 
 ## Index
 
 ### Properties
 
+* [configuration](mmir_tooling.buildappconfig.md#optional-configuration)
 * [directoriesTargetDir](mmir_tooling.buildappconfig.md#optional-directoriestargetdir)
 * [grammars](mmir_tooling.buildappconfig.md#optional-grammars)
 * [includeStateModelXmls](mmir_tooling.buildappconfig.md#optional-includestatemodelxmls)
@@ -21,11 +20,26 @@
 * [resourcesPath](mmir_tooling.buildappconfig.md#optional-resourcespath)
 * [resourcesPathOptions](mmir_tooling.buildappconfig.md#optional-resourcespathoptions)
 * [rootPath](mmir_tooling.buildappconfig.md#optional-rootpath)
+* [settings](mmir_tooling.buildappconfig.md#optional-settings)
 * [states](mmir_tooling.buildappconfig.md#optional-states)
 * [targetDir](mmir_tooling.buildappconfig.md#optional-targetdir)
 * [views](mmir_tooling.buildappconfig.md#optional-views)
 
 ## Properties
+
+### `Optional` configuration
+
+• **configuration**? : *[RuntimeConfiguration](mmir_tooling.runtimeconfiguration.md)*
+
+*Overrides [AppConfig](mmir_tooling.appconfig.md).[configuration](mmir_tooling.appconfig.md#optional-configuration)*
+
+`mmir` runtime configuration:
+instead of, or modifying/overwriting configuration settings in `configuration.json`
+
+NOTE only takes effect, if settings options `inlcude` (or in its sub-option) is set 'file'
+(and possibly force, to enable overwriting existing files), so that settings files will be written
+
+___
 
 ### `Optional` directoriesTargetDir
 
@@ -117,6 +131,20 @@ ___
 *Inherited from [AppConfig](mmir_tooling.appconfig.md).[rootPath](mmir_tooling.appconfig.md#optional-rootpath)*
 
 used for resolving non-absolute paths: the absolute path to the app's root/sources directory (if omitted the current working directory is used for resolving non-absolute paths)
+
+___
+
+### `Optional` settings
+
+• **settings**? : *[SettingsBuildOptions](mmir_tooling.settingsbuildoptions.md) | boolean*
+
+*Overrides [AppConfig](mmir_tooling.appconfig.md).[settings](mmir_tooling.appconfig.md#optional-settings)*
+
+NOTE settings files may be written to the (settings) targetDir if
+(1) the [[SettingsBuildOptions.include]] option is set to 'file'
+(2) if the file already exists in the targetDir it is overwritten if the [SettingsBuildOptions.force](mmir_tooling.settingsbuildoptions.md#optional-force) option is enabled
+
+The `include` and `force` option can be set either in the SettingsBuildOptions, or in the specific SettingsBuildEntry/ies.
 
 ___
 

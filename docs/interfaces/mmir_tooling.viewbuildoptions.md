@@ -1,6 +1,4 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [ViewBuildOptions](mmir_tooling.viewbuildoptions.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [ViewBuildOptions](mmir_tooling.viewbuildoptions.md)
 
 # Interface: ViewBuildOptions
 
@@ -10,7 +8,7 @@
 
 * [BuildOptions](mmir_tooling.buildoptions.md)
 
-  * **ViewBuildOptions**
+  ↳ **ViewBuildOptions**
 
 ## Index
 
@@ -28,8 +26,8 @@
 
 *Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[force](mmir_tooling.buildoptions.md#optional-force)*
 
-if TRUE the grammar(s) will be newly created and written to the targetDir,
-even if the up-to-date check returns `true`
+if TRUE the targets will be newly created and written to the targetDir,
+even if the existence or up-to-date check returns `true`
 
 ___
 
@@ -37,7 +35,7 @@ ___
 
 • **path**? : *string*
 
-*Inherited from [ViewOptions](mmir_tooling.viewoptions.md).[path](mmir_tooling.viewoptions.md#optional-path)*
+*Inherited from [ViewBuildOptions](mmir_tooling.viewbuildoptions.md).[path](mmir_tooling.viewbuildoptions.md#optional-path)*
 
 file path for searching view files:
 ```bash

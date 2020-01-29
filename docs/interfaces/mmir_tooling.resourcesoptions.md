@@ -1,6 +1,4 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [ResourcesOptions](mmir_tooling.resourcesoptions.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [ResourcesOptions](mmir_tooling.resourcesoptions.md)
 
 # Interface: ResourcesOptions
 
@@ -26,12 +24,12 @@ options for handling found resources when parsing the resourcesPath
 for automatically converting old-style implementations that are no CommonJS or AMD modules:
 if `true`, explicitly exports the implementation resource (i.e. as module.exports)
 
-**`see`** ImplementationOptions
+**`see`** ImplementationEntry
 
 ___
 
 ### `Optional` exclude
 
-• **exclude**? : *`Array<ResourceTypeName>`*
+• **exclude**? : *Array‹[ResourceTypeName](../modules/mmir_tooling.md#resourcetypename)›*
 
 excludes the specified resources types when parsing the `resourcesPath`

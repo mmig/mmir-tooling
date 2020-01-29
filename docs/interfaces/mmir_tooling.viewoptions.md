@@ -1,6 +1,4 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [ViewOptions](mmir_tooling.viewoptions.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [ViewOptions](mmir_tooling.viewoptions.md)
 
 # Interface: ViewOptions
 
@@ -8,7 +6,7 @@
 
 * **ViewOptions**
 
-  * [ViewBuildOptions](mmir_tooling.viewbuildoptions.md)
+  ↳ [ViewBuildOptions](mmir_tooling.viewbuildoptions.md)
 
 ## Index
 

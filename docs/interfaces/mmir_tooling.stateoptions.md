@@ -1,6 +1,4 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [StateOptions](mmir_tooling.stateoptions.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [StateOptions](mmir_tooling.stateoptions.md)
 
 # Interface: StateOptions
 
@@ -8,14 +6,14 @@
 ```
 var stateOptions = {
 	path: 'www/config/states',
-	// ignoreErrors: true,
+	ignoreErrors: true,
 	models: {
 		input: {
 			mode: 'simple',
 			file: './alt_config/states_minimal/input.xml'
 		},
 		dialog: {
-			ignoreErrors: true,
+			ignoreErrors: false,
 			mode: 'extended'
 		}
 	}
@@ -24,23 +22,40 @@ var stateOptions = {
 
 ## Hierarchy
 
-* **StateOptions**
+* [StateModelOption](mmir_tooling.statemodeloption.md)
 
-  * [StateBuildOptions](mmir_tooling.statebuildoptions.md)
+  ↳ **StateOptions**
+
+  ↳ [StateBuildOptions](mmir_tooling.statebuildoptions.md)
 
 ## Index
 
 ### Properties
 
+* [exclude](mmir_tooling.stateoptions.md#optional-exclude)
 * [ignoreErrors](mmir_tooling.stateoptions.md#optional-ignoreerrors)
+* [mode](mmir_tooling.stateoptions.md#optional-mode)
 * [models](mmir_tooling.stateoptions.md#optional-models)
+* [moduleId](mmir_tooling.stateoptions.md#optional-moduleid)
 * [path](mmir_tooling.stateoptions.md#optional-path)
 
 ## Properties
 
+### `Optional` exclude
+
+• **exclude**? : *boolean*
+
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[exclude](mmir_tooling.statebuildoptions.md#optional-exclude)*
+
+if `true`, the corresponding resource will be excluded (when parsing `path`)
+
+___
+
 ### `Optional` ignoreErrors
 
 • **ignoreErrors**? : *boolean*
+
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[ignoreErrors](mmir_tooling.statebuildoptions.md#optional-ignoreerrors)*
 
 if `true`, runtime errors will be ignored.
  if `false` (or omitted) the compilation will fail with an error message
@@ -50,6 +65,18 @@ NOTE: if ignored, the runtime errors will be triggered when the state-machine
       enters the corresponing state during runtime!
 
 **`default`** false
+
+___
+
+### `Optional` mode
+
+• **mode**? : *"extended" | "simple"*
+
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[mode](mmir_tooling.statebuildoptions.md#optional-mode)*
+
+run SCXML model in "simple" or "extended" mode
+
+**`default`** "extended"
 
 ___
 
@@ -72,6 +99,22 @@ NOTE: for custom state-models whichs' files are determined by parsing [StateOpti
 * **dialog**? : *[StateModelEntry](mmir_tooling.statemodelentry.md)*
 
 * **input**? : *[StateModelEntry](mmir_tooling.statemodelentry.md)*
+
+___
+
+### `Optional` moduleId
+
+• **moduleId**? : *string*
+
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[moduleId](mmir_tooling.statebuildoptions.md#optional-moduleid)*
+
+the module ID for state interpreter:
+if the interpreter is registered, it can be `require`'d using the `moduleId`, e.g.
+```
+var stateManager = mmir.require(<moduleId>);
+```
+
+(the `moduleId` will be automatically set for `inputManager` and `dialogManager`)
 
 ___
 

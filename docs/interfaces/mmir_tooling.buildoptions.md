@@ -1,6 +1,4 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [BuildOptions](mmir_tooling.buildoptions.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [BuildOptions](mmir_tooling.buildoptions.md)
 
 # Interface: BuildOptions
 
@@ -8,17 +6,21 @@
 
 * **BuildOptions**
 
-  * [GrammarBuildOptions](mmir_tooling.grammarbuildoptions.md)
+  ↳ [GrammarBuildOptions](mmir_tooling.grammarbuildoptions.md)
 
-  * [GrammarBuildEntry](mmir_tooling.grammarbuildentry.md)
+  ↳ [GrammarBuildEntry](mmir_tooling.grammarbuildentry.md)
 
-  * [ViewBuildOptions](mmir_tooling.viewbuildoptions.md)
+  ↳ [ViewBuildOptions](mmir_tooling.viewbuildoptions.md)
 
-  * [ViewBuildEntry](mmir_tooling.viewbuildentry.md)
+  ↳ [ViewBuildEntry](mmir_tooling.viewbuildentry.md)
 
-  * [StateBuildOptions](mmir_tooling.statebuildoptions.md)
+  ↳ [SettingsBuildOptions](mmir_tooling.settingsbuildoptions.md)
 
-  * [StateModelBuildEntry](mmir_tooling.statemodelbuildentry.md)
+  ↳ [SettingsBuildEntry](mmir_tooling.settingsbuildentry.md)
+
+  ↳ [StateBuildOptions](mmir_tooling.statebuildoptions.md)
+
+  ↳ [StateModelBuildEntry](mmir_tooling.statemodelbuildentry.md)
 
 ## Index
 
@@ -33,8 +35,8 @@
 
 • **force**? : *boolean*
 
-if TRUE the grammar(s) will be newly created and written to the targetDir,
-even if the up-to-date check returns `true`
+if TRUE the targets will be newly created and written to the targetDir,
+even if the existence or up-to-date check returns `true`
 
 ___
 

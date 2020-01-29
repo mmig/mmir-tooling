@@ -1,16 +1,14 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [StateModelBuildEntry](mmir_tooling.statemodelbuildentry.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [StateModelBuildEntry](mmir_tooling.statemodelbuildentry.md)
 
 # Interface: StateModelBuildEntry
 
 ## Hierarchy
 
-* [StateModelEntry](mmir_tooling.statemodelentry.md)
+  ↳ [StateModelEntry](mmir_tooling.statemodelentry.md)
 
 * [BuildOptions](mmir_tooling.buildoptions.md)
 
-  * **StateModelBuildEntry**
+  ↳ **StateModelBuildEntry**
 
 ## Index
 
@@ -30,7 +28,7 @@
 
 • **exclude**? : *boolean*
 
-*Inherited from [StateModelEntry](mmir_tooling.statemodelentry.md).[exclude](mmir_tooling.statemodelentry.md#optional-exclude)*
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[exclude](mmir_tooling.statebuildoptions.md#optional-exclude)*
 
 if `true`, the corresponding resource will be excluded (when parsing `path`)
 
@@ -40,7 +38,7 @@ ___
 
 • **file**? : *string*
 
-*Inherited from [StateModelEntry](mmir_tooling.statemodelentry.md).[file](mmir_tooling.statemodelentry.md#optional-file)*
+*Inherited from [StateModelBuildEntry](mmir_tooling.statemodelbuildentry.md).[file](mmir_tooling.statemodelbuildentry.md#optional-file)*
 
 for explicitly specifying the state-machine directly (e.g. instead or in addition of parsing `path`)
 
@@ -52,8 +50,8 @@ ___
 
 *Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[force](mmir_tooling.buildoptions.md#optional-force)*
 
-if TRUE the grammar(s) will be newly created and written to the targetDir,
-even if the up-to-date check returns `true`
+if TRUE the targets will be newly created and written to the targetDir,
+even if the existence or up-to-date check returns `true`
 
 ___
 
@@ -61,10 +59,10 @@ ___
 
 • **ignoreErrors**? : *boolean*
 
-*Inherited from [StateModelEntry](mmir_tooling.statemodelentry.md).[ignoreErrors](mmir_tooling.statemodelentry.md#optional-ignoreerrors)*
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[ignoreErrors](mmir_tooling.statebuildoptions.md#optional-ignoreerrors)*
 
-if TRUE, runtime errors will be ignored.
- if FALSE (or omitted) the compilation will fail with an error message
+if `true`, runtime errors will be ignored.
+ if `false` (or omitted) the compilation will fail with an error message
  when encountering SCXML runtime errors.
 
 NOTE: if ignored, the runtime errors will be triggered when the state-machine
@@ -78,7 +76,7 @@ ___
 
 • **mode**? : *"extended" | "simple"*
 
-*Inherited from [StateModelEntry](mmir_tooling.statemodelentry.md).[mode](mmir_tooling.statemodelentry.md#optional-mode)*
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[mode](mmir_tooling.statebuildoptions.md#optional-mode)*
 
 run SCXML model in "simple" or "extended" mode
 
@@ -90,7 +88,7 @@ ___
 
 • **moduleId**? : *string*
 
-*Inherited from [StateModelEntry](mmir_tooling.statemodelentry.md).[moduleId](mmir_tooling.statemodelentry.md#optional-moduleid)*
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[moduleId](mmir_tooling.statebuildoptions.md#optional-moduleid)*
 
 the module ID for state interpreter:
 if the interpreter is registered, it can be `require`'d using the `moduleId`, e.g.

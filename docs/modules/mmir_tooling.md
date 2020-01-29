@@ -1,6 +1,4 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](mmir_tooling.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](mmir_tooling.md)
 
 # External module: mmir-tooling
 
@@ -20,21 +18,28 @@ grammars or state-models.
 * [GrammarBuildEntry](../interfaces/mmir_tooling.grammarbuildentry.md)
 * [GrammarBuildOptions](../interfaces/mmir_tooling.grammarbuildoptions.md)
 * [GrammarEntry](../interfaces/mmir_tooling.grammarentry.md)
+* [GrammarOption](../interfaces/mmir_tooling.grammaroption.md)
 * [GrammarOptions](../interfaces/mmir_tooling.grammaroptions.md)
 * [HelperOptions](../interfaces/mmir_tooling.helperoptions.md)
-* [ImplementationOptions](../interfaces/mmir_tooling.implementationoptions.md)
+* [ImplementationEntry](../interfaces/mmir_tooling.implementationentry.md)
+* [ImplementationOption](../interfaces/mmir_tooling.implementationoption.md)
 * [ModelOptions](../interfaces/mmir_tooling.modeloptions.md)
 * [PluginOptions](../interfaces/mmir_tooling.pluginoptions.md)
 * [ResourcesOptions](../interfaces/mmir_tooling.resourcesoptions.md)
 * [RuntimeConfiguration](../interfaces/mmir_tooling.runtimeconfiguration.md)
+* [SettingsBuildEntry](../interfaces/mmir_tooling.settingsbuildentry.md)
+* [SettingsBuildOptions](../interfaces/mmir_tooling.settingsbuildoptions.md)
 * [SettingsEntryOptions](../interfaces/mmir_tooling.settingsentryoptions.md)
 * [SettingsOptions](../interfaces/mmir_tooling.settingsoptions.md)
 * [StateBuildOptions](../interfaces/mmir_tooling.statebuildoptions.md)
 * [StateModelBuildEntry](../interfaces/mmir_tooling.statemodelbuildentry.md)
 * [StateModelEntry](../interfaces/mmir_tooling.statemodelentry.md)
+* [StateModelOption](../interfaces/mmir_tooling.statemodeloption.md)
 * [StateOptions](../interfaces/mmir_tooling.stateoptions.md)
+* [TTSPluginSpeechConfig](../interfaces/mmir_tooling.ttspluginspeechconfig.md)
 * [ViewBuildEntry](../interfaces/mmir_tooling.viewbuildentry.md)
 * [ViewBuildOptions](../interfaces/mmir_tooling.viewbuildoptions.md)
+* [ViewEntry](../interfaces/mmir_tooling.viewentry.md)
 * [ViewOptions](../interfaces/mmir_tooling.viewoptions.md)
 
 ### Type aliases
@@ -126,7 +131,7 @@ ___
 
 ###  apply
 
-▸ **apply**(`buildConfig`: [BuildAppConfig](../interfaces/mmir_tooling.buildappconfig.md)): *`Promise<Error[]>`*
+▸ **apply**(`buildConfig`: [BuildAppConfig](../interfaces/mmir_tooling.buildappconfig.md)): *Promise‹Error[]›*
 
 compiles the _mmir_ resources:
 configure/include/compile/generate _mmir_ resources (e.g. grammars, state-models)
@@ -137,7 +142,7 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `buildConfig` | [BuildAppConfig](../interfaces/mmir_tooling.buildappconfig.md) | the _mmir_ build configuration  |
 
-**Returns:** *`Promise<Error[]>`*
+**Returns:** *Promise‹Error[]›*
 
 a promise that is resolved when compilation has completed.
          If errors ocurred during compilation, the promise is resolved

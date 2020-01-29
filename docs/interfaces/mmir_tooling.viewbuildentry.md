@@ -1,65 +1,44 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / [ViewBuildEntry](mmir_tooling.viewbuildentry.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [ViewBuildEntry](mmir_tooling.viewbuildentry.md)
 
 # Interface: ViewBuildEntry
 
 ## Hierarchy
 
-* [ImplementationOptions](mmir_tooling.implementationoptions.md)
+* [ViewEntry](mmir_tooling.viewentry.md)
 
 * [BuildOptions](mmir_tooling.buildoptions.md)
 
-  * **ViewBuildEntry**
+  ↳ **ViewBuildEntry**
 
 ## Index
 
 ### Properties
 
-* [addModuleExport](mmir_tooling.viewbuildentry.md#optional-addmoduleexport)
-* [exclude](mmir_tooling.viewbuildentry.md#optional-exclude)
-* [file](mmir_tooling.viewbuildentry.md#optional-file)
+* [ctrlName](mmir_tooling.viewbuildentry.md#ctrlname)
+* [file](mmir_tooling.viewbuildentry.md#file)
 * [force](mmir_tooling.viewbuildentry.md#optional-force)
-* [name](mmir_tooling.viewbuildentry.md#name)
+* [id](mmir_tooling.viewbuildentry.md#id)
+* [isLayout](mmir_tooling.viewbuildentry.md#islayout)
+* [isPartial](mmir_tooling.viewbuildentry.md#ispartial)
 * [targetDir](mmir_tooling.viewbuildentry.md#optional-targetdir)
-* [type](mmir_tooling.viewbuildentry.md#optional-type)
+* [viewImpl](mmir_tooling.viewbuildentry.md#viewimpl)
+* [viewName](mmir_tooling.viewbuildentry.md#viewname)
 
 ## Properties
 
-### `Optional` addModuleExport
+###  ctrlName
 
-• **addModuleExport**? : *boolean | string*
+• **ctrlName**: *string*
 
-*Inherited from [ImplementationOptions](mmir_tooling.implementationoptions.md).[addModuleExport](mmir_tooling.implementationoptions.md#optional-addmoduleexport)*
-
-for automatically converting old-style implementations that are no CommonJS or AMD modules:
-if true, explicitly exports the implementation resource, i.e. adds something like
-<pre>
-module.exports.<resource name> = <resource constructor>;
-</pre>
-to the implementation source/module.
-
-If string, the specified string will be used for the export.
+*Inherited from [ViewBuildEntry](mmir_tooling.viewbuildentry.md).[ctrlName](mmir_tooling.viewbuildentry.md#ctrlname)*
 
 ___
 
-### `Optional` exclude
+###  file
 
-• **exclude**? : *boolean*
+• **file**: *string*
 
-*Inherited from [ImplementationOptions](mmir_tooling.implementationoptions.md).[exclude](mmir_tooling.implementationoptions.md#optional-exclude)*
-
-if `true`, the corresponding implementation will be excluded (when parsing `path`)
-
-___
-
-### `Optional` file
-
-• **file**? : *string*
-
-*Inherited from [ImplementationOptions](mmir_tooling.implementationoptions.md).[file](mmir_tooling.implementationoptions.md#optional-file)*
-
-for explicitly specifying the implementation-file directly (e.g. instead or in addition of parsing `path`)
+*Inherited from [ViewBuildEntry](mmir_tooling.viewbuildentry.md).[file](mmir_tooling.viewbuildentry.md#file)*
 
 ___
 
@@ -69,18 +48,32 @@ ___
 
 *Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[force](mmir_tooling.buildoptions.md#optional-force)*
 
-if TRUE the grammar(s) will be newly created and written to the targetDir,
-even if the up-to-date check returns `true`
+if TRUE the targets will be newly created and written to the targetDir,
+even if the existence or up-to-date check returns `true`
 
 ___
 
-###  name
+###  id
 
-• **name**: *string*
+• **id**: *string*
 
-*Inherited from [ImplementationOptions](mmir_tooling.implementationoptions.md).[name](mmir_tooling.implementationoptions.md#name)*
+*Inherited from [ViewBuildEntry](mmir_tooling.viewbuildentry.md).[id](mmir_tooling.viewbuildentry.md#id)*
 
-the implementation's name (usually the ID with capitalized first letter)
+___
+
+###  isLayout
+
+• **isLayout**: *boolean*
+
+*Inherited from [ViewBuildEntry](mmir_tooling.viewbuildentry.md).[isLayout](mmir_tooling.viewbuildentry.md#islayout)*
+
+___
+
+###  isPartial
+
+• **isPartial**: *boolean*
+
+*Inherited from [ViewBuildEntry](mmir_tooling.viewbuildentry.md).[isPartial](mmir_tooling.viewbuildentry.md#ispartial)*
 
 ___
 
@@ -99,10 +92,16 @@ if the target directory is missing it will be newly created.
 
 ___
 
-### `Optional` type
+###  viewImpl
 
-• **type**? : *"controller" | "helper" | "model"*
+• **viewImpl**: *"mmirf/layout" | "mmirf/partial" | "mmirf/view"*
 
-*Inherited from [ImplementationOptions](mmir_tooling.implementationoptions.md).[type](mmir_tooling.implementationoptions.md#optional-type)*
+*Inherited from [ViewBuildEntry](mmir_tooling.viewbuildentry.md).[viewImpl](mmir_tooling.viewbuildentry.md#viewimpl)*
 
-the implementation's type (should not be explicitly specified)
+___
+
+###  viewName
+
+• **viewName**: *string*
+
+*Inherited from [ViewBuildEntry](mmir_tooling.viewbuildentry.md).[viewName](mmir_tooling.viewbuildentry.md#viewname)*

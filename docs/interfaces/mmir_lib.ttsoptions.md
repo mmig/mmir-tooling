@@ -1,6 +1,4 @@
-> **[mmir-tooling 5.2.0](../README.md)**
-
-[Globals](../README.md) / [mmir-lib](../modules/mmir_lib.md) / [TTSOptions](mmir_lib.ttsoptions.md) /
+[mmir-tooling 6.0.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [TTSOptions](mmir_lib.ttsoptions.md)
 
 # Interface: TTSOptions
 
