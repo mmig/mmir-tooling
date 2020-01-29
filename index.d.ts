@@ -252,10 +252,14 @@ export interface BuildAppConfig extends AppConfig {
 	 * (1) the [[SettingsBuildOptions.include]] option is set to 'file'
 	 * (2) if the file already exists in the targetDir it is overwritten if the [[SettingsBuildOptions.force]] option is enabled
 	 *
-	 * The include and force option can be set either in the SettingsBuildOptions, or in the specific SettingsBuildEntry/ies.
+	 * The `include` and `force` option can be set either in the SettingsBuildOptions, or in the specific SettingsBuildEntry/ies.
 	 */
 	settings?: SettingsBuildOptions | boolean;
-	/** NOTE only takes effect, if settings options inlcude (or in its sub-option) is set 'file'
+	/**
+	 * `mmir` runtime configuration:
+	 * instead of, or modifying/overwriting configuration settings in `configuration.json`
+	 *
+	 * NOTE only takes effect, if settings options `inlcude` (or in its sub-option) is set 'file'
 	 * (and possibly force, to enable overwriting existing files), so that settings files will be written
 	 */
 	configuration?: RuntimeConfiguration;
