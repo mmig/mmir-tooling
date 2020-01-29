@@ -815,8 +815,10 @@ export type PluginConfig = {[config: string]: any};
  *  }}
  *  </pre>
  *  which would set "Hedda" as voice for "en", and voice "male" for all other language codes
+ *
+ * @see [[SimpleSpeechConfig]]
  */
-export interface TTSPluginSpeechConfig extends mmir.SimpleSpeechConfig  {
+export interface TTSPluginSpeechConfig {
 	/** local with 2-letter language- and country-code, separated with "-", e.g. "de-DE" or "en-US" */
 	language?: string | {[languageCode: string]: string};
 	/** local with 3-letter language- and country-code, separated with "-", e.g. "deu-DEU" or "eng-USA" */
