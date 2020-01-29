@@ -1,9 +1,11 @@
-mmir-tooling
+[mmir-tooling][1]
 ============
 
 [![MIT license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/mmig/mmir-tooling)
-
+[![GitHub package.json version](https://img.shields.io/github/package-json/v/mmig/mmir-tooling/master)](https://github.com/mmig/mmir-tooling)
+[![npm](https://img.shields.io/npm/v/mmir-tooling)](https://www.npmjs.com/package/mmir-tooling)
+[![API](https://img.shields.io/badge/docs-API%20reference-orange.svg?style=flat)](https://mmig.github.io/mmir/api)
+[![Guides](https://img.shields.io/badge/docs-guides-orange.svg?style=flat)](https://github.com/mmig/mmir/wiki)
 
 The [mmir-tooling][1] repository holds files, resources etc. for
 building [mmir][2]-based applications.
@@ -16,7 +18,8 @@ See generated [API documentation][9] (or more detailed [HTML][10] documentation)
 
 ### Dependencies
 
-The current build process requires the **[mmir-lib][3] version 5.2.0 or later**
+See [Versioning Note](#versioning-note) below, for compatibility with `mmir-lib`
+versions.
 
 By default the build process will assume that the `mmir`-based application is
 located at `www/`:
@@ -47,6 +50,17 @@ to be specified in the build configuration.
 ### Installation
 
 Install `mmir-tooling` via `npm`.
+
+From `npm` registry
+```bash
+npm install mmir-tooling
+```
+
+Or latest development version from _github_
+```bash
+npm install git+https://github.com/mmig/mmir-tooling.git
+```
+
 
 See sections below for integrating `mmir-lib` into
 various frameworks / build-systems.
@@ -152,12 +166,12 @@ into the application directory `www/mmirf/`
  1. install `mmir` and `mmir-lib` via `npm`
     ```bash
     # install mmir-lib
-    npm install git+https://github.com/mmig/mmir-lib.git --save
+    npm install mmir-lib --save
     # install mmir-tooling
-    npm install git+https://github.com/mmig/mmir-tooling.git --save-dev
+    npm install mmir-tooling --save-dev
     ```
- 2. copy `mmir-lib` library files using `mmir-tooling`'s helper `mmirinstall`
-    1. using command line  
+ 2. copy `mmir-lib` library files using `mmir-tooling`'s helper `mmirinstall`, e.g.
+    * directly via command line ...  
        _(if used in an npm script, the relative path to `mmirinstall` can be omitted)_
        * on Windows
          ```cmd
@@ -167,7 +181,7 @@ into the application directory `www/mmirf/`
          ```bash
          node_modules/.bin/mmirinstall www/mmirf
          ```
-    2. as `npm` script
+    * ... or as `npm` script:
        * add `scripts` entry  in the `package.json` of the application:
          ```json
          "scripts": {
@@ -225,11 +239,17 @@ _NOTE_ if `mmir-lib` is included in a web page "as is", using its built-in
   which would store the built resources into `/dist/gen/**`.
 
 
-### Development
+### Versioning Note
+
+The major and minor version number of `mmir-tooling` matches the compatible
+verison of `mmir-lib`, i.e. `mmir-tooling X.Y.i` is compatible with `mmir-lib X.Y.j`.
+
+----
+
+### _Development_
 
 For including new libraries to [mmir-lib][3] (or updating/modifying existing vendor/generated libraries),
 see [mmir-lib-dev][8]
-
 
 [1]: https://github.com/mmig/mmir-tooling
 [2]: https://github.com/mmig/mmir
