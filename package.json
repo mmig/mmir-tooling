@@ -22,23 +22,26 @@
   },
   "author": "MMIG team",
   "license": "MIT",
-  "devDependencies": {
-    "@types/fs-extra": "^8.0.1",
-    "@types/lodash": "^4.14.149",
-    "@types/meow": "^5.0.0",
-    "cross-var": "^1.1.0",
-    "eclint": "^2.8.1",
-    "mmir-lib": "^6.0.0",
-    "typedoc": "^0.16.9",
-    "typedoc-plugin-external-module-name": "^3.0.0",
-    "typedoc-plugin-markdown": "^2.2.16"
-  },
   "dependencies": {
     "@scion-scxml/scxml": "^4.3.25",
     "array-flatten": "^3.0.0",
     "es6-promise": "^4.2.8",
     "fs-extra": "^8.0.0",
     "lodash": "^4.17.15",
-    "meow": "^6.0.0"
+    "meow": "^6.0.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.1.0",
+    "@types/lodash": "^4.14.149",
+    "@types/meow": "^5.0.0",
+    "cross-var": "^1.1.0",
+    "eclint": "^2.8.1",
+    "mmir-lib": "^6.0.0",
+    "typedoc": "^0.16.11",
+    "typedoc-plugin-external-module-name": "^3.0.0",
+    "typedoc-plugin-markdown": "^2.2.17"
+  },
+  "peerDependencies": {
+    "mmir-lib": "^6.0.0"
   }
 }
