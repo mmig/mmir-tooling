@@ -1,4 +1,4 @@
-[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [BuildOptions](mmir_tooling.buildoptions.md)
+[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [BuildOptions](mmir_tooling.buildoptions.md)
 
 # Interface: BuildOptions
 

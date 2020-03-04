@@ -1,4 +1,4 @@
-[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](mmir_tooling.md)
+[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](mmir_tooling.md)
 
 # External module: mmir-tooling
 

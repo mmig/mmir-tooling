@@ -1,4 +1,4 @@
-[mmir-tooling 6.0.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [EncodeUtils](mmir_lib.encodeutils.md)
+[mmir-tooling 6.1.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [EncodeUtils](mmir_lib.encodeutils.md)
 
 # Interface: EncodeUtils
 

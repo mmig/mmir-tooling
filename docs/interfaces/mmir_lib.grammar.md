@@ -1,4 +1,4 @@
-[mmir-tooling 6.0.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [Grammar](mmir_lib.grammar.md)
+[mmir-tooling 6.1.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [Grammar](mmir_lib.grammar.md)
 
 # Interface: Grammar
 

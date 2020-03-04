@@ -1,6 +1,6 @@
-[mmir-tooling 6.0.0](README.md)
+[mmir-tooling 6.1.0](README.md)
 
-# mmir-tooling 6.0.0
+# mmir-tooling 6.1.0
 
 ## Index
 

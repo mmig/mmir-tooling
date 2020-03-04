@@ -1,4 +1,4 @@
-[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [ImplementationEntry](mmir_tooling.implementationentry.md)
+[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [ImplementationEntry](mmir_tooling.implementationentry.md)
 
 # Interface: ImplementationEntry
 

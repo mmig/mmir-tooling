@@ -1,4 +1,4 @@
-[mmir-tooling 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [StateModelEntry](mmir_tooling.statemodelentry.md)
+[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [StateModelEntry](mmir_tooling.statemodelentry.md)
 
 # Interface: StateModelEntry
 
