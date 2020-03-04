@@ -1,7 +1,7 @@
 
 const path = require('path');
 
-var flatten = require('array-flatten');
+var flatten = require('array-flatten').flatten;
 
 var Promise = require('./utils/promise.js');
 
@@ -223,6 +223,11 @@ var compileResources = function(mmirAppConfig){
 }
 
 var getErrors = function(taskResults){
+
+	if(taskResults instanceof Error){
+		return [taskResults.stack? taskResults.stack : taskResults];
+	}
+
 	if(Array.isArray(taskResults)){
 		return flatten(taskResults).filter(function(err){ return !!err});
 	}
