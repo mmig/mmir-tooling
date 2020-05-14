@@ -436,7 +436,8 @@ export type SettingsType = 'configuration' | 'dictionary' | 'grammar' | 'speech'
  * 	models: {
  * 		input: {
  * 			mode: 'simple',
- * 			file: './alt_config/states_minimal/input.xml'
+ * 			file: './alt_config/states_minimal/input.xml',
+ * 			strict: false
  * 		},
  * 		dialog: {
  * 			ignoreErrors: false,
@@ -514,6 +515,11 @@ export interface StateModelOption {
 	 * @default false
 	 */
 	ignoreErrors?: boolean;
+	/**
+	 * set or disable strict-mode for generated JavaScript code
+	 * @default true
+	 */
+	strict?: boolean;
 }
 
 export interface StateModelEntry extends StateModelOption {

@@ -83,7 +83,8 @@ function readDir(dir, list, options){
 				file: normalized,
 				mode: opt && opt.mode? opt.mode : DEFAULT_MODE,
 				ignoreErrors: opt && typeof opt.ignoreErrors === 'boolean'? opt.ignoreErrors : void(0),
-				force: opt && typeof opt.force === 'boolean'? opt.force : void(0)
+				force: opt && typeof opt.force === 'boolean'? opt.force : void(0),
+				strict: opt && typeof opt.strict === 'boolean'? opt.strict : void(0)
 			});
 		} else {
 			log('scxml-utils.addFromDirectory(): ignoring non-XML file '+absPath);//DEBUG
@@ -253,7 +254,8 @@ module.exports = {
 			[
 				{name: 'mode', defaultValue: DEFAULT_MODE},
 				{name: 'ignoreErrors', defaultValue: false},
-				{name: 'force', defaultValue: false}
+				{name: 'force', defaultValue: false},
+				{name: 'strict', defaultValue: true}
 			].forEach(function(fieldInfo){
 				optionUtils.applySetting(fieldInfo.name, st, options, fieldInfo.defaultValue);
 			});

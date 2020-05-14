@@ -29,6 +29,7 @@ var MODULE_CODE_SUFFIX = ';\n' +
 
 var AMD_PREFIX = 'define(["module"],  function(module){\n';
 var AMD_SUFFIX = '\n});';
+var STRICT_MODE = '"use strict";\n';
 
 function toError(errList, file){
 	if(Array.isArray(errList)){
@@ -90,6 +91,8 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 	// log('SCXML parsing, ignoreErrors -> ', ignoreRuntimeErrors, ', options.ignoreErrors: ', options.config, scxmlInfo)//DEBU
 	var moduleType = scxmlInfo.moduleType? scxmlInfo.moduleType : (options.config && options.config.moduleType);
 	//log('SCXML parsing, moduleType -> ', moduleType, ', options.config: ', options.config, scxmlInfo)//DEBU
+	var strictMode = typeof scxmlInfo.strict === 'boolean'? scxmlInfo.strict : (options.config && typeof options.config.strict === 'boolean'? options.config.strict : true);
+	//log('SCXML parsing, strictMode -> ', strictMode, ', options.config: ', options.config, scxmlInfo)//DEBU
 
 	scxml.documentStringToModel(id, content, function(err, model){
 
@@ -110,7 +113,7 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 				var scxmlCode = MODULE_CODE_PREFIX + fnModel.toString() + MODULE_CODE_SUFFIX;
 
 				if(moduleType === 'amd'){
-					scxmlCode = AMD_PREFIX + scxmlCode + AMD_SUFFIX;
+					scxmlCode = AMD_PREFIX + (strictMode? STRICT_MODE : '') + scxmlCode + AMD_SUFFIX;
 				}
 
 				// log('mmir-scxml-loader: created model for '+id+'.');//DEBU
