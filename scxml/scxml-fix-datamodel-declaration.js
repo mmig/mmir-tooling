@@ -1,4 +1,6 @@
 
+var _ = require('lodash');
+var warn = require('../utils/log-utils.js').warn;
 
 /**
  * scxml currently does not correctly declare the datamodel variables
@@ -22,10 +24,14 @@ function _fixRawCompileInjectDataModule(scxmlCompiler){
 		var invokeConstructor;
 		for(var i=rawModule.invokeConstructors.length-1; i >= 0; --i){
 			invokeConstructor = rawModule.invokeConstructors[i];
-			if(invokeConstructor.datamodel) {//FIXME russa
-				var injectionNode = invokeConstructor.module._children[2];
-				injectionNode.add(invokeConstructor.datamodel);
-				injectionNode.add('\n');
+			if(invokeConstructor.datamodel) {
+				if(!_.isArray(invokeConstructor.module._children) || invokeConstructor.module._children.length < 3 || typeof invokeConstructor.module._children[2].add !== 'function'){
+					warn('[mmir-tooling] could not FIX scxml datamodel variable declaration, because of encountering unknown data structure. Please update mmir-tooling to fix this.')
+				} else {
+					var injectionNode = invokeConstructor.module._children[2];
+					injectionNode.add(invokeConstructor.datamodel);
+					injectionNode.add('\n');
+				}
 			}
 		}
 		scxmlCompiler.documentStringToModel.__handleRawModule.apply(scxmlCompiler.documentStringToModel, arguments);
