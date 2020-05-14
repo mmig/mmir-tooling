@@ -1,6 +1,10 @@
 
 var scxml = require('@scion-scxml/scxml');
 
+//FIXME do fix datamodel declaration in generated scxml model FIXES @scion-scxml/scxml@4.3.25
+//TODO remove when not neccessary any more
+require('./scxml-fix-datamodel-declaration').fixRawCompileInjectDataModule(scxml);
+
 // var logUtils = require('../utils/log-utils.js');
 // var log = logUtils.log;
 
