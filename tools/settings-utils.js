@@ -22,6 +22,7 @@ var ALL_SPEECH_CONFIGS_TYPE = 'speech-all';
 
 var CONFIG_IGNORE_GRAMMAR_FILES = 'ignoreGrammarFiles';
 var CONFIG_GRAMMAR_ASYNC_EXEC = 'grammarAsyncExecMode';
+var CONFIG_GRAMMAR_DISABLE_STRICT_MODE = 'grammarDisableStrictCompileMode';
 
 /**
  * scan for
@@ -580,4 +581,5 @@ module.exports = {
 	isExcludeType: isExclude,
 	configEntryIgnoreGrammar: CONFIG_IGNORE_GRAMMAR_FILES,
 	configEntryAsyncExecGrammar: CONFIG_GRAMMAR_ASYNC_EXEC,
+	configEntryDisableGrammarStrictMode: CONFIG_GRAMMAR_DISABLE_STRICT_MODE
 };

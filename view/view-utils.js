@@ -57,7 +57,7 @@ function readDir(dir, list, options){
 	}
 }
 
-function readSubDir(dirs, list, _options){
+function readSubDir(dirs, list, options){
 
 	var dir = dirs.dir;
 	var files = fs.readdirSync(dir);
@@ -87,14 +87,18 @@ function readSubDir(dirs, list, _options){
 				}
 			}
 
+			var id = dirs.ctrlName.toLowerCase() + '/' + fileName;
+			var opt = options && options[id];
+
 			list.push({
-				id: dirs.ctrlName.toLowerCase() + '/' + fileName,
+				id: id,
 				ctrlName: ctrlName,
 				viewName: viewName,
 				file: normalized,
 				viewImpl: isLayout? 'mmirf/layout' : isPartial? 'mmirf/partial' : 'mmirf/view',
 				isLayout: isLayout,
-				isPartial: isPartial
+				isPartial: isPartial,
+				strict: opt && typeof opt.strict === 'boolean'? opt.strict : void(0)
 			});
 
 		} else {
@@ -193,18 +197,19 @@ module.exports = {
 	 * @param  {{Array<ViewEntry>}} viewList
 	 * @return {{Array<ViewEntry>}}
 	 */
-	applyDefaultOptions: function(_options, viewList){
+	applyDefaultOptions: function(options, viewList){
 
 		//TODO impl. if/when addFromOpitions is implemented...
-		// viewList.forEach(function(v){
-		// 	[
-		// 		{name: 'ignoreErrors', defaultValue: false},
-		// 		{name: 'force', defaultValue: false}
-		// 	].forEach(function(fieldInfo){
-		// 		optionUtils.applySetting(fieldInfo.name, v, options, fieldInfo.defaultValue);
-		// 	});
-		//
-		// });
+		viewList.forEach(function(v){
+			[
+				// {name: 'ignoreErrors', defaultValue: false},	//TODO impl. if/when addFromOpitions is implemented...
+				// {name: 'force', defaultValue: false},	//TODO impl. if/when addFromOpitions is implemented...
+				{name: 'strict', defaultValue: true}
+			].forEach(function(fieldInfo){
+				optionUtils.applySetting(fieldInfo.name, v, options, fieldInfo.defaultValue);
+			});
+
+		});
 
 		return viewList;
 	},

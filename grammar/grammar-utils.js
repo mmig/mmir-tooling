@@ -45,7 +45,8 @@ function readDir(dir, list, options){
 				async: opt && opt.async? true : void(0),
 				initPhrase: opt && opt.initPhrase? opt.initPhrase : void(0),
 				asyncCompile: opt && typeof opt.asyncCompile === 'boolean'? opt.asyncCompile : void(0),
-				force: opt && typeof opt.force === 'boolean'? opt.force : void(0)
+				force: opt && typeof opt.force === 'boolean'? opt.force : void(0),
+				strict: opt && typeof opt.strict === 'boolean'? opt.strict : void(0)
 			});
 		}
 	});
@@ -190,6 +191,21 @@ function parseRuntimeConfigurationForOptions(options, config){
 
 			} else {
 				warn('grammar-utils.parseRuntimeConfigurationForOptions(): cannot convert runtime setting for "'+CONFIG_IGNORE_GRAMMAR+'": must be Array<string> or true, but encountered ', val);//FIXME proper webpack error/warning
+			}
+		}
+
+		var CONFIG_GRAMMAR_DISABLE_STRICT_MODE = settingsUtil.configEntryDisableGrammarStrictMode;
+		if(val = config[CONFIG_GRAMMAR_DISABLE_STRICT_MODE]){
+
+			if(val === true){
+
+				if(isApplyRuntimeConfigOption(options, null, true, 'encountered runtime setting true for "'+CONFIG_GRAMMAR_DISABLE_STRICT_MODE+'"')){
+					if(options === true || !options){
+						options = {};
+					}
+					options.strict = false;
+				}
+
 			}
 		}
 
@@ -339,7 +355,8 @@ module.exports = {
 				{name: 'async', defaultValue: false},
 				{name: 'initPhrase', defaultValue: void(0)},
 				{name: 'asyncCompile', defaultValue: void(0)},
-				{name: 'force', defaultValue: false}
+				{name: 'force', defaultValue: false},
+				{name: 'strict', defaultValue: true}
 			].forEach(function(fieldInfo){
 				optionUtils.applySetting(fieldInfo.name, g, options, fieldInfo.defaultValue);
 			});

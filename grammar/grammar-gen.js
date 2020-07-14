@@ -101,7 +101,9 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
 	var async = isAsyncCompile(grammarInfo, options);
 	log('mmir-grammer-loader: using '+(async? 'async' : 'SYNC')+' mode ('+engine+') for grammar "'+grammarInfo.id+'" ...');//DEBUG
 
-	semantic.setGrammarEngine(engine, async);
+	var strictMode = typeof grammarInfo.strict === 'boolean'? grammarInfo.strict : (options.config && typeof options.config.strict === 'boolean'? options.config.strict : true);
+
+	semantic.setGrammarEngine(engine, async, strictMode);
 
 	updatePendingAsyncGrammarStarted(engine, async);
 

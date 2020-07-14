@@ -60,6 +60,8 @@ function compile(content, viewFile, options, callback, _map, _meta) {
 		return;/////////////// EARLY EXIT /////////////////
 	}
 
+	var strictMode = typeof viewInfo.strict === 'boolean'? viewInfo.strict : (options.config && typeof options.config.strict === 'boolean'? options.config.strict : true);
+
 	var viewConstr = mmir.require(viewInfo.viewImpl);
 	var viewInstance;
 	if(viewInfo.isLayout){
@@ -70,7 +72,7 @@ function compile(content, viewFile, options, callback, _map, _meta) {
 		viewInstance = new viewConstr(ctrl, viewInfo.viewName, content);
 	}
 
-	callback(null, '\n' + viewInstance.stringify() + '\n', _map, _meta);
+	callback(null, '\n' + viewInstance.stringify(!strictMode) + '\n', _map, _meta);
 	return;
 };
 

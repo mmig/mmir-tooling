@@ -328,6 +328,11 @@ export interface GrammarOption {
 	 */
 	async?: boolean;
 	/**
+	 * set or disable strict-mode for generated JavaScript code
+	 * @default true
+	 */
+	strict?: boolean;
+	/**
 	 * An "initialization phrase" for the grammar, in case of async-exection:
 	 * this phrase will be immediately interpreted, after grammar has been loaded for async-execution in the WebWorkers
 	 * (for large grammars, this may reduce delays for subsequent calls, by fully initializing the grammar)
@@ -546,6 +551,8 @@ export interface RuntimeConfiguration {
 	usePrecompiledGrammarsOnly?: boolean;
 	/** if JSON grammar is compiled during runtime, use async (i.e. web worker) compilation */
 	grammarAsyncCompileMode?: boolean;
+	/** when compiling JSON grammar: disable setting JavaScript strict mode for compiled grammar */
+	grammarDisableStrictCompileMode?: boolean;
 	/**
 	 * list of grammars (IDs) which should not be automatically loaded on startup, even if compiled/JSON grammar is available for the language
 	 *
@@ -639,6 +646,11 @@ export interface ViewOptions {
 	 * ```
 	 */
 	path?: string;
+	/**
+	 * set or disable strict-mode for generated JavaScript code
+	 * @default true
+	 */
+	strict?: boolean;
 }
 
 export interface ViewEntry {
