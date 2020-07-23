@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "lib": [
+      "dom",
+      "es2015"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+		"allowJs": true,
+    "sourceMap": false,
+    "target": "es5",
+    "outDir": "build"
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+	"exclude": [
+		"node_modules/**"
+	],
+  "compileOnSave": false,
+  "atom": {
+    "rewriteTsconfig": false
+  }
+}
