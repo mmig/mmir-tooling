@@ -34,7 +34,7 @@ module.exports = {
 	},
 	copyFiles: function(srcDir, targetDir, force){
 		if(!fs.existsSync(srcDir)){
-			return promise.fail('Source directory does not exist!');
+			return promise.reject('Source directory does not exist!');
 		}
 		return fs.ensureDir(targetDir).then(function(){
 			return fs.copy(srcDir, targetDir, {
