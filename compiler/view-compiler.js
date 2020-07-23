@@ -42,7 +42,7 @@ var writeView = function(err, viewCode, _map, meta){
 	if(err){
 		var msg = 'ERROR compiling view '+(v? v.file : '')+': ';
 		warn(msg, err);
-		return Promise.revole(err.stack? err : new Error(msg+err));
+		return Promise.resolve(err.stack? err : new Error(msg+err));
 	}
 
 	var viewPath =  getViewTargetPath(v);
