@@ -9,7 +9,6 @@
     ],
     "module": "commonjs",
     "moduleResolution": "node",
-		"allowJs": true,
     "sourceMap": false,
     "target": "es5",
     "outDir": "build"
@@ -17,9 +16,10 @@
   "include": [
     "src/**/*.ts"
   ],
-	"exclude": [
-		"node_modules/**"
-	],
+  "exclude": [
+    "node_modules/**",
+    "src/assets/**"
+  ],
   "compileOnSave": false,
   "atom": {
     "rewriteTsconfig": false
