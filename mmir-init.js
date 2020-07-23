@@ -6,19 +6,19 @@ var mmirLib = require('mmir-lib');
 
 var mmir = mmirLib.init(function(mmir){
 
-	mmir.startModule = 'mmirf/main-minimal';
-	(mmirLib._config || mmirLib.config).paths['mmirf/main-minimal'] = path.join(__dirname, 'main-minimal');
+    mmir.startModule = 'mmirf/main-minimal';
+    (mmirLib._config || mmirLib.config).paths['mmirf/main-minimal'] = path.join(__dirname, 'main-minimal');
 
-	mmir.config({
-		config: {
-			'mmirf/configurationManager': {
-				configuration: {}
-			},
-			'mmirf/commonUtils': {
-				directories: {}
-			}
-		}
-	});
+    mmir.config({
+        config: {
+            'mmirf/configurationManager': {
+                configuration: {}
+            },
+            'mmirf/commonUtils': {
+                directories: {}
+            }
+        }
+    });
 
 });
 

@@ -8,9 +8,9 @@ var defaultGrammar = {
 };
 
 function getDefault(_id){
-	return _.cloneDeep(defaultGrammar);
+    return _.cloneDeep(defaultGrammar);
 }
 
 export = {
-	getDefault
+    getDefault
 };

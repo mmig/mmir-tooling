@@ -27,40 +27,40 @@ var mmirModuleBaseConfig = _.cloneDeep(require('mmir-lib/lib/modulesBaseConfig')
 // log('############## mmir module paths for webpack build: ', paths);
 
 var defaultResourcesConfig = {
-	paths: null,
+    paths: null,
 
-	// paths for web worker entry points (i.e. new Worker(<path>)):
-	workers: [
-		'workers/scionQueueWorker.js',
-		'workers/asyncGrammarWorker.js',
-		'workers/jisonCompiler.js',
-		'workers/jsccCompiler.js',
-		'workers/pegjsCompiler.js'
-	],
-	//paths for "raw" files that will be included as-is (i.e. copied)
-	fileResources: [
-		'vendor/sounds/beep-notification.mp3',
-		'vendor/styles/simpleViewLayout.css',
-		'vendor/styles/stdlne-wait-dlg.css'
-	],
-	//path for text resources
-	textResources: [
-		'env/grammar/grammarTemplate_reduced.tpl'
-	],
-	//path mappings for copied files etc (i.e. will be included/copied to the specified relative file path/name)
-	resourcesPaths: {}
+    // paths for web worker entry points (i.e. new Worker(<path>)):
+    workers: [
+        'workers/scionQueueWorker.js',
+        'workers/asyncGrammarWorker.js',
+        'workers/jisonCompiler.js',
+        'workers/jsccCompiler.js',
+        'workers/pegjsCompiler.js'
+    ],
+    //paths for "raw" files that will be included as-is (i.e. copied)
+    fileResources: [
+        'vendor/sounds/beep-notification.mp3',
+        'vendor/styles/simpleViewLayout.css',
+        'vendor/styles/stdlne-wait-dlg.css'
+    ],
+    //path for text resources
+    textResources: [
+        'env/grammar/grammarTemplate_reduced.tpl'
+    ],
+    //path mappings for copied files etc (i.e. will be included/copied to the specified relative file path/name)
+    resourcesPaths: {}
 }
 
 function applyRemovePaths(paths, removePathsList){
-	removePathsList.forEach(function(entry){
-		delete paths[entry];
-	});
+    removePathsList.forEach(function(entry){
+        delete paths[entry];
+    });
 }
 
 function applyCustomPaths(paths, customPaths){
-	for(var n in customPaths){
-		paths[n] = customPaths[n];
-	}
+    for(var n in customPaths){
+        paths[n] = customPaths[n];
+    }
 }
 
 /**
@@ -77,19 +77,19 @@ function applyCustomPaths(paths, customPaths){
  * @return {ResourcesConfig} the resource config object
  */
 function createResourcesConfig(removePathsList, customPaths){
-	var paths = _.cloneDeep(mmirModuleBaseConfig.paths);
+    var paths = _.cloneDeep(mmirModuleBaseConfig.paths);
 
-	if(removePathsList){
-		applyRemovePaths(paths, removePathsList);
-	}
-	if(customPaths){
-		applyCustomPaths(paths, customPaths);
-	}
+    if(removePathsList){
+        applyRemovePaths(paths, removePathsList);
+    }
+    if(customPaths){
+        applyCustomPaths(paths, customPaths);
+    }
 
-	var resConfig = _.cloneDeep(defaultResourcesConfig);
-	resConfig.paths = paths;
+    var resConfig = _.cloneDeep(defaultResourcesConfig);
+    resConfig.paths = paths;
 
-	return resConfig;
+    return resConfig;
 }
 
 module.exports = createResourcesConfig;

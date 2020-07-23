@@ -8,19 +8,19 @@ import mmirLib from 'mmir-lib';
 
 var mmir = (mmirLib as MmirModule as NodeMmirModule).init(function(mmir){
 
-	mmir.startModule = 'mmirf/main-minimal';
-	((mmirLib as any)._config || mmirLib.config).paths['mmirf/main-minimal'] = path.join(__dirname, 'main-minimal');
+    mmir.startModule = 'mmirf/main-minimal';
+    ((mmirLib as any)._config || mmirLib.config).paths['mmirf/main-minimal'] = path.join(__dirname, 'main-minimal');
 
-	mmir.config({
-		config: {
-			'mmirf/configurationManager': {
-				configuration: {}
-			},
-			'mmirf/commonUtils': {
-				directories: {}
-			}
-		}
-	});
+    mmir.config({
+        config: {
+            'mmirf/configurationManager': {
+                configuration: {}
+            },
+            'mmirf/commonUtils': {
+                directories: {}
+            }
+        }
+    });
 
 });
 

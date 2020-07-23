@@ -1,8 +1,8 @@
 
 function getDefault(){
-	return {};
+    return {};
 }
 
 export = {
-	getDefault
+    getDefault
 };

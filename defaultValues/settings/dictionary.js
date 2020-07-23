@@ -1,8 +1,8 @@
 
 function getDefault(_id){
-	return {};
+    return {};
 }
 
 module.exports = {
-	getDefault
+    getDefault
 };

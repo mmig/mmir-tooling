@@ -4,10 +4,10 @@ var log = logUtils.log;
 // var warn = logUtils.warn;
 
 function getExportCodeFor(varName){
-	return '\n' +
-				// 'if(typeof module !== "undefined" && module.exports) {' +
-					'module.exports = '+varName+';\n'
-				// '}\n';
+    return '\n' +
+                // 'if(typeof module !== "undefined" && module.exports) {' +
+                    'module.exports = '+varName+';\n'
+                // '}\n';
 }
 
 /**
@@ -22,44 +22,44 @@ function getExportCodeFor(varName){
  */
 function compile(content, implFile, options, callback, _map, _meta) {
 
-	var i = options.mapping.findIndex(function(impl){
-		return impl.file === implFile;
-	});
-	var implInfo = options.mapping[i];
+    var i = options.mapping.findIndex(function(impl){
+        return impl.file === implFile;
+    });
+    var implInfo = options.mapping[i];
 
-	log('mmir-impl-loader: options for resource -> ', implInfo);//DEBUG
+    log('mmir-impl-loader: options for resource -> ', implInfo);//DEBUG
 
-	if(!implInfo || !implInfo.name){
-		var error;
-		if(options.mapping.length === 0){
-			error = 'failed to parse implementation: empty list for impl. settings [{id: "the ID", file: "the file path", ...}, ...]';
-		}
-		else if(i === -1 || !implInfo){
-			error = 'failed to parse implementation: could not find settings for impl. in impl.-settings list: '+JSON.stringify(options.mapping);
-		} else if(!implInfo.name){
-			error = 'failed to parse implementation: missing field name for impl: '+JSON.stringify(implInfo);
-		} else {
-			error = 'failed to parse implementation: invalid impl. settings in list: '+JSON.stringify(options.mapping);
-		}
-		callback(error);
-		return;/////////////// EARLY EXIT /////////////////
-	}
+    if(!implInfo || !implInfo.name){
+        var error;
+        if(options.mapping.length === 0){
+            error = 'failed to parse implementation: empty list for impl. settings [{id: "the ID", file: "the file path", ...}, ...]';
+        }
+        else if(i === -1 || !implInfo){
+            error = 'failed to parse implementation: could not find settings for impl. in impl.-settings list: '+JSON.stringify(options.mapping);
+        } else if(!implInfo.name){
+            error = 'failed to parse implementation: missing field name for impl: '+JSON.stringify(implInfo);
+        } else {
+            error = 'failed to parse implementation: invalid impl. settings in list: '+JSON.stringify(options.mapping);
+        }
+        callback(error);
+        return;/////////////// EARLY EXIT /////////////////
+    }
 
-	var implCode = content;
+    var implCode = content;
 
-	if(implInfo.addModuleExport){
-		var name = typeof implInfo.addModuleExport === 'string'? implInfo.addModuleExport : implInfo.name;
-		log('mmir-impl-loader: adding module.exports for resource '+implInfo.id+' -> ', name);//DEBUG
-		implCode += getExportCodeFor(name);
-	}
+    if(implInfo.addModuleExport){
+        var name = typeof implInfo.addModuleExport === 'string'? implInfo.addModuleExport : implInfo.name;
+        log('mmir-impl-loader: adding module.exports for resource '+implInfo.id+' -> ', name);//DEBUG
+        implCode += getExportCodeFor(name);
+    }
 
 
-	// log('mmir-impl-loader: emitting code for '+implInfo.id+' -> ', content);//DEBUG
+    // log('mmir-impl-loader: emitting code for '+implInfo.id+' -> ', content);//DEBUG
 
-	callback(null, implCode, _map, _meta);
-	return;
+    callback(null, implCode, _map, _meta);
+    return;
 };
 
 export = {
-	compile: compile
+    compile: compile
 }

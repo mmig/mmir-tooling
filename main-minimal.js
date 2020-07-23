@@ -25,108 +25,108 @@
  */
 
 define(['mmirf/core', 'mmirf/env', 'mmirf/util/deferred', 'mmirf/resources', 'mmirf/commonUtils', 'mmirf/configurationManager', 'mmirf/languageManager'
-		, 'mmirf/semanticInterpreter',  'module'
-	],
-	/**
-	 * Initializes the MMIR framework:
-	 * triggers {@link mmir.ready} when initialization has finished.
-	 *
-	 * @class
-	 * @name main
-	 * @memberof mmir
-	 * @private
-	 *
-	 * @requires require.config
-	 * @requires util/deferred
-	 *
-	 */
-	function(mmir, env, deferred, res, commonUtils, configurationManager, languageManager
-		, semanticInterpreter, module
+        , 'mmirf/semanticInterpreter',  'module'
+    ],
+    /**
+     * Initializes the MMIR framework:
+     * triggers {@link mmir.ready} when initialization has finished.
+     *
+     * @class
+     * @name main
+     * @memberof mmir
+     * @private
+     *
+     * @requires require.config
+     * @requires util/deferred
+     *
+     */
+    function(mmir, env, deferred, res, commonUtils, configurationManager, languageManager
+        , semanticInterpreter, module
 ){
 
-	//export framework functions/objects:
+    //export framework functions/objects:
 
-	/** @memberOf mmir */
-	mmir.res = res;
-	/** @memberOf mmir */
-	mmir.util = commonUtils;
-	/** @memberOf mmir */
-	mmir.conf = configurationManager;
-	/** @memberOf mmir */
-	mmir.semantic = semanticInterpreter;
-	/** @memberOf mmir */
-	mmir.notifier = void(0);
-	/** @memberOf mmir */
-	mmir.media = void(0);
-	/** @memberOf mmir */
-	mmir.dialog = void(0);
-	/** @memberOf mmir */
-	mmir.input = void(0);
-	/** @memberOf mmir */
-	mmir.dialogEngine = void(0);
-	/** @memberOf mmir */
-	mmir.inputEngine = void(0);
-	/** @memberOf mmir */
-	mmir.present = void(0);
-	/** @memberOf mmir */
-	mmir.ctrl = void(0);
-	/** @memberOf mmir */
-	mmir.model = void(0);
+    /** @memberOf mmir */
+    mmir.res = res;
+    /** @memberOf mmir */
+    mmir.util = commonUtils;
+    /** @memberOf mmir */
+    mmir.conf = configurationManager;
+    /** @memberOf mmir */
+    mmir.semantic = semanticInterpreter;
+    /** @memberOf mmir */
+    mmir.notifier = void(0);
+    /** @memberOf mmir */
+    mmir.media = void(0);
+    /** @memberOf mmir */
+    mmir.dialog = void(0);
+    /** @memberOf mmir */
+    mmir.input = void(0);
+    /** @memberOf mmir */
+    mmir.dialogEngine = void(0);
+    /** @memberOf mmir */
+    mmir.inputEngine = void(0);
+    /** @memberOf mmir */
+    mmir.present = void(0);
+    /** @memberOf mmir */
+    mmir.ctrl = void(0);
+    /** @memberOf mmir */
+    mmir.model = void(0);
 
-	/**
-	 * Main Initialization:
-	 * initializes mmir and exports its functions/modules to (gobal) mmir namespace
-	 *
-	 * @memberOf main
-	 */
-	var mainInit = function(){
+    /**
+     * Main Initialization:
+     * initializes mmir and exports its functions/modules to (gobal) mmir namespace
+     *
+     * @memberOf main
+     */
+    var mainInit = function(){
 
-		//initialize the common-utils:
-		commonUtils.init()//<- load directory structure
+        //initialize the common-utils:
+        commonUtils.init()//<- load directory structure
 
-			.then(function() {
+            .then(function() {
 
-				return languageManager.init().then(function(langMng){
-					mmir.lang = langMng;
-				});
+                return languageManager.init().then(function(langMng){
+                    mmir.lang = langMng;
+                });
 
-			})
+            })
 
-			.then(function(){
+            .then(function(){
 
-				/**
-				 * Additional configuration for requirejs
-				 * from configuration.json:
-				 *  -> if property "config" is set, apply it as requirejs-config
-				 *     before signaling READY
-				 *  EXAMPLE:
-				 *  the following entry (in config/configuration.json) would add
-				 *  the dependency information for www/appjs/test.js as module "testConf"
-				 *
-				 * 	, "config": {
-				 *     	"paths": {
-				 *     		"testConf": "../appjs/test"
-				 *     	}
-				 *     }
-				 *
-				 * @type PlainObject
-				 * @memberOf main
-				 */
-				var requireConfig = configurationManager.get('config');
-				if(requireConfig){
-					mmir.require = require.config(requireConfig);
-				}
+                /**
+                 * Additional configuration for requirejs
+                 * from configuration.json:
+                 *  -> if property "config" is set, apply it as requirejs-config
+                 *     before signaling READY
+                 *  EXAMPLE:
+                 *  the following entry (in config/configuration.json) would add
+                 *  the dependency information for www/appjs/test.js as module "testConf"
+                 *
+                 * 	, "config": {
+                 *     	"paths": {
+                 *     		"testConf": "../appjs/test"
+                 *     	}
+                 *     }
+                 *
+                 * @type PlainObject
+                 * @memberOf main
+                 */
+                var requireConfig = configurationManager.get('config');
+                if(requireConfig){
+                    mmir.require = require.config(requireConfig);
+                }
 
-				//"give signal" that the framework is now initialized / ready
-				mmir.setInitialized();
+                //"give signal" that the framework is now initialized / ready
+                mmir.setInitialized();
 
-			});
+            });
 
 
-	};//END: mainInit(){...
+    };//END: mainInit(){...
 
-	mainInit();
+    mainInit();
 
-	return mmir;
+    return mmir;
 
 });//END: define(...

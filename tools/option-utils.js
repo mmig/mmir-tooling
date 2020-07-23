@@ -9,15 +9,15 @@
  * @param  {any} defaultValue the default value for the option/field (in case neither opt nor globalOpt for that field is defined)
  */
 function applySetting(field, opt, globalOpt, defaultValue){
-	if(typeof opt[field] === 'undefined'){
-		if(typeof globalOpt[field] !== 'undefined'){
-			opt[field] = globalOpt[field];
-		} else if(typeof defaultValue !== 'undefined') {
-			opt[field] = defaultValue;
-		}
-	}
+    if(typeof opt[field] === 'undefined'){
+        if(typeof globalOpt[field] !== 'undefined'){
+            opt[field] = globalOpt[field];
+        } else if(typeof defaultValue !== 'undefined') {
+            opt[field] = defaultValue;
+        }
+    }
 }
 
 module.exports = {
-	applySetting: applySetting
+    applySetting: applySetting
 }

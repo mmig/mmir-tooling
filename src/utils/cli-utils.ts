@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 function init(opt?, helpText?: string){
 
-	const help = helpText? helpText : `
+    const help = helpText? helpText : `
   Usage
     <script>
 
@@ -12,29 +12,29 @@ function init(opt?, helpText?: string){
     --help         show usage information
     --verbose, -v  show additional information
                     DEFAULT: false
-	`;
+    `;
 
-	const options: {flags: meow.AnyFlags} = {
-		flags: {
-			verbose: {
-				type: 'boolean',
-				alias: 'v',
-				default: false
-			}
-		}
-	};
+    const options: {flags: meow.AnyFlags} = {
+        flags: {
+            verbose: {
+                type: 'boolean',
+                alias: 'v',
+                default: false
+            }
+        }
+    };
 
-	if(opt){
-		_.merge(options, opt);
-	}
+    if(opt){
+        _.merge(options, opt);
+    }
 
-	var cli = meow(help, options);
+    var cli = meow(help, options);
 
-	if(cli.flags.verbose){
-		process.env.verbose = true.toString();
-	}
+    if(cli.flags.verbose){
+        process.env.verbose = true.toString();
+    }
 }
 
 export = {
-	parseCli: init
+    parseCli: init
 }

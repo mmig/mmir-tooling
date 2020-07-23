@@ -13,31 +13,31 @@ var warn = require('../utils/log-utils.js').warn;
  * 																				If already applied once, multiple calls to this function will be ignored.
  */
 function _fixRawCompileInjectDataModule(scxmlCompiler){
-	if(!scxmlCompiler){
-		scxmlCompiler = require('@scion-scxml/scxml');
-	}
-	if(scxmlCompiler.documentStringToModel.__handleRawModule){
-		return;
-	}
-	scxmlCompiler.documentStringToModel.__handleRawModule = scxmlCompiler.documentStringToModel.handleRawModule;
-	scxmlCompiler.documentStringToModel.handleRawModule = function(_url, rawModule){
-		var invokeConstructor;
-		for(var i=rawModule.invokeConstructors.length-1; i >= 0; --i){
-			invokeConstructor = rawModule.invokeConstructors[i];
-			if(invokeConstructor.datamodel) {
-				if(!_.isArray(invokeConstructor.module._children) || invokeConstructor.module._children.length < 3 || typeof invokeConstructor.module._children[2].add !== 'function'){
-					warn('[mmir-tooling] could not FIX scxml datamodel variable declaration, because of encountering unknown data structure. Please update mmir-tooling to fix this.')
-				} else {
-					var injectionNode = invokeConstructor.module._children[2];
-					injectionNode.add(invokeConstructor.datamodel);
-					injectionNode.add('\n');
-				}
-			}
-		}
-		scxmlCompiler.documentStringToModel.__handleRawModule.apply(scxmlCompiler.documentStringToModel, arguments);
-	}
+    if(!scxmlCompiler){
+        scxmlCompiler = require('@scion-scxml/scxml');
+    }
+    if(scxmlCompiler.documentStringToModel.__handleRawModule){
+        return;
+    }
+    scxmlCompiler.documentStringToModel.__handleRawModule = scxmlCompiler.documentStringToModel.handleRawModule;
+    scxmlCompiler.documentStringToModel.handleRawModule = function(_url, rawModule){
+        var invokeConstructor;
+        for(var i=rawModule.invokeConstructors.length-1; i >= 0; --i){
+            invokeConstructor = rawModule.invokeConstructors[i];
+            if(invokeConstructor.datamodel) {
+                if(!_.isArray(invokeConstructor.module._children) || invokeConstructor.module._children.length < 3 || typeof invokeConstructor.module._children[2].add !== 'function'){
+                    warn('[mmir-tooling] could not FIX scxml datamodel variable declaration, because of encountering unknown data structure. Please update mmir-tooling to fix this.')
+                } else {
+                    var injectionNode = invokeConstructor.module._children[2];
+                    injectionNode.add(invokeConstructor.datamodel);
+                    injectionNode.add('\n');
+                }
+            }
+        }
+        scxmlCompiler.documentStringToModel.__handleRawModule.apply(scxmlCompiler.documentStringToModel, arguments);
+    }
 }
 
 module.exports = {
-	fixRawCompileInjectDataModule: _fixRawCompileInjectDataModule
+    fixRawCompileInjectDataModule: _fixRawCompileInjectDataModule
 };
