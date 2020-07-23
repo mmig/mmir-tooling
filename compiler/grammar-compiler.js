@@ -60,7 +60,7 @@ var writeGrammar = function(_err, grammarCode, _map, meta){
 
 	return Promise.all([
 		fs.writeFile(grammarPath, grammarCode, 'utf8').catch(function(err){
-			var msg = 'ERROR writing compiled grammar to '+ viewPath+ ': ';
+			var msg = 'ERROR writing compiled grammar to '+ grammarPath+ ': ';
 			warn(msg, err);
 			return err.stack? err : new Error(msg+err);
 		}),
@@ -102,9 +102,9 @@ var compile = function(grammarLoadOptions){
 			try{
 				content = JSON.stringify(grammarJsonObj);
 			} catch(err){
-				var msg = 'ERROR parsing grammar definition from '+(sc? sc.file : '<UNKNOWN>')+': ';
+				var msg = 'ERROR parsing grammar definition from '+(g? g.file : '<UNKNOWN>')+': ';
 				warn(msg, err);
-				return resolve(err.stack? err : new Error(msg+err));
+				return Promise.reject(err.stack? err : new Error(msg+err));
 			}
 
 			var doCompile = function(){
