@@ -1,0 +1,14 @@
+/**
+ * HELPER: do set the field in options, if it is not explicitly specified, either
+ * 				 to the globally specified value, or the default/fallback value for the field
+ *
+ * @param  {string} field the field name for the option
+ * @param  {{[field: string]: any}} opt the element's options (e.g. GrammarOption)
+ * @param  {{[field: string]: any}} globalOpt the global options for that type of element (e.g. GrammarOptions)
+ * @param  {any} defaultValue the default value for the option/field (in case neither opt nor globalOpt for that field is defined)
+ */
+declare function applySetting(field: any, opt: any, globalOpt: any, defaultValue: any): void;
+declare const _default: {
+    applySetting: typeof applySetting;
+};
+export = _default;
