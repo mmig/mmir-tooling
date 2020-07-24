@@ -5,12 +5,12 @@
     "declaration": true,
     "lib": [
       "dom",
-      "es2015"
+      "es6"
     ],
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": false,
-    "target": "es5",
+    "target": "es6",
     "outDir": "build"
   },
   "include": [
