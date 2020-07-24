@@ -1,56 +1,48 @@
-
+"use strict";
 var defaultValues = {
-
     de: {
         "language": "de-DE",
         "long": "deu-DEU",
-
         "plugins": {
-            "ttsMary": {//"maryTextToSpeech"
+            "ttsMary": {
                 "language": "de"
             },
-            "asrNuance": {//"nuanceAudioInput"
+            "asrNuance": {
                 "language": "deu-DEU"
             }
         }
     },
-
     en: {
         "language": "en-GB",
         "long": "eng-GBR",
-
         "plugins": {
-            "ttsMary": {//"maryTextToSpeech"
+            "ttsMary": {
                 "language": "en_GB"
             },
-            "asrNuance": {//"nuanceAudioInput"
+            "asrNuance": {
                 "language": "eng-GBR"
             },
-            "ttsNuance": {//"nuanceTextToSpeech"
+            "ttsNuance": {
                 "language": "en-UK"
             },
-            "ttsNuanceXhr": {//"nuanceHttpTextToSpeech"
+            "ttsNuanceXhr": {
                 "language": "en-UK"
             }
         }
     },
-
     ja: {
         "language": "ja-JP",
         "long": "jpn-JPN",
-
         "plugins": {
-            "asrNuance": {//"nuanceAudioInput"
+            "asrNuance": {
                 "language": "jpn-JPN"
             }
         }
     }
 };
-
-function getDefault(id){
+function getDefault(id) {
     return defaultValues[id] || {};
 }
-
 module.exports = {
-    getDefault
+    getDefault: getDefault
 };

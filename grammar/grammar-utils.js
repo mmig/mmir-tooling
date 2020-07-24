@@ -1,92 +1,90 @@
-var path = require('path');
-var fs = require('fs');
-var _ = require ('lodash');
-var fileUtils = require('../utils/filepath-utils.js');
-
-var appConfigUtils = require('../utils/module-config-init.js');
-var directoriesUtil = require('../tools/directories-utils.js');
-var configurationUtil = require('../tools/settings-utils.js');
-var settingsUtil = require('../tools/settings-utils.js');
-var optionUtils = require('../tools/option-utils.js');
-
-var logUtils = require('../utils/log-utils.js');
-var log = logUtils.log;
-var warn = logUtils.warn;
-
-function readDir(dir, list, options){
-
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var path = __importStar(require("path"));
+var fs = __importStar(require("fs-extra"));
+var _ = require('lodash');
+var filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
+var module_config_init_1 = __importDefault(require("../utils/module-config-init"));
+var directories_utils_1 = __importDefault(require("../tools/directories-utils"));
+var settings_utils_1 = __importDefault(require("../tools/settings-utils"));
+var settings_utils_2 = __importDefault(require("../tools/settings-utils"));
+var option_utils_1 = __importDefault(require("../tools/option-utils"));
+var log_utils_1 = __importDefault(require("../utils/log-utils"));
+var log = log_utils_1.default.log;
+var warn = log_utils_1.default.warn;
+function readDir(dir, list, options) {
     var files = fs.readdirSync(dir);
     var dirs = [];
     // log('read dir "'+dir+'" -> ', files);
-
-    files.forEach(function(p){
+    files.forEach(function (p) {
         var absPath = path.join(dir, p);
-        if(fileUtils.isDirectory(absPath)){
+        if (filepath_utils_1.default.isDirectory(absPath)) {
             dirs.push(absPath);
             return false;
-        } else if(/grammar\.js(on)?$/i.test(p)){
-            var normalized = fileUtils.normalizePath(absPath);
+        }
+        else if (/grammar\.js(on)?$/i.test(p)) {
+            var normalized = filepath_utils_1.default.normalizePath(absPath);
             var m = /\/([^/]+)\/grammar\.js(on)?$/i.exec(normalized);
             var id = m[1];
-
             var opt = options && options[id];
-            if(opt && (opt.exclude || opt.file)){
+            if (opt && (opt.exclude || opt.file)) {
                 //-> ignore/exclude this grammar!
-                log('grammar-utils.addFromDirectory(): excluding grammar '+id+' at "'+normalized+'"!');//DEBUG
-                return;//////////////////// EARLY EXIT //////////////////
+                log('grammar-utils.addFromDirectory(): excluding grammar ' + id + ' at "' + normalized + '"!'); //DEBUG
+                return; //////////////////// EARLY EXIT //////////////////
             }
-
             list.push({
                 id: id,
                 file: normalized,
-                fileType: configurationUtil.getFileType(normalized),
-                engine: opt && opt.engine? opt.engine : void(0),
-                ignore: opt && opt.ignore? true : false,
-                async: opt && opt.async? true : void(0),
-                initPhrase: opt && opt.initPhrase? opt.initPhrase : void(0),
-                asyncCompile: opt && typeof opt.asyncCompile === 'boolean'? opt.asyncCompile : void(0),
-                force: opt && typeof opt.force === 'boolean'? opt.force : void(0),
-                strict: opt && typeof opt.strict === 'boolean'? opt.strict : void(0)
+                fileType: settings_utils_1.default.getFileType(normalized),
+                engine: opt && opt.engine ? opt.engine : void (0),
+                ignore: opt && opt.ignore ? true : false,
+                async: opt && opt.async ? true : void (0),
+                initPhrase: opt && opt.initPhrase ? opt.initPhrase : void (0),
+                asyncCompile: opt && typeof opt.asyncCompile === 'boolean' ? opt.asyncCompile : void (0),
+                force: opt && typeof opt.force === 'boolean' ? opt.force : void (0),
+                strict: opt && typeof opt.strict === 'boolean' ? opt.strict : void (0)
             });
         }
     });
-
     // log('read sub-dirs -> ', dirs);
     var size = dirs.length;
-    if(size > 0){
-        for(var i = 0; i < size; ++i){
+    if (size > 0) {
+        for (var i = 0; i < size; ++i) {
             readDir(dirs[i], list, options);
         }
     }
 }
-
-function addFromOptions(grammars, list, appRootDir){
-
+function addFromOptions(grammars, list, appRootDir) {
     var g, entry;
-    for(var id in grammars){
-
+    for (var id in grammars) {
         g = grammars[id];
-        if(g && g.file && !g.exclude){
-
+        if (g && g.file && !g.exclude) {
             entry = _.cloneDeep(g);
-            if(!path.isAbsolute(entry.file)){
+            if (!path.isAbsolute(entry.file)) {
                 entry.file = path.resolve(appRootDir, entry.file);
             }
-            entry.file = fileUtils.normalizePath(entry.file);
-            entry.fileType = entry.fileType || configurationUtil.getFileType(entry.file);
-
-            if(entry.id && entry.id !== id){
-                warn('grammar-utils.addFromOptions(): entry from grammarOptions for ID "'+id+'" has differing field id with value "'+entry.id+'", overwritting the id field with "'+id+'"!');//FIXME proper webpack error/warning
+            entry.file = filepath_utils_1.default.normalizePath(entry.file);
+            entry.fileType = entry.fileType || settings_utils_1.default.getFileType(entry.file);
+            if (entry.id && entry.id !== id) {
+                warn('grammar-utils.addFromOptions(): entry from grammarOptions for ID "' + id + '" has differing field id with value "' + entry.id + '", overwritting the id field with "' + id + '"!'); //FIXME proper webpack error/warning
             }
             entry.id = id;
-
             //TODO verify existence of entry.file?
-
-            if(!contains(list, id)){
+            if (!contains(list, id)) {
                 // log('grammar-utils.addFromOptions(): adding ', entry);//DEBU
-                list.push(entry)
-            } else {
-                warn('grammar-utils.addFromOptions(): entry from grammarOptions for ID '+id+' already exists in grammar-list, ignoring entry!');//FIXME proper webpack error/warning
+                list.push(entry);
+            }
+            else {
+                warn('grammar-utils.addFromOptions(): entry from grammarOptions for ID ' + id + ' already exists in grammar-list, ignoring entry!'); //FIXME proper webpack error/warning
             }
         }
         // else {//DEBU
@@ -94,127 +92,98 @@ function addFromOptions(grammars, list, appRootDir){
         // }
     }
 }
-
-function parseRuntimeConfigurationForOptions(options, config){
-
+function parseRuntimeConfigurationForOptions(options, config) {
     // console.log('START parseRuntimeConfigurationForOptions: ', config , '\n -> \n', options);
-
-    if(config){
-
+    if (config) {
         var val, gopt;
-
-        var CONFIG_ASYNC_EXEC_GRAMMAR = settingsUtil.configEntryAsyncExecGrammar;
-        if(val = config[CONFIG_ASYNC_EXEC_GRAMMAR]){
-
-            if(val === true){
-
-                if(isApplyRuntimeConfigOption(options, null, true, 'encountered runtime setting true for "'+CONFIG_ASYNC_EXEC_GRAMMAR+'"')){
-                    if(options === true || !options){
+        var CONFIG_ASYNC_EXEC_GRAMMAR = settings_utils_2.default.configEntryAsyncExecGrammar;
+        if (val = config[CONFIG_ASYNC_EXEC_GRAMMAR]) {
+            if (val === true) {
+                if (isApplyRuntimeConfigOption(options, null, true, 'encountered runtime setting true for "' + CONFIG_ASYNC_EXEC_GRAMMAR + '"')) {
+                    if (options === true || !options) {
                         options = {};
                     }
                     options.async = true;
                 }
-
-            } else if(Array.isArray(val)){
-
-                if(isApplyRuntimeConfigOption(options, null, true, 'encountered list for runtime setting "'+CONFIG_ASYNC_EXEC_GRAMMAR+'"')){
-
-                    if(options === true || !options){
+            }
+            else if (Array.isArray(val)) {
+                if (isApplyRuntimeConfigOption(options, null, true, 'encountered list for runtime setting "' + CONFIG_ASYNC_EXEC_GRAMMAR + '"')) {
+                    if (options === true || !options) {
                         options = {};
                     }
-
-                    if(!options.grammars){
+                    if (!options.grammars) {
                         options.grammars = {};
                     }
                     gopt = options.grammars;
-
-                    val.forEach(function(grammarEntry){
-
-                        var grammarId = typeof grammarEntry === 'string'? grammarEntry : grammarEntry.id;
-                        if(isApplyRuntimeConfigOption(gopt[grammarId], grammarId, true, 'encountered list entry "'+grammarId+'" for runtime setting "'+CONFIG_ASYNC_EXEC_GRAMMAR+'"')){
-                            if(gopt[grammarId] === true || !gopt[grammarId]){
+                    val.forEach(function (grammarEntry) {
+                        var grammarId = typeof grammarEntry === 'string' ? grammarEntry : grammarEntry.id;
+                        if (isApplyRuntimeConfigOption(gopt[grammarId], grammarId, true, 'encountered list entry "' + grammarId + '" for runtime setting "' + CONFIG_ASYNC_EXEC_GRAMMAR + '"')) {
+                            if (gopt[grammarId] === true || !gopt[grammarId]) {
                                 gopt[grammarId] = {};
                             }
                             gopt[grammarId].async = true;
-                            if(grammarEntry && grammarEntry.phrase){
+                            if (grammarEntry && grammarEntry.phrase) {
                                 gopt[grammarId].initPhrase = grammarEntry.phrase;
                             }
                         }
-
                     });
                 }
-
-            } else {
-                warn('grammar-utils.parseRuntimeConfigurationForOptions(): cannot convert runtime setting for "'+CONFIG_ASYNC_EXEC_GRAMMAR+'": must be Array<string> or true, but encountered ', val);//FIXME proper webpack error/warning
+            }
+            else {
+                warn('grammar-utils.parseRuntimeConfigurationForOptions(): cannot convert runtime setting for "' + CONFIG_ASYNC_EXEC_GRAMMAR + '": must be Array<string> or true, but encountered ', val); //FIXME proper webpack error/warning
             }
         }
-
-        var CONFIG_IGNORE_GRAMMAR = settingsUtil.configEntryIgnoreGrammar;
-        if(val = config[CONFIG_IGNORE_GRAMMAR]){
-
-            if(val === true){
-
-                if(isApplyRuntimeConfigOption(options, null, false, 'encountered runtime setting true for "'+CONFIG_IGNORE_GRAMMAR+'"')){
-                    if(options === true || !options){
+        var CONFIG_IGNORE_GRAMMAR = settings_utils_2.default.configEntryIgnoreGrammar;
+        if (val = config[CONFIG_IGNORE_GRAMMAR]) {
+            if (val === true) {
+                if (isApplyRuntimeConfigOption(options, null, false, 'encountered runtime setting true for "' + CONFIG_IGNORE_GRAMMAR + '"')) {
+                    if (options === true || !options) {
                         options = {};
                     }
                     options.ignore = true;
                 }
-
-            } else if(Array.isArray(val)){
-
-                if(isApplyRuntimeConfigOption(options, null, false, 'encountered list for runtime setting "'+CONFIG_IGNORE_GRAMMAR+'"')){
-
-                    if(options === true || !options){
+            }
+            else if (Array.isArray(val)) {
+                if (isApplyRuntimeConfigOption(options, null, false, 'encountered list for runtime setting "' + CONFIG_IGNORE_GRAMMAR + '"')) {
+                    if (options === true || !options) {
                         options = {};
                     }
-
-                    if(!options.grammars){
+                    if (!options.grammars) {
                         options.grammars = {};
                     }
                     gopt = options.grammars;
-
-                    val.forEach(function(grammarId){
-
-                        if(isApplyRuntimeConfigOption(gopt[grammarId], grammarId, false, 'encountered list entry "'+grammarId+'" for runtime setting "'+CONFIG_IGNORE_GRAMMAR+'"')){
-                            if(gopt[grammarId] === true || !gopt[grammarId]){
+                    val.forEach(function (grammarId) {
+                        if (isApplyRuntimeConfigOption(gopt[grammarId], grammarId, false, 'encountered list entry "' + grammarId + '" for runtime setting "' + CONFIG_IGNORE_GRAMMAR + '"')) {
+                            if (gopt[grammarId] === true || !gopt[grammarId]) {
                                 gopt[grammarId] = {};
                             }
                             gopt[grammarId].ignore = true;
-                            if(gopt[grammarId].async){
-                                warn('grammar-utils.parseRuntimeConfigurationForOptions(): trying to apply runtime setting "'+CONFIG_IGNORE_GRAMMAR+'" for list entry "'+grammarId+'" to GrammarOptions['+grammarId+'], but option is already set to async=true: ignore-setting will have no effect!');//FIXME proper webpack error/warning
+                            if (gopt[grammarId].async) {
+                                warn('grammar-utils.parseRuntimeConfigurationForOptions(): trying to apply runtime setting "' + CONFIG_IGNORE_GRAMMAR + '" for list entry "' + grammarId + '" to GrammarOptions[' + grammarId + '], but option is already set to async=true: ignore-setting will have no effect!'); //FIXME proper webpack error/warning
                             }
                         }
-
                     });
                 }
-
-            } else {
-                warn('grammar-utils.parseRuntimeConfigurationForOptions(): cannot convert runtime setting for "'+CONFIG_IGNORE_GRAMMAR+'": must be Array<string> or true, but encountered ', val);//FIXME proper webpack error/warning
+            }
+            else {
+                warn('grammar-utils.parseRuntimeConfigurationForOptions(): cannot convert runtime setting for "' + CONFIG_IGNORE_GRAMMAR + '": must be Array<string> or true, but encountered ', val); //FIXME proper webpack error/warning
             }
         }
-
-        var CONFIG_GRAMMAR_DISABLE_STRICT_MODE = settingsUtil.configEntryDisableGrammarStrictMode;
-        if(val = config[CONFIG_GRAMMAR_DISABLE_STRICT_MODE]){
-
-            if(val === true){
-
-                if(isApplyRuntimeConfigOption(options, null, true, 'encountered runtime setting true for "'+CONFIG_GRAMMAR_DISABLE_STRICT_MODE+'"')){
-                    if(options === true || !options){
+        var CONFIG_GRAMMAR_DISABLE_STRICT_MODE = settings_utils_2.default.configEntryDisableGrammarStrictMode;
+        if (val = config[CONFIG_GRAMMAR_DISABLE_STRICT_MODE]) {
+            if (val === true) {
+                if (isApplyRuntimeConfigOption(options, null, true, 'encountered runtime setting true for "' + CONFIG_GRAMMAR_DISABLE_STRICT_MODE + '"')) {
+                    if (options === true || !options) {
                         options = {};
                     }
                     options.strict = false;
                 }
-
             }
         }
-
         // console.log('DONE parseRuntimeConfigurationForOptions: ', config , '\n -> \n', options);
     }
-
     return options;
 }
-
 /**
  * HELPER check, if runtime-configuration setting should/can be applied to GrammarOption
  *
@@ -226,44 +195,40 @@ function parseRuntimeConfigurationForOptions(options, config){
  * @param  {string} descRuntimeSetting description for the runtime setting, for print the warning-message in case the runtime setting cannot be applied
  * @return {Boolean} whether or not the runtime setting can/should be applied
  */
-function isApplyRuntimeConfigOption(options, optionId, invalidIgnoreValue, descRuntimeSetting){
-
+function isApplyRuntimeConfigOption(options, optionId, invalidIgnoreValue, descRuntimeSetting) {
     var errDetails;
-    if(options === false){
+    if (options === false) {
         errDetails = ' is set to false';
-    } else {
-        if(!options){
+    }
+    else {
+        if (!options) {
             return true;
-        } else if(invalidIgnoreValue !== null && options.ignore === invalidIgnoreValue){
+        }
+        else if (invalidIgnoreValue !== null && options.ignore === invalidIgnoreValue) {
             errDetails = '.ignore is set to ' + (!invalidIgnoreValue);
-        } else if(options.exclude === true){
+        }
+        else if (options.exclude === true) {
             errDetails = '.exclude is set to true';
-        } else {
+        }
+        else {
             return true;
         }
     }
-
-    warn('grammar-utils.parseRuntimeConfigurationForOptions(): '+ descRuntimeSetting +', but GrammarOptions'+(optionId? '['+optionId+']' : '')+errDetails+' -> ignoring runtime setting!');//FIXME proper webpack error/warning
+    warn('grammar-utils.parseRuntimeConfigurationForOptions(): ' + descRuntimeSetting + ', but GrammarOptions' + (optionId ? '[' + optionId + ']' : '') + errDetails + ' -> ignoring runtime setting!'); //FIXME proper webpack error/warning
     return false;
 }
-
-function contains(grammarList, id){
-    return grammarList.findIndex(function(item){
+function contains(grammarList, id) {
+    return grammarList.findIndex(function (item) {
         return item.id === id;
     }) !== -1;
 }
-
-
-function toAliasPath(grammar){
-    return path.normalize(grammar.file);//DISABLED: do keep file-extension to ensure that module is found regardless of webpack resolve-configuration//.replace(/\.json$/i, '');
+function toAliasPath(grammar) {
+    return path.normalize(grammar.file); //DISABLED: do keep file-extension to ensure that module is found regardless of webpack resolve-configuration//.replace(/\.json$/i, '');
 }
-
-function toAliasId(grammar){
-    return 'mmirf/grammar/'+grammar.id;//FIXME formalize IDs for loading views in webpack (?)
+function toAliasId(grammar) {
+    return 'mmirf/grammar/' + grammar.id; //FIXME formalize IDs for loading views in webpack (?)
 }
-
 module.exports = {
-
     /**
      * parse directories for JSON grammars and create/return GrammarEntry list
      *
@@ -303,16 +268,13 @@ module.exports = {
      * 																												in a Worker (during build)
      * @return {Array<GrammarEntry>} the list of GrammarEntry objects
      */
-    jsonGrammarsFromDir: function(options, appRootDir, grammarList){
-
+    jsonGrammarsFromDir: function (options, appRootDir, grammarList) {
         var dir = options.path;
-        if(!path.isAbsolute(dir)){
+        if (!path.isAbsolute(dir)) {
             dir = path.resolve(appRootDir, dir);
         }
-
         var list = grammarList || [];
         readDir(dir, list, options.grammars);
-
         return list;
     },
     /**
@@ -322,13 +284,10 @@ module.exports = {
      * @param  {{Array<GrammarEntry>}} [grammarList] OPTIONAL
      * @return {{Array<GrammarEntry>}}
      */
-    jsonGrammarsFromOptions: function(options, appRootDir, grammarList){
-
+    jsonGrammarsFromOptions: function (options, appRootDir, grammarList) {
         var grammars = options.grammars;
-
         var list = grammarList || [];
         addFromOptions(grammars, list, appRootDir);
-
         return list;
     },
     /**
@@ -346,23 +305,20 @@ module.exports = {
      * @param  {{Array<GrammarEntry>}} grammarList
      * @return {{Array<GrammarEntry>}}
      */
-    applyDefaultOptions: function(options, grammarList){
-
-        grammarList.forEach(function(g){
+    applyDefaultOptions: function (options, grammarList) {
+        grammarList.forEach(function (g) {
             [
-                {name: 'engine', defaultValue: 'jscc'},
-                {name: 'ignore', defaultValue: false},
-                {name: 'async', defaultValue: false},
-                {name: 'initPhrase', defaultValue: void(0)},
-                {name: 'asyncCompile', defaultValue: void(0)},
-                {name: 'force', defaultValue: false},
-                {name: 'strict', defaultValue: true}
-            ].forEach(function(fieldInfo){
-                optionUtils.applySetting(fieldInfo.name, g, options, fieldInfo.defaultValue);
+                { name: 'engine', defaultValue: 'jscc' },
+                { name: 'ignore', defaultValue: false },
+                { name: 'async', defaultValue: false },
+                { name: 'initPhrase', defaultValue: void (0) },
+                { name: 'asyncCompile', defaultValue: void (0) },
+                { name: 'force', defaultValue: false },
+                { name: 'strict', defaultValue: true }
+            ].forEach(function (fieldInfo) {
+                option_utils_1.default.applySetting(fieldInfo.name, g, options, fieldInfo.defaultValue);
             });
-
         });
-
         return grammarList;
     },
     /**
@@ -381,39 +337,31 @@ module.exports = {
      * @param  {ResourcesConfig} _resources the resources configuration
      * @param  {[type]} runtimeConfiguration the configuration.json representation
      */
-    addGrammarsToAppConfig: function(grammars, appConfig, directories, _resources, runtimeConfiguration){
-
-        if(!grammars || grammars.length < 1){
+    addGrammarsToAppConfig: function (grammars, appConfig, directories, _resources, runtimeConfiguration) {
+        if (!grammars || grammars.length < 1) {
             return;
         }
-
-        grammars.forEach(function(g){
-
-            if(g.ignore){
+        grammars.forEach(function (g) {
+            if (g.ignore) {
                 //add configuration entry to avoid loading of grammar module on app start-up:
-                configurationUtil.setGrammarIgnored(runtimeConfiguration, g.id);
+                settings_utils_1.default.setGrammarIgnored(runtimeConfiguration, g.id);
             }
-
-            if(g.async){
-
+            if (g.async) {
                 //add configuration entry initializing grammar for async-execution:
-                var entry = g.initPhrase? {id: g.id, phrase: g.initPhrase} : g.id;
-                configurationUtil.setGrammarAsyncExec(runtimeConfiguration, entry);
+                var entry = g.initPhrase ? { id: g.id, phrase: g.initPhrase } : g.id;
+                settings_utils_1.default.setGrammarAsyncExec(runtimeConfiguration, entry);
                 //add alias information, but do not require inclusion in "main thread script"
                 // (i.e. inclusion only mandatory in async-exec-Worker script):
-                appConfigUtils.registerModuleId(appConfig, toAliasId(g), toAliasPath(g));
-
+                module_config_init_1.default.registerModuleId(appConfig, toAliasId(g), toAliasPath(g));
                 //include internal mmir-lib module asyncGrammar for async-grammar-execution:
-                appConfigUtils.addIncludeModule(appConfig, 'mmirf/asyncGrammar');
-
-            } else {
-
+                module_config_init_1.default.addIncludeModule(appConfig, 'mmirf/asyncGrammar');
+            }
+            else {
                 //do add alias information (for require'ing via ID instead of relative/absolute file path),
                 // and register module ID for inclusion in "main thread script"
-                appConfigUtils.addIncludeModule(appConfig, toAliasId(g), toAliasPath(g));
+                module_config_init_1.default.addIncludeModule(appConfig, toAliasId(g), toAliasPath(g));
             }
-
-            directoriesUtil.addGrammar(directories, toAliasId(g));
+            directories_utils_1.default.addGrammar(directories, toAliasId(g));
         });
     },
     toAliasId: toAliasId,

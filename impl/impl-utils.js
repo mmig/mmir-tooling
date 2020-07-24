@@ -1,62 +1,61 @@
-var path = require('path');
-var fs = require('fs');
-var _ = require ('lodash');
-var fileUtils = require('../utils/filepath-utils.js');
-
-var appConfigUtils = require('../utils/module-config-init.js');
-var directoriesUtil = require('../tools/directories-utils.js');
-var optionUtils = require('../tools/option-utils.js');
-
-var logUtils = require('../utils/log-utils.js');
-var log = logUtils.log;
-var warn = logUtils.warn;
-
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var path = __importStar(require("path"));
+var fs = __importStar(require("fs-extra"));
+var _ = require('lodash');
+var filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
+var module_config_init_1 = __importDefault(require("../utils/module-config-init"));
+var directories_utils_1 = __importDefault(require("../tools/directories-utils"));
+var option_utils_1 = __importDefault(require("../tools/option-utils"));
+var log_utils_1 = __importDefault(require("../utils/log-utils"));
+var log = log_utils_1.default.log;
+var warn = log_utils_1.default.warn;
 //mode: 'controller' | 'helper' | 'model'
-function readDir(mode, dir, list, options, generalOptions){
-
+function readDir(mode, dir, list, options, generalOptions) {
     var files = fs.readdirSync(dir);
     var dirs = [];
     // log('read dir "'+dir+'" -> ', files);
-
-    files.forEach(function(p){
-
+    files.forEach(function (p) {
         var absPath = path.join(dir, p);
-        if(fileUtils.isDirectory(absPath)){
-
+        if (filepath_utils_1.default.isDirectory(absPath)) {
             dirs.push(absPath);
             return false;
-
-        } else {
-
-            var normalized = fileUtils.normalizePath(absPath);
+        }
+        else {
+            var normalized = filepath_utils_1.default.normalizePath(absPath);
             var id = path.basename(absPath, '.js');
-            switch(mode){
+            switch (mode) {
                 case 'helper':
-                    if(!/Helper$/.test(id)){
-                        warn('impl-utils.addFromDirectory(): invalid file-name for helper '+id+' (must have suffix "Helper"): "'+normalized+'"!');
+                    if (!/Helper$/.test(id)) {
+                        warn('impl-utils.addFromDirectory(): invalid file-name for helper ' + id + ' (must have suffix "Helper"): "' + normalized + '"!');
                         id += 'Helper';
                     }
                     break;
-                case 'controller':	// intentional fall through
-                case 'model':				// intentional fall through
+                case 'controller': // intentional fall through
+                case 'model': // intentional fall through
                 default:
                     break;
             }
-
-            log('impl-utils.addFromDirectory(): parsing '+mode+' implemenation '+id+' at "'+normalized+'"');//DEBUG
-
+            log('impl-utils.addFromDirectory(): parsing ' + mode + ' implemenation ' + id + ' at "' + normalized + '"'); //DEBUG
             var opt = options && options[id];
-            if((opt && (opt.exclude || opt.file) || opt === false)){
+            if ((opt && (opt.exclude || opt.file) || opt === false)) {
                 //-> ignore/exclude this impl. file!
-                log('impl-utils.addFromDirectory(): excluding '+mode+' implemenation '+id+' at "'+normalized+'"!');
-                return;//////////////////// EARLY EXIT //////////////////
+                log('impl-utils.addFromDirectory(): excluding ' + mode + ' implemenation ' + id + ' at "' + normalized + '"!');
+                return; //////////////////// EARLY EXIT //////////////////
             }
-
             var modExport = opt && opt.addModuleExport;
-            if(typeof modExport === 'undefined'){
+            if (typeof modExport === 'undefined') {
                 modExport = generalOptions.addModuleExport || false;
             }
-
             list.push({
                 id: id,
                 name: toImplName(id),
@@ -66,79 +65,64 @@ function readDir(mode, dir, list, options, generalOptions){
             });
         }
     });
-
     // log('read sub-dirs -> ', dirs);
     var size = dirs.length;
-    if(size > 0){
-        for(var i = 0; i < size; ++i){
+    if (size > 0) {
+        for (var i = 0; i < size; ++i) {
             readDir(mode, dirs[i], list, options, generalOptions);
         }
     }
 }
-
-function addFromOptions(implMap, list, appRootDir, generalOptions){
-
+function addFromOptions(implMap, list, appRootDir, generalOptions) {
     var impl, entry;
-    for(var id in implMap){
-
+    for (var id in implMap) {
         impl = implMap[id];
-        if(impl && impl.file && !impl.exclude){
-
+        if (impl && impl.file && !impl.exclude) {
             entry = _.cloneDeep(impl);
-            if(!path.isAbsolute(entry.file)){
+            if (!path.isAbsolute(entry.file)) {
                 entry.file = path.resolve(appRootDir, entry.file);
             }
-            entry.file = fileUtils.normalizePath(entry.file);
-
-            if(entry.id && entry.id !== id){
-                warn('impl-utils.addFromOptions(): entry from implOptions for ID "'+id+'" has differing field id with value "'+entry.id+'", overwritting the id field with "'+id+'"!');//FIXME proper webpack error/warning
+            entry.file = filepath_utils_1.default.normalizePath(entry.file);
+            if (entry.id && entry.id !== id) {
+                warn('impl-utils.addFromOptions(): entry from implOptions for ID "' + id + '" has differing field id with value "' + entry.id + '", overwritting the id field with "' + id + '"!'); //FIXME proper webpack error/warning
             }
             entry.id = id;
-
-            if(!entry.name){
+            if (!entry.name) {
                 entry.name = toImplName(id);
             }
-
-            if(!/^(controller|helper|model)$/.test(entry.type)){
-                warn('impl-utils.addFromOptions(): entry from implOptions for ID "'+id+'" has invalid type '+JSON.stringify(entry.type)+', overwritting the type field with "controller"!');//FIXME proper webpack error/warning
+            if (!/^(controller|helper|model)$/.test(entry.type)) {
+                warn('impl-utils.addFromOptions(): entry from implOptions for ID "' + id + '" has invalid type ' + JSON.stringify(entry.type) + ', overwritting the type field with "controller"!'); //FIXME proper webpack error/warning
                 entry.type = 'controller';
             }
-
             //TODO verify existence of entry.file?
-
-            if(!contains(list, id, entry.type)){
-                log('impl-utils.addFromOptions(): adding ', entry);//DEBUG
-                list.push(entry)
-            } else {
-                warn('impl-utils.addFromOptions(): entry from implOptions for ID '+id+' already exists in implementation-list, ignoring entry!');//FIXME proper webpack error/warning
+            if (!contains(list, id, entry.type)) {
+                log('impl-utils.addFromOptions(): adding ', entry); //DEBUG
+                list.push(entry);
+            }
+            else {
+                warn('impl-utils.addFromOptions(): entry from implOptions for ID ' + id + ' already exists in implementation-list, ignoring entry!'); //FIXME proper webpack error/warning
             }
         }
-        else {//DEBUG
-            log('impl-utils.addFromOptions(): entry for '+id+' has no file set -> ignore ', impl);//DEBU
+        else { //DEBUG
+            log('impl-utils.addFromOptions(): entry for ' + id + ' has no file set -> ignore ', impl); //DEBU
         }
     }
 }
-
-function contains(implList, id, type){
-    return implList.findIndex(function(item){
+function contains(implList, id, type) {
+    return implList.findIndex(function (item) {
         return item.id === id && item.type === type;
     }) !== -1;
 }
-
-function toImplName(id){
+function toImplName(id) {
     return id[0].toUpperCase() + id.substring(1);
 }
-
-function toAliasPath(impl){
+function toAliasPath(impl) {
     return path.normalize(impl.file).replace(/\.js$/i, '');
 }
-
-function toAliasId(impl){
-    return 'mmirf/'+impl.type+'/'+impl.id;//FIXME formalize IDs for loading views in webpack (?)
+function toAliasId(impl) {
+    return 'mmirf/' + impl.type + '/' + impl.id; //FIXME formalize IDs for loading views in webpack (?)
 }
-
 module.exports = {
-
     /**
      * [description]
      * @param  {"controller" | "helper" | "model"} mode the kind of implementation (modules) that the directory contains
@@ -164,16 +148,13 @@ module.exports = {
      *																																				or, if addModuleExport is a String, this String will be used.
      * @return {Array<ImplEntry>} the list of ImplEntry objects
      */
-    implFromDir: function(mode, options, appRootDir, implList){
-
+    implFromDir: function (mode, options, appRootDir, implList) {
         var dir = options.path;
-        if(!path.isAbsolute(dir)){
+        if (!path.isAbsolute(dir)) {
             dir = path.resolve(appRootDir, dir);
         }
-
         var list = implList || [];
         readDir(mode, dir, list, options[mode + 's'], options);
-
         return list;
     },
     /**
@@ -184,14 +165,11 @@ module.exports = {
      * @param  {{Array<ImplEntry>}} [implList] OPTIONAL
      * @return {{Array<ImplEntry>}}
      */
-    implFromOptions: function(mode, options, appRootDir, implList){
-
+    implFromOptions: function (mode, options, appRootDir, implList) {
         var list = implList || [];
         addFromOptions(options[mode + 's'], list, appRootDir, options);
-
         return list;
     },
-
     /**
      * apply the "global" options from `options` or default values to the entries
      * from `implList` if its corresponding options-field is not explicitly specified.
@@ -200,20 +178,16 @@ module.exports = {
      * @param  {{Array<ImplEntry>}} implList
      * @return {{Array<ImplEntry>}}
      */
-    applyDefaultOptions: function(options, implList){
-
-        implList.forEach(function(impl){
+    applyDefaultOptions: function (options, implList) {
+        implList.forEach(function (impl) {
             [
-                {name: 'addModuleExport', defaultValue: false}
-            ].forEach(function(fieldInfo){
-                optionUtils.applySetting(fieldInfo.name, impl, options, fieldInfo.defaultValue);
+                { name: 'addModuleExport', defaultValue: false }
+            ].forEach(function (fieldInfo) {
+                option_utils_1.default.applySetting(fieldInfo.name, impl, options, fieldInfo.defaultValue);
             });
-
         });
-
         return implList;
     },
-
     /**
      * add implementations to (webpack) app build configuration
      *
@@ -225,35 +199,28 @@ module.exports = {
      * @param  {ResourcesConfig} _resources the resources configuration
      * @param  {[type]} runtimeConfiguration the configuration.json representation
      */
-    addImplementationsToAppConfig: function(implList, appConfig, directories, _resources, _runtimeConfiguration){
-
-        if(!implList || implList.length < 1){
+    addImplementationsToAppConfig: function (implList, appConfig, directories, _resources, _runtimeConfiguration) {
+        if (!implList || implList.length < 1) {
             return;
         }
-
-        implList.forEach(function(impl){
-
+        implList.forEach(function (impl) {
             var aliasId = toAliasId(impl);
-            appConfigUtils.addIncludeModule(appConfig, aliasId, toAliasPath(impl));
-
-
-            log('impl-utils.addImplementationsToAppConfig(): adding '+impl.type+' implemenation '+impl.id+': ['+aliasId+'] -> "'+toAliasPath(impl)+'"!');
-
-            switch(impl.type){
+            module_config_init_1.default.addIncludeModule(appConfig, aliasId, toAliasPath(impl));
+            log('impl-utils.addImplementationsToAppConfig(): adding ' + impl.type + ' implemenation ' + impl.id + ': [' + aliasId + '] -> "' + toAliasPath(impl) + '"!');
+            switch (impl.type) {
                 case 'controller':
-                    directoriesUtil.addCtrl(directories, aliasId);
+                    directories_utils_1.default.addCtrl(directories, aliasId);
                     break;
                 case 'helper':
-                    directoriesUtil.addHelper(directories, aliasId);
+                    directories_utils_1.default.addHelper(directories, aliasId);
                     break;
                 case 'model':
-                    directoriesUtil.addModel(directories, aliasId);
+                    directories_utils_1.default.addModel(directories, aliasId);
                     break;
                 default:
-                    warn('impl-utils.addImplementationsToAppConfig(): unknown type '+impl.type+' for implemenation '+impl.id+' at "'+impl.file+'"!');
+                    warn('impl-utils.addImplementationsToAppConfig(): unknown type ' + impl.type + ' for implemenation ' + impl.id + ' at "' + impl.file + '"!');
                     break;
             }
-
         });
     }
 };

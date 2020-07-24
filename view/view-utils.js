@@ -1,154 +1,143 @@
-var path = require('path');
-var fs = require('fs');
-var fileUtils = require('../utils/filepath-utils.js');
-
-var appConfigUtils = require('../utils/module-config-init.js');
-
-var directoriesUtil = require('../tools/directories-utils.js');
-// var optionUtils = require('../tools/option-utils.js');
-
-var logUtils = require('../utils/log-utils.js');
-var log = logUtils.log;
-var warn = logUtils.warn;
-
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var path = __importStar(require("path"));
+var fs = __importStar(require("fs-extra"));
+var filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
+var module_config_init_1 = __importDefault(require("../utils/module-config-init"));
+var directories_utils_1 = __importDefault(require("../tools/directories-utils"));
+var option_utils_1 = __importDefault(require("../tools/option-utils"));
+var log_utils_1 = __importDefault(require("../utils/log-utils"));
+var log = log_utils_1.default.log;
+var warn = log_utils_1.default.warn;
 var VirtualModulePlugin;
-function initVirtualModulePlugin(){
-    if(!VirtualModulePlugin){
-        try{
+function initVirtualModulePlugin() {
+    if (!VirtualModulePlugin) {
+        try {
             VirtualModulePlugin = require('virtual-module-webpack-plugin');
-        } catch(err){
+        }
+        catch (err) {
             warn('view-utils: failed to initialize virtual-module-webpack-plugin ', err);
         }
     }
     return !!VirtualModulePlugin;
 }
-
-var isPartialView = function(name){
+var isPartialView = function (name) {
     return name.charAt(0) == '~';
 };
 var regExprFileExt = /\.ehtml$/i;
-
-function readDir(dir, list, options){
-
+function readDir(dir, list, options) {
     var files = fs.readdirSync(dir);
     var dirs = [];
     // log('read dir "'+dir+'" -> ', files);
-
-    files.forEach(function(p){
+    files.forEach(function (p) {
         var absPath = path.join(dir, p);
-        if(fileUtils.isDirectory(absPath)){
+        if (filepath_utils_1.default.isDirectory(absPath)) {
             var name = path.basename(absPath);
             var isLayout = /layouts/i.test(name);
-            if(!isLayout && name){
+            if (!isLayout && name) {
                 name = name[0].toUpperCase() + name.substring(1);
             }
-            dirs.push({dir: absPath, ctrlName: name, isLayout: isLayout});
-        } else {
+            dirs.push({ dir: absPath, ctrlName: name, isLayout: isLayout });
+        }
+        else {
             warn('view-utils.addFromDirectory(): unknow file in view root path: ', absPath);
         }
     });
-
     // log('read sub-dirs -> ', dirs);
     var size = dirs.length;
-    if(size > 0){
-        for(var i = 0; i < size; ++i){
+    if (size > 0) {
+        for (var i = 0; i < size; ++i) {
             readSubDir(dirs[i], list, options);
         }
     }
 }
-
-function readSubDir(dirs, list, options){
-
+function readSubDir(dirs, list, options) {
     var dir = dirs.dir;
     var files = fs.readdirSync(dir);
     // log('read dir "'+dir+'" -> ', files);
-
-    files.forEach(function(p){
+    files.forEach(function (p) {
         var absPath = path.join(dir, p);
-        if(fileUtils.isDirectory(absPath)){
+        if (filepath_utils_1.default.isDirectory(absPath)) {
             warn('view-utils.addFromDirectory(): invalid sub-directory in view-directory: ', absPath);
-        } else if(regExprFileExt.test(absPath)) {
-
-            var normalized = fileUtils.normalizePath(absPath);
+        }
+        else if (regExprFileExt.test(absPath)) {
+            var normalized = filepath_utils_1.default.normalizePath(absPath);
             var fileName = path.basename(normalized).replace(/\.ehtml/i, '');
             var isLayout = dirs.isLayout;
-
             var isPartial = false;
             var ctrlName, viewName;
-            if(isLayout && fileName){
+            if (isLayout && fileName) {
                 ctrlName = fileName[0].toUpperCase() + fileName.substring(1);
                 viewName = ctrlName;
-            } else {
+            }
+            else {
                 ctrlName = dirs.ctrlName;
                 viewName = fileName;
                 isPartial = isPartialView(viewName);
-                if(isPartial){
+                if (isPartial) {
                     viewName = viewName.substring(1);
                 }
             }
-
             var id = dirs.ctrlName.toLowerCase() + '/' + fileName;
             var opt = options && options[id];
-
             list.push({
                 id: id,
                 ctrlName: ctrlName,
                 viewName: viewName,
                 file: normalized,
-                viewImpl: isLayout? 'mmirf/layout' : isPartial? 'mmirf/partial' : 'mmirf/view',
+                viewImpl: isLayout ? 'mmirf/layout' : isPartial ? 'mmirf/partial' : 'mmirf/view',
                 isLayout: isLayout,
                 isPartial: isPartial,
-                strict: opt && typeof opt.strict === 'boolean'? opt.strict : void(0)
+                strict: opt && typeof opt.strict === 'boolean' ? opt.strict : void (0)
             });
-
-        } else {
+        }
+        else {
             warn('view-utils.addFromDirectory(): unknown view template file: ', absPath);
         }
     });
     // log('results for dir "'+dir+'" -> ', ids, views);
 }
-
-function toAliasPath(view){
-    return path.normalize(view.file);//.replace(/\.ehtml$/i, '')
+function toAliasPath(view) {
+    return path.normalize(view.file); //.replace(/\.ehtml$/i, '')
 }
-
-function toAliasId(view){
-    return 'mmirf/view/' + view.id;//FIXME formalize IDs for loading views in webpack (?)
+function toAliasId(view) {
+    return 'mmirf/view/' + view.id; //FIXME formalize IDs for loading views in webpack (?)
 }
-
-function containsCtrl(ctrlName, ctrlList){
-    return ctrlList.findIndex(function(c){
+function containsCtrl(ctrlName, ctrlList) {
+    return ctrlList.findIndex(function (c) {
         return c.name === ctrlName;
     }) !== -1;
 }
-
-function addCtrlStub(view, ctrlList, ctrlMap){
-
-    if(view.isLayout){
+function addCtrlStub(view, ctrlList, ctrlMap) {
+    if (view.isLayout) {
         return;
     }
-
-    if(containsCtrl(view.ctrlName, ctrlList)){
+    if (containsCtrl(view.ctrlName, ctrlList)) {
         return;
     }
-
     var ctrl = ctrlMap.get(view.ctrlName);
-    var isDebug = true;//DEBUG TODO make configurable/settable via options
-    if(!ctrl){
+    var isDebug = true; //DEBUG TODO make configurable/settable via options
+    if (!ctrl) {
         ctrl = {
-            moduleName: 'mmirf/controller/'+view.ctrlName[0].toLowerCase()+view.ctrlName.substring(1),
-            contents: 'function '+view.ctrlName+'(){'+(isDebug? 'console.log("created stub controller '+view.ctrlName+'");' : '')+'}; ' +
-                                    view.ctrlName + '.prototype.on_page_load = function(){'+(isDebug? 'console.log("invoked on_page_load() on stub controller '+view.ctrlName+'");' : '')+'};' +
-                                    // 'window.'+view.ctrlName+' = '+view.ctrlName+';' +
-                                    'module.exports = '+view.ctrlName+';'
+            moduleName: 'mmirf/controller/' + view.ctrlName[0].toLowerCase() + view.ctrlName.substring(1),
+            contents: 'function ' + view.ctrlName + '(){' + (isDebug ? 'console.log("created stub controller ' + view.ctrlName + '");' : '') + '}; ' +
+                view.ctrlName + '.prototype.on_page_load = function(){' + (isDebug ? 'console.log("invoked on_page_load() on stub controller ' + view.ctrlName + '");' : '') + '};' +
+                // 'window.'+view.ctrlName+' = '+view.ctrlName+';' +
+                'module.exports = ' + view.ctrlName + ';'
         };
         ctrlMap.set(view.ctrlName, ctrl);
     }
 }
-
-
 module.exports = {
-
     /**
      * add views from a base-directory that adheres to the structure:
      * <pre>
@@ -178,17 +167,14 @@ module.exports = {
      * 										isPartial: Boolean
      * 									}
      */
-    viewTemplatesFromDir: function(dir, appRootDir, options){
-
-        if(!path.isAbsolute(dir)){
+    viewTemplatesFromDir: function (dir, appRootDir, options) {
+        if (!path.isAbsolute(dir)) {
             dir = path.resolve(appRootDir, dir);
         }
         var list = [];
         readDir(dir, list, options);
-
         return list;
     },
-
     /**
      * apply the "global" options from `options` or default values to the entries
      * from `viewList` if its corresponding options-field is not explicitly specified.
@@ -197,23 +183,19 @@ module.exports = {
      * @param  {{Array<ViewEntry>}} viewList
      * @return {{Array<ViewEntry>}}
      */
-    applyDefaultOptions: function(options, viewList){
-
+    applyDefaultOptions: function (options, viewList) {
         //TODO impl. if/when addFromOpitions is implemented...
-        viewList.forEach(function(v){
+        viewList.forEach(function (v) {
             [
                 // {name: 'ignoreErrors', defaultValue: false},	//TODO impl. if/when addFromOpitions is implemented...
                 // {name: 'force', defaultValue: false},	//TODO impl. if/when addFromOpitions is implemented...
-                {name: 'strict', defaultValue: true}
-            ].forEach(function(fieldInfo){
-                optionUtils.applySetting(fieldInfo.name, v, options, fieldInfo.defaultValue);
+                { name: 'strict', defaultValue: true }
+            ].forEach(function (fieldInfo) {
+                option_utils_1.default.applySetting(fieldInfo.name, v, options, fieldInfo.defaultValue);
             });
-
         });
-
         return viewList;
     },
-
     /**
      * add views to (webpack) app build configuration
      *
@@ -227,74 +209,49 @@ module.exports = {
      * @param  {ResourcesConfig} resources the resources configuration
      * @param  {[type]} runtimeConfiguration the configuration.json representation
      */
-    addViewsToAppConfig: function(views, ctrls, appConfig, directories, resources, _runtimeConfiguration){
-
-        if(!views || views.length < 1){
+    addViewsToAppConfig: function (views, ctrls, appConfig, directories, resources, _runtimeConfiguration) {
+        if (!views || views.length < 1) {
             return;
         }
-
         var stubCtrlMap = new Map();
-
-        views.forEach(function(v){
-
+        views.forEach(function (v) {
             var aliasId = toAliasId(v);
-            appConfigUtils.addIncludeModule(appConfig, aliasId, toAliasPath(v));
-            directoriesUtil.addView(directories, aliasId);
-            if(appConfig.includeViewTemplates){
-                directoriesUtil.addViewTemplate(directories, aliasId);
+            module_config_init_1.default.addIncludeModule(appConfig, aliasId, toAliasPath(v));
+            directories_utils_1.default.addView(directories, aliasId);
+            if (appConfig.includeViewTemplates) {
+                directories_utils_1.default.addViewTemplate(directories, aliasId);
             }
-
             addCtrlStub(v, ctrls, stubCtrlMap);
         });
-
         // include dependencies for loading & rendering views:
         appConfig.includeModules.push('mmirf/storageUtils', 'mmirf/renderUtils');
-        appConfig.includeModules.push('mmirf/yield', 'mmirf/layout', 'mmirf/view', 'mmirf/partial');//TODO only include types that were actually parsed
-
+        appConfig.includeModules.push('mmirf/yield', 'mmirf/layout', 'mmirf/view', 'mmirf/partial'); //TODO only include types that were actually parsed
         //FIXME set simpleViewEngine TODO support setting engine via appConfig
         resources.paths['mmirf/simpleViewEngine'] = 'env/view/simpleViewEngine';
-
-        if(!appConfig.paths){
+        if (!appConfig.paths) {
             appConfig.paths = {};
         }
-
         // replace default viewLoader with webpack-viewLoader:
         appConfig.paths['mmirf/viewLoader'] = path.resolve(__dirname, '..', 'runtime', 'webpackViewLoader.js');
-
         //add generated stub controllers if necessary:
-        if(stubCtrlMap.size > 0 && appConfig.controllers !== false){
-
-            if(initVirtualModulePlugin()){
-
-                if(!appConfig.webpackPlugins){
+        if (stubCtrlMap.size > 0 && appConfig.controllers !== false) {
+            if (initVirtualModulePlugin()) {
+                if (!appConfig.webpackPlugins) {
                     appConfig.webpackPlugins = [];
                 }
-
-                stubCtrlMap.forEach(function(ctrl, name){
+                stubCtrlMap.forEach(function (ctrl, name) {
                     var id = ctrl.moduleName;
-                    log('view-utils: adding view controller stub "'+name+'": ', id, ' -> ', ctrl);//DEBUG
+                    log('view-utils: adding view controller stub "' + name + '": ', id, ' -> ', ctrl); //DEBUG
                     // appConfig.paths[id] = id;// path.resolve('./viewParser/webpackGenCtrl.js');
                     // appConfig.includeModules.push(id);
-                    appConfigUtils.addIncludeModule(appConfig, id, id);
-
-                    directoriesUtil.addCtrl(directories, ctrl.moduleName);
+                    module_config_init_1.default.addIncludeModule(appConfig, id, id);
+                    directories_utils_1.default.addCtrl(directories, ctrl.moduleName);
                     appConfig.webpackPlugins.push(new VirtualModulePlugin(ctrl));
                 });
-
-            } else {
+            }
+            else {
                 warn('view-utils: cannot add stub controllers, because of misssing package virtual-module-webpack-plugin');
             }
         }
     },
-
-    getCtrlImpl: function(){
-        if(controllers.size < 1){
-            return [];
-        }
-        var list = [];
-        controllers.forEach(function(ctrl){
-            list.push(ctrl)
-        });
-        return list;
-    }
 };

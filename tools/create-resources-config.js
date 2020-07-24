@@ -1,8 +1,9 @@
-
-var _ = require('lodash');
-
-var mmirModuleBaseConfig = _.cloneDeep(require('mmir-lib/lib/modulesBaseConfig'));
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var lodash_1 = __importDefault(require("lodash"));
+var mmirModuleBaseConfig = lodash_1.default.cloneDeep(require('mmir-lib/lib/modulesBaseConfig'));
 // //remove paths that match the ID from mmir base paths:
 // var removePathsList = ['jquery'];
 //
@@ -23,12 +24,9 @@ var mmirModuleBaseConfig = _.cloneDeep(require('mmir-lib/lib/modulesBaseConfig')
 // };
 //
 // var paths = mmirModuleBaseConfig.paths;
-
 // log('############## mmir module paths for webpack build: ', paths);
-
 var defaultResourcesConfig = {
     paths: null,
-
     // paths for web worker entry points (i.e. new Worker(<path>)):
     workers: [
         'workers/scionQueueWorker.js',
@@ -49,20 +47,17 @@ var defaultResourcesConfig = {
     ],
     //path mappings for copied files etc (i.e. will be included/copied to the specified relative file path/name)
     resourcesPaths: {}
-}
-
-function applyRemovePaths(paths, removePathsList){
-    removePathsList.forEach(function(entry){
+};
+function applyRemovePaths(paths, removePathsList) {
+    removePathsList.forEach(function (entry) {
         delete paths[entry];
     });
 }
-
-function applyCustomPaths(paths, customPaths){
-    for(var n in customPaths){
+function applyCustomPaths(paths, customPaths) {
+    for (var n in customPaths) {
         paths[n] = customPaths[n];
     }
 }
-
 /**
  * create config for mmir resources:
  *
@@ -76,20 +71,16 @@ function applyCustomPaths(paths, customPaths){
  * @param  {{[moduleId: string]: string}} [customPaths] mapping of additional/overriding module IDs to URI/paths
  * @return {ResourcesConfig} the resource config object
  */
-function createResourcesConfig(removePathsList, customPaths){
-    var paths = _.cloneDeep(mmirModuleBaseConfig.paths);
-
-    if(removePathsList){
+function createResourcesConfig(removePathsList, customPaths) {
+    var paths = lodash_1.default.cloneDeep(mmirModuleBaseConfig.paths);
+    if (removePathsList) {
         applyRemovePaths(paths, removePathsList);
     }
-    if(customPaths){
+    if (customPaths) {
         applyCustomPaths(paths, customPaths);
     }
-
-    var resConfig = _.cloneDeep(defaultResourcesConfig);
+    var resConfig = lodash_1.default.cloneDeep(defaultResourcesConfig);
     resConfig.paths = paths;
-
     return resConfig;
 }
-
 module.exports = createResourcesConfig;
