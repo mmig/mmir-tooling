@@ -2,6 +2,8 @@
 
 import { MediaManagerPluginEntry, GrammarEngineType } from 'mmir-lib';//FIXME
 
+export * from './index-webpack';
+
 /**
  * `mmir-tooling` generates/compiles/builds _mmir_ resources, e.g.
  * grammars or state-models.
