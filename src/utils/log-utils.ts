@@ -1,5 +1,5 @@
 
-import * as console from 'console';
+import console from 'console';
 
 function defaultLog(_message?: any, ..._optionalParams: any[]): void {
     if(_isLog())	console.log.apply(console, arguments);
@@ -35,10 +35,10 @@ export = {
     setWarn(func: (_message?: any, ..._optionalParams: any[]) => void){
         _warn = func;
     },
-    setIsLog(func: () => boolean){
+    setIsLog(func: () => boolean): void {
         _isLog = func;
     },
-    setIsWarn(func: () => boolean){
+    setIsWarn(func: () => boolean): void {
         _isWarn = func;
     }
 }

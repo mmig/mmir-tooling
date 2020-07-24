@@ -1,31 +1,32 @@
 
+import { StateModelBuildEntry, StateCompilerOptions } from '../index.d';
 
-import * as path from 'path';
-import * as fs from 'fs-extra';
+import path from 'path';
+import fs from 'fs-extra';
 
 import scxmlGen from '../scxml/scxml-gen';
 
 import checksumUtil from '../utils/checksum-util';
 
-import Promise from '../utils/promise';
+import promise from '../utils/promise';
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
-var warn = logUtils.warn;
+const log = logUtils.log;
+const warn = logUtils.warn;
 
-var getStateChartTargetPath = function(scxmlInfo){
+function getStateChartTargetPath(scxmlInfo: StateModelBuildEntry): string {
     return path.join(scxmlInfo.targetDir, scxmlInfo.id + '.js');
 }
 
-var getStateChartChecksumPath = function(scxmlInfo){
+function getStateChartChecksumPath(scxmlInfo: StateModelBuildEntry): string {
     return path.join(scxmlInfo.targetDir, scxmlInfo.id + checksumUtil.getFileExt());
 }
 
-var getChecksumContent = function(content, type?){
+function getChecksumContent(content: string, type?: string): string {
     return checksumUtil.createContent(content, type);
 }
 
-var checkUpToDate = function(scxmlInfo, jsonContent){
+function checkUpToDate(scxmlInfo: StateModelBuildEntry, jsonContent: string): Promise<boolean> {
 
     return checksumUtil.upToDate(
         jsonContent,
@@ -36,7 +37,7 @@ var checkUpToDate = function(scxmlInfo, jsonContent){
 }
 
 
-var writeStateChartModel = function(_err, scCode, _map, meta){
+function writeStateChartModel(_err: Error, scCode: string, _map: any, meta: any): Promise<Error | Error[] | any> {
 
     var sc = meta && meta.info;
     var scPath =  getStateChartTargetPath(sc);
@@ -45,7 +46,7 @@ var writeStateChartModel = function(_err, scCode, _map, meta){
 
     log('###### writing compiled SCXML model to file (length '+scCode.length+') ', scPath, ' -> ', checksumContent);
 
-    return Promise.all([
+    return promise.all([
         fs.writeFile(scPath, scCode, 'utf8').catch(function(err){
             var msg = 'ERROR writing compiled SCXML model to '+ scPath+ ': ';
             warn(msg, err);
@@ -59,12 +60,12 @@ var writeStateChartModel = function(_err, scCode, _map, meta){
     ]);
 };
 
-var prepareCompile = function(options){
+function prepareCompile(options: StateCompilerOptions){
     options.config.moduleType = options.config.moduleType? options.config.moduleType : 'amd';
     return fs.ensureDir(options.config.targetDir);
 }
 
-var compile = function(loadOptions){
+function compile(loadOptions: StateCompilerOptions): Promise<Array<Error|Error[]> | any[]> {
 
     var tasks = [];
     loadOptions.mapping.forEach(sc => {
@@ -72,18 +73,18 @@ var compile = function(loadOptions){
         sc.targetDir = loadOptions.config.targetDir;
         sc.force = typeof sc.force === 'boolean'? sc.force : loadOptions.config.force;
 
-        var t = fs.readFile(sc.file, 'utf8').then(function(content){
+        const t = fs.readFile(sc.file, 'utf8').then(async function(content){
 
             log('###### start processing SCXML model '+sc.id);
 
-            var doCompile = function(){
-                return new Promise(function(resolve, reject){
-                    scxmlGen.compile(content, sc.file, loadOptions, function(err, scCode, _map, meta){
+            function doCompile(){
+                return new promise(function(resolve, reject){
+                    scxmlGen.compile(content, sc.file, loadOptions, async function(err: Error, scCode: string, _map: any, meta: any): Promise<Error | any> {
 
                         if(err){
                             var msg = 'ERROR compiling SCXML model '+(sc? sc.file : '')+': ';
                             warn(msg, err);
-                            return resolve(err.stack? err : new Error(msg+err));
+                            return resolve(err.stack? err : new Error(msg+err)) as any;
                         }
 
                         return writeStateChartModel(err, scCode, _map, meta).then(function(){
@@ -121,7 +122,7 @@ var compile = function(loadOptions){
         tasks.push(t);
     });
 
-    return Promise.all(tasks);
+    return promise.all(tasks);
 }
 
 export = {

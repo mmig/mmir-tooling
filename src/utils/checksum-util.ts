@@ -1,16 +1,16 @@
 
-import { MmirModule } from 'mmir-lib';
+import { MmirModule, ChecksumUtils } from 'mmir-lib';
 
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 
 import * as mmir from '../mmir-init';
-var checksumUtil = (mmir as MmirModule).require('mmirf/checksumUtils').init();
+const checksumUtil: ChecksumUtils = (mmir as MmirModule).require('mmirf/checksumUtils').init();
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
-var warn = logUtils.warn;
+const log = logUtils.log;
+const warn = logUtils.warn;
 
-var checkUpToDate = function(jsonContent, checksumPath, targetPath, additionalInfo){
+async function checkUpToDate(jsonContent: string, checksumPath: string, targetPath: string, additionalInfo: string): Promise<boolean> {
 
     return fs.pathExists(targetPath).then(function(exists){
         if(!exists){
@@ -47,7 +47,7 @@ var checkUpToDate = function(jsonContent, checksumPath, targetPath, additionalIn
 
 export = {
     upToDate: checkUpToDate,
-    createContent: function(content, type){
+    createContent: function(content: string, type?: string){
         return checksumUtil.createContent(content, type);
     },
     getFileExt: function(){

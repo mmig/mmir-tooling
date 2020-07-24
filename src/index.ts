@@ -1,9 +1,11 @@
 
-import * as path from 'path';
+import { BuildAppConfig, BuildConfig , SettingsBuildOptions } from './index.d';
+
+import path from 'path';
 
 import { flatten } from 'array-flatten';
 
-import Promise from './utils/promise';
+import promise from './utils/promise';
 
 import directoriesUtils from './tools/directories-utils';
 
@@ -17,20 +19,18 @@ import settingsCompiler from './compiler/settings-compiler';
 
 import cliUtils from './utils/cli-utils';
 
-import { BuildConfig } from './tools/create-build-config';
-
-var getTargetDir = function(appConfig, mainOptions, optType){
+function getTargetDir(appConfig: BuildAppConfig, mainOptions: BuildConfig, optType: 'grammar' | 'view' | 'state'){
     return mainOptions[optType+'Options'].targetDir || (appConfig.targetDir && path.join(appConfig.targetDir, 'gen', optType));
 }
 
-var resolveTargetDir = function(appDir, targetDir){
+function resolveTargetDir(appDir: string, targetDir: string): string {
     if(!path.isAbsolute(targetDir)){
         return path.join(appDir, targetDir);
     }
     return targetDir;
 }
 
-var processTargetDirs = function(appDir, appConfig, buildConfig){
+function processTargetDirs(appDir: string, appConfig: BuildAppConfig, buildConfig: BuildConfig){
 
     if(typeof buildConfig.stateOptions === 'undefined'){
         buildConfig.stateOptions = {};
@@ -48,8 +48,8 @@ var processTargetDirs = function(appDir, appConfig, buildConfig){
 
     if(buildConfig.settingsOptions){
         buildConfig.settingsOptions.targetDir = resolveTargetDir(appDir,
-            appConfig.settingsOptions && appConfig.settingsOptions.targetDir?
-                appConfig.settingsOptions.targetDir : appConfig.targetDir?
+            appConfig.settings && (appConfig.settings as SettingsBuildOptions).targetDir?
+                (appConfig.settings as SettingsBuildOptions).targetDir : appConfig.targetDir?
                     path.join(appConfig.targetDir, 'config') : path.join('www', 'config')
         );
     }
@@ -63,7 +63,7 @@ var processTargetDirs = function(appDir, appConfig, buildConfig){
  * @param  {any} buildConfig the build options (or sub-build options)
  * @param  {string | Array<string>} resType the build-option name or path to a sub-build option
  */
-var checkBuildOptions = function(buildConfig, resType, resTypeMessage){
+function checkBuildOptions(buildConfig: BuildConfig, resType: string | string[], resTypeMessage: string): void {
 
     if(Array.isArray(resType)){
         resTypeMessage = resTypeMessage || resType.join('.');
@@ -86,7 +86,7 @@ var checkBuildOptions = function(buildConfig, resType, resTypeMessage){
     }
 };
 
-var compileResources = function(mmirAppConfig){
+function compileResources(mmirAppConfig: BuildAppConfig): Promise<Array<Error|Error[]> | any>[] {
 
     //set defaults specific for tooling-build
     directoriesUtils.setMode('file');
@@ -110,14 +110,14 @@ var compileResources = function(mmirAppConfig){
 
     // const moduleRules = [];
 
-    const tasks = [];
+    const tasks: Promise<Error[] | any[]>[] = [];
 
     processTargetDirs(appRootDir, mmirAppConfig, buildConfig);
 
     tasks.push(settingsCompiler.prepareWriteSettings(buildConfig.settings, buildConfig.settingsOptions).then(function(){
         return settingsCompiler.writeSettings(buildConfig.settings, buildConfig.settingsOptions);
     }));
-    tasks.push(settingsCompiler.writeDirectoriesJson(buildConfig.directories, buildConfig.directoriesTargetDir));
+    tasks.push(settingsCompiler.writeDirectoriesJson(buildConfig.directories, buildConfig.directoriesTargetDir) as Promise<any>);
 
     if(buildConfig.grammars.length > 0){
 
@@ -224,10 +224,10 @@ var compileResources = function(mmirAppConfig){
     return tasks;
 }
 
-var getErrors = function(taskResults){
+function getErrors(taskResults: Error | Array<Error | Error[] | any>): Error[] {
 
     if(taskResults instanceof Error){
-        return [taskResults.stack? taskResults.stack : taskResults];
+        return [taskResults];
     }
 
     if(Array.isArray(taskResults)){
@@ -240,7 +240,7 @@ export = {
     /**
      * @param  {[type]} mmirAppConfig app-specific configuration for mmir-lib
      */
-    apply: function(mmirAppConfig){
+    apply: async function(mmirAppConfig: BuildAppConfig): Promise<Error[]> {
 
         cliUtils.parseCli();
 
@@ -254,9 +254,9 @@ export = {
                 configuration: false,
                 speech: false
             }
-        };
+        } as BuildAppConfig;
         var taskList = compileResources(mmirAppConfig);
 
-        return Promise.all(taskList).then(getErrors).catch(getErrors);
+        return promise.all(taskList).then(getErrors).catch(getErrors);
     }
 };

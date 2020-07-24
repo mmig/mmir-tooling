@@ -1,6 +1,10 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-var _ = require ('lodash');
+
+import { ImplementationType , ImplementationOption , ImplementationBuildEntry , AnyImplementationOptions , DirectoriesInfo , ResourceConfig , RuntimeConfiguration , BuildAppConfig , ImplementationEntry , ViewBuildEntry } from '../index.d';
+import { WebpackAppConfig } from '../index-webpack.d';
+
+import path from 'path';
+import fs from 'fs-extra';
+import _ from 'lodash';
 import fileUtils from '../utils/filepath-utils';
 
 import appConfigUtils from '../utils/module-config-init';
@@ -8,11 +12,11 @@ import directoriesUtil from '../tools/directories-utils';
 import optionUtils from '../tools/option-utils';
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
-var warn = logUtils.warn;
+const log = logUtils.log;
+const warn = logUtils.warn;
 
 //mode: 'controller' | 'helper' | 'model'
-function readDir(mode, dir, list, options, generalOptions){
+function readDir(mode: ImplementationType, dir: string, list: ImplementationBuildEntry[], options: ImplementationOption, generalOptions: AnyImplementationOptions): void {
 
     var files = fs.readdirSync(dir);
     var dirs = [];
@@ -76,9 +80,9 @@ function readDir(mode, dir, list, options, generalOptions){
     }
 }
 
-function addFromOptions(implMap, list, appRootDir, generalOptions){
+function addFromOptions(implMap: {[id: string]: ImplementationEntry}, list: ImplementationBuildEntry[], appRootDir: string, _generalOptions: AnyImplementationOptions): void {
 
-    var impl, entry;
+    var impl: ImplementationEntry, entry: ImplementationBuildEntry;
     for(var id in implMap){
 
         impl = implMap[id];
@@ -119,21 +123,21 @@ function addFromOptions(implMap, list, appRootDir, generalOptions){
     }
 }
 
-function contains(implList, id, type){
+function contains(implList: ImplementationBuildEntry[], id: string, type: ImplementationType): boolean {
     return implList.findIndex(function(item){
         return item.id === id && item.type === type;
     }) !== -1;
 }
 
-function toImplName(id){
+function toImplName(id: string): string {
     return id[0].toUpperCase() + id.substring(1);
 }
 
-function toAliasPath(impl){
+function toAliasPath(impl: ImplementationEntry): string {
     return path.normalize(impl.file).replace(/\.js$/i, '');
 }
 
-function toAliasId(impl){
+function toAliasId(impl: ImplementationBuildEntry): string {
     return 'mmirf/'+impl.type+'/'+impl.id;//FIXME formalize IDs for loading views in webpack (?)
 }
 
@@ -164,7 +168,7 @@ export = {
      *																																				or, if addModuleExport is a String, this String will be used.
      * @return {Array<ImplEntry>} the list of ImplEntry objects
      */
-    implFromDir: function(mode, options, appRootDir, implList){
+    implFromDir: function(mode: ImplementationType, options: AnyImplementationOptions, appRootDir: string, implList: ImplementationBuildEntry[]): ImplementationBuildEntry[] {
 
         var dir = options.path;
         if(!path.isAbsolute(dir)){
@@ -184,7 +188,7 @@ export = {
      * @param  {{Array<ImplEntry>}} [implList] OPTIONAL
      * @return {{Array<ImplEntry>}}
      */
-    implFromOptions: function(mode, options, appRootDir, implList){
+    implFromOptions: function(mode: ImplementationType, options: AnyImplementationOptions, appRootDir: string, implList: ImplementationBuildEntry[]): ImplementationBuildEntry[] {
 
         var list = implList || [];
         addFromOptions(options[mode + 's'], list, appRootDir, options);
@@ -200,9 +204,9 @@ export = {
      * @param  {{Array<ImplEntry>}} implList
      * @return {{Array<ImplEntry>}}
      */
-    applyDefaultOptions: function(options, implList){
+    applyDefaultOptions: function(options: AnyImplementationOptions, implList: ImplementationBuildEntry[] | ViewBuildEntry[]): ImplementationBuildEntry[] | ViewBuildEntry[] {
 
-        implList.forEach(function(impl){
+        implList.forEach(function(impl: ImplementationBuildEntry | ViewBuildEntry){
             [
                 {name: 'addModuleExport', defaultValue: false}
             ].forEach(function(fieldInfo){
@@ -225,7 +229,7 @@ export = {
      * @param  {ResourcesConfig} _resources the resources configuration
      * @param  {[type]} runtimeConfiguration the configuration.json representation
      */
-    addImplementationsToAppConfig: function(implList, appConfig, directories, _resources, _runtimeConfiguration){
+    addImplementationsToAppConfig: function(implList: ImplementationBuildEntry[], appConfig: BuildAppConfig | WebpackAppConfig, directories: DirectoriesInfo, _resources: ResourceConfig, _runtimeConfiguration: RuntimeConfiguration): void {
 
         if(!implList || implList.length < 1){
             return;

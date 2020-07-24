@@ -1,7 +1,7 @@
 
 import { MmirModule, NodeMmirModule } from 'mmir-lib';
 
-import * as path from 'path';
+import path from 'path';
 import mmirLib from 'mmir-lib';
 
 // log('########################## mmir-loader: set start module ', mmirLib.mmir.startModule);//, ', config-paths: ', mmirLib.config.paths);

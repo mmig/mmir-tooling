@@ -1,4 +1,5 @@
 
+import { ResourceConfig } from '../index.d';
 import _ from 'lodash';
 
 var mmirModuleBaseConfig = _.cloneDeep(require('mmir-lib/lib/modulesBaseConfig'));
@@ -51,13 +52,13 @@ var defaultResourcesConfig = {
     resourcesPaths: {}
 }
 
-function applyRemovePaths(paths, removePathsList){
+function applyRemovePaths(paths: {[id: string]: string}, removePathsList: string[]): void {
     removePathsList.forEach(function(entry){
         delete paths[entry];
     });
 }
 
-function applyCustomPaths(paths, customPaths){
+function applyCustomPaths(paths: {[id: string]: string}, customPaths: {[id: string]: string}): void {
     for(var n in customPaths){
         paths[n] = customPaths[n];
     }
@@ -76,7 +77,7 @@ function applyCustomPaths(paths, customPaths){
  * @param  {{[moduleId: string]: string}} [customPaths] mapping of additional/overriding module IDs to URI/paths
  * @return {ResourcesConfig} the resource config object
  */
-function createResourcesConfig(removePathsList?, customPaths?){
+function createResourcesConfig(removePathsList?: string[], customPaths?: {[id: string]: string}): ResourceConfig {
     var paths = _.cloneDeep(mmirModuleBaseConfig.paths);
 
     if(removePathsList){

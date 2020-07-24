@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import * as meow from 'meow';
-import * as path from 'path';
+import meow from 'meow';
+import path from 'path';
 
 import mmirInstall from '../utils/install-mmir-lib';
 
@@ -10,7 +10,7 @@ const appName = 'mmirinstall';
 
 export function main(){
 
-    var cli = meow.default(`
+    var cli = meow(`
         Usage
             ${appName} <target directory>
 
@@ -98,7 +98,7 @@ export function main(){
 
 }
 
-function handleError(err, cli){
+function handleError(err: Error, cli: meow.Options<meow.AnyFlags> & {input: string[], showHelp: ()=>void}){
     console.error(`
     An Error occurred for:
         ${appName} ${cli.input.join(' ')} -f ${cli.flags.force} -s ${cli.flags.src}

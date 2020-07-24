@@ -1,31 +1,32 @@
 
+import { ViewBuildEntry, ViewCompilerOptions } from '../index.d';
 
-import * as path from 'path';
-import * as fs from 'fs-extra';
+import path from 'path';
+import fs from 'fs-extra';
 
 import viewGen from '../view/view-gen';
 
 import checksumUtil from '../utils/checksum-util';
 
-import Promise from '../utils/promise';
+import promise from '../utils/promise';
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
-var warn = logUtils.warn;
+const log = logUtils.log;
+const warn = logUtils.warn;
 
-var getViewTargetPath = function(viewInfo){
+function getViewTargetPath(viewInfo: ViewBuildEntry): string {
     return path.join(viewInfo.targetDir, viewInfo.id + '.js');
 }
 
-var getViewChecksumPath = function(viewInfo){
+function getViewChecksumPath(viewInfo: ViewBuildEntry): string {
     return path.join(viewInfo.targetDir, viewInfo.id + checksumUtil.getFileExt());
 }
 
-var getChecksumContent = function(content, type){
+function getChecksumContent(content: string, type: string): string {
     return checksumUtil.createContent(content, type);
 }
 
-var checkUpToDate = function(viewInfo, jsonContent){
+function checkUpToDate(viewInfo: ViewBuildEntry, jsonContent: string): Promise<boolean> {
 
     return checksumUtil.upToDate(
         jsonContent,
@@ -36,13 +37,13 @@ var checkUpToDate = function(viewInfo, jsonContent){
 }
 
 
-var writeView = function(err, viewCode, _map, meta){
+async function writeView(err: Error | null, viewCode: string, _map: any, meta: any): Promise<Error | Error[] | any[]> {
 
     var v = meta && meta.info;
     if(err){
         var msg = 'ERROR compiling view '+(v? v.file : '')+': ';
         warn(msg, err);
-        return Promise.resolve(err.stack? err : new Error(msg+err));
+        return promise.resolve(err.stack? err : new Error(msg+err));
     }
 
     var viewPath =  getViewTargetPath(v);
@@ -65,16 +66,16 @@ var writeView = function(err, viewCode, _map, meta){
             return err.stack? err : new Error(msg+err);
         });
 
-        return Promise.all([p1, p2]);
+        return promise.all([p1, p2]);
     });
 
 };
 
-var prepareCompile = function(options){
+function prepareCompile(options: ViewCompilerOptions): Promise<void> {
     return fs.ensureDir(options.config.targetDir);
 }
 
-var compile = function(loadOptions){
+function compile(loadOptions: ViewCompilerOptions): Promise<Array<Error|Error[]> | any[]> {
 
     var tasks = [];
     loadOptions.mapping.forEach(v => {
@@ -82,12 +83,12 @@ var compile = function(loadOptions){
         v.targetDir = loadOptions.config.targetDir;
         v.force = typeof v.force === 'boolean'? v.force : loadOptions.config.force;
 
-        var t = fs.readFile(v.file, 'utf8').then(function(content){
+        var t = fs.readFile(v.file, 'utf8').then(async function(content){
 
-            var doCompile = function(){
-                return new Promise(function(resolve, reject){
+            function doCompile(){
+                return new promise<void|Error>(function(resolve, reject){
 
-                    viewGen.compile(content, v.file, loadOptions, function(err, viewCode, _map, meta){
+                    viewGen.compile(content, v.file, loadOptions, function(err: null | Error, viewCode: string, _map: any, meta: any){
 
                         if(err){
                             var msg = 'ERROR compiling view '+(v? v.file : '')+': ';
@@ -135,7 +136,7 @@ var compile = function(loadOptions){
         tasks.push(t);
     });
 
-    return Promise.all(tasks);
+    return promise.all(tasks);
 }
 
 export = {

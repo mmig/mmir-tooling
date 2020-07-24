@@ -1,20 +1,22 @@
 
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import { DirectoriesInfo, SettingsBuildEntry, SettingsBuildOptions } from '../index.d';
+
+import fs from 'fs-extra';
+import path from 'path';
 
 // import _ from '.lodash';
 
 import settingsUtil from '../tools/settings-utils';
 
-import Promise from '../utils/promise';
+import promise from '../utils/promise';
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
-var warn = logUtils.warn;
+const log = logUtils.log;
+const warn = logUtils.warn;
 
-function writeDirectoriesJson(directories, targetDir){
+async function writeDirectoriesJson(directories: DirectoriesInfo, targetDir: string): Promise<void | Error> {
 
-    return fs.ensureDir(targetDir).then(function(){
+    return fs.ensureDir(targetDir).then(async function(){
         return fs.writeFile(path.join(targetDir, 'directories.json'), JSON.stringify(directories), 'utf8').catch(function(err){
             var msg = 'ERROR writing directories.json to '+targetDir+': ';
             warn(msg, err);
@@ -23,12 +25,12 @@ function writeDirectoriesJson(directories, targetDir){
     });
 }
 
-function getSettingTargetPath(setting, targetDir){
+function getSettingTargetPath(setting: SettingsBuildEntry, targetDir: string): string {
     if(setting.type === 'configuration'){
         return path.join(targetDir, 'configuration.json');
     }
 
-    var fileName;
+    let fileName: string;
     switch(setting.type){
         case 'dictionary':
             fileName = 'dictionary.json';
@@ -48,9 +50,9 @@ function getSettingTargetPath(setting, targetDir){
     }
 }
 
-function prepareWriteSettings(settings, settingsOptions){
+function prepareWriteSettings(settings: SettingsBuildEntry[], settingsOptions: SettingsBuildOptions): Promise<void|Error> {
     settingsUtil.applyDefaultOptions(settingsOptions, settings);
-    return Promise.resolve();
+    return promise.resolve();
 }
 
 /**
@@ -61,7 +63,7 @@ function prepareWriteSettings(settings, settingsOptions){
  * @param  {Array<SettingsEntry>} settings the list of settings
  * @param  {SettingsOptions} settingsOptions the settings options
  */
-function writeSettings(settings, settingsOptions){
+function writeSettings(settings: SettingsBuildEntry[], settingsOptions: SettingsBuildOptions): Promise<Array<Error|Error[]> | any[]> {
 
     // include all settings that
     // (1) do not match the exclude-type pattern
@@ -87,11 +89,11 @@ function writeSettings(settings, settingsOptions){
             return;
         }
 
-        var t = fs.pathExists(targetPath).then(function(exists){
+        var t = fs.pathExists(targetPath).then(async function(exists){
 
             if(!exists || setting.force){
 
-                return fs.ensureDir(path.dirname(targetPath)).then(function(){
+                return fs.ensureDir(path.dirname(targetPath)).then(async function(){
                     if(setting.include === 'file' && !setting.value){
 
                         return fs.copyFile(setting.file, targetPath).catch(function(err){
@@ -118,7 +120,7 @@ function writeSettings(settings, settingsOptions){
         tasks.push(t);
     });
 
-    return Promise.all(tasks);
+    return promise.all(tasks);
 }
 
 export = {

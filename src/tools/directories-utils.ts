@@ -1,5 +1,7 @@
 
-var createDirectoriesJson = function(){
+import { DirectoriesInfo } from '../index.d';
+
+function createDirectoriesJson(): DirectoriesInfo {
     return {
         "/controllers": [],//["mmirf/controller/application.js", "mmirf/controller/calendar.js"]
         "/views": [],//["application", "calendar", "layouts"]
@@ -21,39 +23,39 @@ var createDirectoriesJson = function(){
     }
 };
 
-var cpath = "/controllers";
-var vpath = "/views";
-var mpath = "/models";
-// var confpath = "/config";
-var lpath = "/config/languages";
-var spath = "/config/states";
-var hpath = "/helpers";
-var gpath = "/gen";
-var gensubgrammars = "/grammar";
-var gengrammars = "/gen" + gensubgrammars;
-var gensubviews = "/view";
-var genviews = "/gen" + gensubviews;
-var gensubstates = "/state";
-var genstates = "/gen" + gensubstates;
+const cpath = "/controllers";
+const vpath = "/views";
+const mpath = "/models";
+// const confpath = "/config";
+const lpath = "/config/languages";
+const spath = "/config/states";
+const hpath = "/helpers";
+const gpath = "/gen";
+const gensubgrammars = "/grammar";
+const gengrammars = "/gen" + gensubgrammars;
+const gensubviews = "/view";
+const genviews = "/gen" + gensubviews;
+const gensubstates = "/state";
+const genstates = "/gen" + gensubstates;
 
-var reViewInfo = /mmirf\/view\/([^/]+)\/([^/]+)/;
-// var reCtrlInfo = /mmirf\/controller\/([^/]+)/;
-var reGrammarInfo = /mmirf\/grammar\/([^/]+)/;
-var reJsonGrammarInfo = /mmirf\/settings\/grammar\/([^/]+)/;
-var reDictionaryInfo = /mmirf\/settings\/dictionary\/([^/]+)/;
-var reSpeechConfigInfo = /mmirf\/settings\/speech\/([^/]+)/;
-var reSateModelInfo = /mmirf\/state\/([^/]+)/;
+const reViewInfo = /mmirf\/view\/([^/]+)\/([^/]+)/;
+// const reCtrlInfo = /mmirf\/controller\/([^/]+)/;
+const reGrammarInfo = /mmirf\/grammar\/([^/]+)/;
+const reJsonGrammarInfo = /mmirf\/settings\/grammar\/([^/]+)/;
+const reDictionaryInfo = /mmirf\/settings\/dictionary\/([^/]+)/;
+const reSpeechConfigInfo = /mmirf\/settings\/speech\/([^/]+)/;
+const reSateModelInfo = /mmirf\/state\/([^/]+)/;
 
-var entryMode = 'id';// 'id' | 'file';
+let entryMode: 'id' | 'file' = 'id';// 'id' | 'file';
 
-function _getEntry(entry){
+function _getEntry(entry: string): string {
     if(entryMode === 'file'){
         return entry.replace(/^.*\//, '');
     }
     return entry;
 }
 
-function _addPath(json, path, entry){
+function _addPath(json: DirectoriesInfo, path: string, entry: string): void {
     entry = _getEntry(entry);
     if(!json[path]){
         json[path] = [entry];
@@ -62,16 +64,16 @@ function _addPath(json, path, entry){
     }
 }
 
-function addCtrl(json, reqId){
+function addCtrl(json: DirectoriesInfo, reqId: string): void {
     _addPath(json, cpath, reqId + '.js');
     // log('added '+reqId+' to ['+cpath+']: ', json[cpath], ', existing: ', json[cpath].find(function(item){return item === reqId+'.js'}), ' in -> ', json);
 }
 
-function addHelper(json, reqId){
+function addHelper(json: DirectoriesInfo, reqId: string): void {
     _addPath(json, hpath, reqId + '.js');
 }
 
-function addModel(json, reqId){
+function addModel(json: DirectoriesInfo, reqId: string): void {
     _addPath(json, mpath, reqId + '.js');
 }
 
@@ -79,9 +81,9 @@ function addModel(json, reqId){
  *
  * @param {String} reqId  the module ID for require'ing the view
  */
-function addView(json, reqId){
-    var m = reViewInfo.exec(reqId);
-    var ctrlName = m[1];
+function addView(json: DirectoriesInfo, reqId: string): void {
+    const m = reViewInfo.exec(reqId);
+    const ctrlName = m[1];
 
     _addPath(json, gpath, gensubviews);
     _addPath(json, genviews, ctrlName);
@@ -93,17 +95,17 @@ function addView(json, reqId){
     // _addPath(json, vpath + '/'  + ctrlName, m[2] + '.ehtml');
 }
 
-function addViewTemplate(json, reqId){
-    var m = reViewInfo.exec(reqId);
-    var ctrlName = m[1];
+function addViewTemplate(json: DirectoriesInfo, reqId: string): void {
+    const m = reViewInfo.exec(reqId);
+    const ctrlName = m[1];
 
     _addPath(json, vpath, ctrlName);
     _addPath(json, vpath + '/'  + ctrlName, m[2] + '.ehtml');
 }
 
-function addGrammar(json, reqId){
-    var m = reGrammarInfo.exec(reqId);
-    var lang = m[1];
+function addGrammar(json: DirectoriesInfo, reqId: string): void {
+    const m = reGrammarInfo.exec(reqId);
+    const lang = m[1];
     _addPath(json, gpath, gensubgrammars);
     _addPath(json, gengrammars, reqId + '.js');
 
@@ -115,40 +117,40 @@ function addGrammar(json, reqId){
     // _addPath(json, lpath + '/'  + lang, 'grammar.json');
 }
 
-function addJsonGrammar(json, reqId){
-    var m = reJsonGrammarInfo.exec(reqId);
-    var lang = m[1];
+function addJsonGrammar(json: DirectoriesInfo, reqId: string): void {
+    const m = reJsonGrammarInfo.exec(reqId);
+    const lang = m[1];
 
     _addPath(json, lpath, lang);
     _addPath(json, lpath + '/'  + lang, 'grammar.json');
 }
 
-function addDictionary(json, reqId){
-    var m = reDictionaryInfo.exec(reqId);
-    var lang = m[1];
+function addDictionary(json: DirectoriesInfo, reqId: string): void {
+    const m = reDictionaryInfo.exec(reqId);
+    const lang = m[1];
     _addPath(json, lpath, lang);
     _addPath(json, lpath + '/'  + lang, 'dictionary.json');
 }
 
-function addSpeechConfig(json, reqId){
-    var m = reSpeechConfigInfo.exec(reqId);
-    var lang = m[1];
+function addSpeechConfig(json: DirectoriesInfo, reqId: string): void {
+    const m = reSpeechConfigInfo.exec(reqId);
+    const lang = m[1];
     _addPath(json, lpath, lang);
     _addPath(json, lpath + '/'  + lang, 'speech.json');
 }
 
-function addStateModel(json, reqId){
+function addStateModel(json: DirectoriesInfo, reqId: string): void {
     _addPath(json, gpath, gensubstates);
     _addPath(json, genstates, reqId + '.js');
 }
 
-function addStateModelXml(json, reqId){
-    var m = reSateModelInfo.exec(reqId);
-    var type = m[1];
+function addStateModelXml(json: DirectoriesInfo, reqId: string): void {
+    const m = reSateModelInfo.exec(reqId);
+    const type = m[1];
     _addPath(json, spath, type + '.xml');
 }
 
-function getLanguages(json){
+function getLanguages(json: DirectoriesInfo): string[] {
     return json[lpath] || [];
 }
 
@@ -166,7 +168,7 @@ export = {
     addStateModelXml: addStateModelXml,
     createDirectoriesJson: createDirectoriesJson,
     getLanguages: getLanguages,
-    setMode: function(mode){
+    setMode: function(mode: 'id' | 'file'): void {
         entryMode = mode;
     }
     // reset: function(){

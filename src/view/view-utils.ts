@@ -1,5 +1,9 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
+
+import { ViewBuildOptions, ViewEntry, ImplementationEntry , BuildAppConfig, ImplementationBuildEntry , ResourceConfig , RuntimeConfiguration , DirectoriesInfo , VirtualImplementationEntry , ViewBuildEntry } from '../index.d';
+import { WebpackAppConfig } from '../index-webpack.d';
+
+import path from 'path';
+import fs from 'fs-extra';
 import fileUtils from '../utils/filepath-utils';
 
 import appConfigUtils from '../utils/module-config-init';
@@ -8,10 +12,13 @@ import directoriesUtil from '../tools/directories-utils';
 import optionUtils from '../tools/option-utils';
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
-var warn = logUtils.warn;
+import { isWebpackConfig } from '../tools/type-utils';
 
-var VirtualModulePlugin;
+type ViewDirInfo = {dir: string, ctrlName: string, isLayout: boolean};
+
+const log = logUtils.log;
+const warn = logUtils.warn;
+var VirtualModulePlugin: any;
 function initVirtualModulePlugin(){
     if(!VirtualModulePlugin){
         try{
@@ -23,15 +30,15 @@ function initVirtualModulePlugin(){
     return !!VirtualModulePlugin;
 }
 
-var isPartialView = function(name){
+function isPartialView(name: string): boolean {
     return name.charAt(0) == '~';
 };
 var regExprFileExt = /\.ehtml$/i;
 
-function readDir(dir, list, options?){
+function readDir(dir: string, list: ViewEntry[], options?: ViewBuildOptions): void {
 
-    var files = fs.readdirSync(dir);
-    var dirs = [];
+    const files = fs.readdirSync(dir);
+    const dirs: ViewDirInfo[] = [];
     // log('read dir "'+dir+'" -> ', files);
 
     files.forEach(function(p){
@@ -57,7 +64,7 @@ function readDir(dir, list, options?){
     }
 }
 
-function readSubDir(dirs, list, options?){
+function readSubDir(dirs: ViewDirInfo, list: ViewEntry[], options?: ViewBuildOptions): void {
 
     var dir = dirs.dir;
     var files = fs.readdirSync(dir);
@@ -74,7 +81,7 @@ function readSubDir(dirs, list, options?){
             var isLayout = dirs.isLayout;
 
             var isPartial = false;
-            var ctrlName, viewName;
+            let ctrlName: string, viewName: string;
             if(isLayout && fileName){
                 ctrlName = fileName[0].toUpperCase() + fileName.substring(1);
                 viewName = ctrlName;
@@ -108,21 +115,21 @@ function readSubDir(dirs, list, options?){
     // log('results for dir "'+dir+'" -> ', ids, views);
 }
 
-function toAliasPath(view){
+function toAliasPath(view: ViewEntry): string {
     return path.normalize(view.file);//.replace(/\.ehtml$/i, '')
 }
 
-function toAliasId(view){
+function toAliasId(view: ViewEntry): string {
     return 'mmirf/view/' + view.id;//FIXME formalize IDs for loading views in webpack (?)
 }
 
-function containsCtrl(ctrlName, ctrlList){
+function containsCtrl(ctrlName: string, ctrlList: Array<ImplementationBuildEntry | VirtualImplementationEntry>): boolean {
     return ctrlList.findIndex(function(c){
-        return c.name === ctrlName;
+        return (c as ImplementationEntry).name === ctrlName;
     }) !== -1;
 }
 
-function addCtrlStub(view, ctrlList, ctrlMap){
+function addCtrlStub(view: ViewEntry, ctrlList: Array<ImplementationBuildEntry | VirtualImplementationEntry>, ctrlMap: Map<string, ImplementationBuildEntry | VirtualImplementationEntry>): void {
 
     if(view.isLayout){
         return;
@@ -145,7 +152,6 @@ function addCtrlStub(view, ctrlList, ctrlMap){
         ctrlMap.set(view.ctrlName, ctrl);
     }
 }
-
 
 export = {
 
@@ -178,7 +184,7 @@ export = {
      * 										isPartial: Boolean
      * 									}
      */
-    viewTemplatesFromDir: function(dir, appRootDir, options?){
+    viewTemplatesFromDir: function(dir: string, appRootDir: string, options?: ViewBuildOptions): ViewBuildEntry[] {
 
         if(!path.isAbsolute(dir)){
             dir = path.resolve(appRootDir, dir);
@@ -197,7 +203,7 @@ export = {
      * @param  {{Array<ViewEntry>}} viewList
      * @return {{Array<ViewEntry>}}
      */
-    applyDefaultOptions: function(options, viewList){
+    applyDefaultOptions: function(options: ViewBuildOptions, viewList: ViewEntry[]): ViewEntry[] {
 
         //TODO impl. if/when addFromOpitions is implemented...
         viewList.forEach(function(v){
@@ -227,7 +233,7 @@ export = {
      * @param  {ResourcesConfig} resources the resources configuration
      * @param  {[type]} runtimeConfiguration the configuration.json representation
      */
-    addViewsToAppConfig: function(views, ctrls, appConfig, directories, resources, _runtimeConfiguration){
+    addViewsToAppConfig: function(views: ViewEntry[], ctrls: ImplementationBuildEntry[], appConfig: BuildAppConfig | WebpackAppConfig, directories: DirectoriesInfo, resources: ResourceConfig, _runtimeConfiguration: RuntimeConfiguration): void {
 
         if(!views || views.length < 1){
             return;
@@ -238,21 +244,27 @@ export = {
         views.forEach(function(v){
 
             var aliasId = toAliasId(v);
-            appConfigUtils.addIncludeModule(appConfig, aliasId, toAliasPath(v));
+            if(isWebpackConfig(appConfig)){
+                appConfigUtils.addIncludeModule(appConfig, aliasId, toAliasPath(v));
+            }
             directoriesUtil.addView(directories, aliasId);
-            if(appConfig.includeViewTemplates){
+            if((appConfig as BuildAppConfig).includeViewTemplates){
                 directoriesUtil.addViewTemplate(directories, aliasId);
             }
 
             addCtrlStub(v, ctrls, stubCtrlMap);
         });
 
+        //FIXME set simpleViewEngine TODO support setting engine via appConfig
+        resources.paths['mmirf/simpleViewEngine'] = 'env/view/simpleViewEngine';
+
+        if(!isWebpackConfig(appConfig)){
+            return;
+        }
+
         // include dependencies for loading & rendering views:
         appConfig.includeModules.push('mmirf/storageUtils', 'mmirf/renderUtils');
         appConfig.includeModules.push('mmirf/yield', 'mmirf/layout', 'mmirf/view', 'mmirf/partial');//TODO only include types that were actually parsed
-
-        //FIXME set simpleViewEngine TODO support setting engine via appConfig
-        resources.paths['mmirf/simpleViewEngine'] = 'env/view/simpleViewEngine';
 
         if(!appConfig.paths){
             appConfig.paths = {};

@@ -1,6 +1,10 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-var _ = require ('lodash');
+
+import { GrammarEntry , GrammarBuildEntry , GrammarOptions , BuildAppConfig , DirectoriesInfo , ResourceConfig , RuntimeConfiguration , AsyncGramarExecEntry } from '../index.d';
+import { WebpackAppConfig } from '../index-webpack.d';
+
+import path from 'path';
+import fs from 'fs-extra';
+import _ from 'lodash';
 import fileUtils from '../utils/filepath-utils';
 
 import appConfigUtils from '../utils/module-config-init';
@@ -10,26 +14,26 @@ import settingsUtil from '../tools/settings-utils';
 import optionUtils from '../tools/option-utils';
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
-var warn = logUtils.warn;
+const log = logUtils.log;
+const warn = logUtils.warn;
 
-function readDir(dir, list, options){
+function readDir(dir: string, list: GrammarBuildEntry[], options: GrammarOptions): void {
 
-    var files = fs.readdirSync(dir);
-    var dirs = [];
+    const files = fs.readdirSync(dir);
+    const dirs = [];
     // log('read dir "'+dir+'" -> ', files);
 
     files.forEach(function(p){
-        var absPath = path.join(dir, p);
+        const absPath = path.join(dir, p);
         if(fileUtils.isDirectory(absPath)){
             dirs.push(absPath);
             return false;
         } else if(/grammar\.js(on)?$/i.test(p)){
-            var normalized = fileUtils.normalizePath(absPath);
-            var m = /\/([^/]+)\/grammar\.js(on)?$/i.exec(normalized);
-            var id = m[1];
+            const normalized = fileUtils.normalizePath(absPath);
+            const m = /\/([^/]+)\/grammar\.js(on)?$/i.exec(normalized);
+            const id = m[1];
 
-            var opt = options && options[id];
+            const opt = options && options[id];
             if(opt && (opt.exclude || opt.file)){
                 //-> ignore/exclude this grammar!
                 log('grammar-utils.addFromDirectory(): excluding grammar '+id+' at "'+normalized+'"!');//DEBUG
@@ -60,9 +64,9 @@ function readDir(dir, list, options){
     }
 }
 
-function addFromOptions(grammars, list, appRootDir){
+function addFromOptions(grammars: {[grammarId: string]: GrammarEntry}, list: GrammarBuildEntry[], appRootDir: string): void {
 
-    var g, entry;
+    var g: GrammarEntry, entry: GrammarBuildEntry;
     for(var id in grammars){
 
         g = grammars[id];
@@ -95,15 +99,23 @@ function addFromOptions(grammars, list, appRootDir){
     }
 }
 
-function parseRuntimeConfigurationForOptions(options, config){
+function isAsyncGramarExecEntry(g: string | AsyncGramarExecEntry): g is AsyncGramarExecEntry {
+    return !!(g && (g as AsyncGramarExecEntry).id);
+}
+
+function parseRuntimeConfigurationForOptions(options: GrammarOptions | false, config: RuntimeConfiguration): GrammarOptions | null {
+
+    if(!options){
+        return null;
+    }
 
     // console.log('START parseRuntimeConfigurationForOptions: ', config , '\n -> \n', options);
 
     if(config){
 
-        var val, gopt;
+        let val: true | Array<string | AsyncGramarExecEntry>, gopt: GrammarEntry;
 
-        var CONFIG_ASYNC_EXEC_GRAMMAR = settingsUtil.configEntryAsyncExecGrammar;
+        const CONFIG_ASYNC_EXEC_GRAMMAR = settingsUtil.configEntryAsyncExecGrammar;
         if(val = config[CONFIG_ASYNC_EXEC_GRAMMAR]){
 
             if(val === true){
@@ -130,13 +142,13 @@ function parseRuntimeConfigurationForOptions(options, config){
 
                     val.forEach(function(grammarEntry){
 
-                        var grammarId = typeof grammarEntry === 'string'? grammarEntry : grammarEntry.id;
+                        const grammarId = typeof grammarEntry === 'string'? grammarEntry : grammarEntry.id;
                         if(isApplyRuntimeConfigOption(gopt[grammarId], grammarId, true, 'encountered list entry "'+grammarId+'" for runtime setting "'+CONFIG_ASYNC_EXEC_GRAMMAR+'"')){
                             if(gopt[grammarId] === true || !gopt[grammarId]){
                                 gopt[grammarId] = {};
                             }
                             gopt[grammarId].async = true;
-                            if(grammarEntry && grammarEntry.phrase){
+                            if(isAsyncGramarExecEntry(grammarEntry) && grammarEntry.phrase){
                                 gopt[grammarId].initPhrase = grammarEntry.phrase;
                             }
                         }
@@ -149,7 +161,7 @@ function parseRuntimeConfigurationForOptions(options, config){
             }
         }
 
-        var CONFIG_IGNORE_GRAMMAR = settingsUtil.configEntryIgnoreGrammar;
+        const CONFIG_IGNORE_GRAMMAR = settingsUtil.configEntryIgnoreGrammar;
         if(val = config[CONFIG_IGNORE_GRAMMAR]){
 
             if(val === true){
@@ -174,8 +186,9 @@ function parseRuntimeConfigurationForOptions(options, config){
                     }
                     gopt = options.grammars;
 
-                    val.forEach(function(grammarId){
+                    val.forEach(function(grammarEntry){
 
+                        const grammarId = typeof grammarEntry === 'string'? grammarEntry : grammarEntry.id;
                         if(isApplyRuntimeConfigOption(gopt[grammarId], grammarId, false, 'encountered list entry "'+grammarId+'" for runtime setting "'+CONFIG_IGNORE_GRAMMAR+'"')){
                             if(gopt[grammarId] === true || !gopt[grammarId]){
                                 gopt[grammarId] = {};
@@ -194,7 +207,7 @@ function parseRuntimeConfigurationForOptions(options, config){
             }
         }
 
-        var CONFIG_GRAMMAR_DISABLE_STRICT_MODE = settingsUtil.configEntryDisableGrammarStrictMode;
+        const CONFIG_GRAMMAR_DISABLE_STRICT_MODE = settingsUtil.configEntryDisableGrammarStrictMode;
         if(val = config[CONFIG_GRAMMAR_DISABLE_STRICT_MODE]){
 
             if(val === true){
@@ -226,9 +239,9 @@ function parseRuntimeConfigurationForOptions(options, config){
  * @param  {string} descRuntimeSetting description for the runtime setting, for print the warning-message in case the runtime setting cannot be applied
  * @return {Boolean} whether or not the runtime setting can/should be applied
  */
-function isApplyRuntimeConfigOption(options, optionId, invalidIgnoreValue, descRuntimeSetting){
+function isApplyRuntimeConfigOption(options: GrammarOptions, optionId: string | null, invalidIgnoreValue: boolean | null, descRuntimeSetting: string): boolean {
 
-    var errDetails;
+    let errDetails: string;
     if(options === false){
         errDetails = ' is set to false';
     } else {
@@ -247,18 +260,18 @@ function isApplyRuntimeConfigOption(options, optionId, invalidIgnoreValue, descR
     return false;
 }
 
-function contains(grammarList, id){
+function contains(grammarList: GrammarEntry[], id: string): boolean {
     return grammarList.findIndex(function(item){
         return item.id === id;
     }) !== -1;
 }
 
 
-function toAliasPath(grammar){
+function toAliasPath(grammar: GrammarEntry): string {
     return path.normalize(grammar.file);//DISABLED: do keep file-extension to ensure that module is found regardless of webpack resolve-configuration//.replace(/\.json$/i, '');
 }
 
-function toAliasId(grammar){
+function toAliasId(grammar: GrammarBuildEntry): string {
     return 'mmirf/grammar/'+grammar.id;//FIXME formalize IDs for loading views in webpack (?)
 }
 
@@ -303,7 +316,7 @@ export = {
      * 																												in a Worker (during build)
      * @return {Array<GrammarEntry>} the list of GrammarEntry objects
      */
-    jsonGrammarsFromDir: function(options, appRootDir, grammarList){
+    jsonGrammarsFromDir: function(options: GrammarOptions, appRootDir: string, grammarList: GrammarEntry[]): GrammarBuildEntry[] {
 
         var dir = options.path;
         if(!path.isAbsolute(dir)){
@@ -322,7 +335,7 @@ export = {
      * @param  {{Array<GrammarEntry>}} [grammarList] OPTIONAL
      * @return {{Array<GrammarEntry>}}
      */
-    jsonGrammarsFromOptions: function(options, appRootDir, grammarList){
+    jsonGrammarsFromOptions: function(options: GrammarOptions, appRootDir: string, grammarList: GrammarEntry[]): GrammarBuildEntry[] {
 
         var grammars = options.grammars;
 
@@ -346,7 +359,7 @@ export = {
      * @param  {{Array<GrammarEntry>}} grammarList
      * @return {{Array<GrammarEntry>}}
      */
-    applyDefaultOptions: function(options, grammarList){
+    applyDefaultOptions: function(options: GrammarOptions, grammarList: GrammarEntry[]): GrammarBuildEntry[] {
 
         grammarList.forEach(function(g){
             [
@@ -381,7 +394,7 @@ export = {
      * @param  {ResourcesConfig} _resources the resources configuration
      * @param  {[type]} runtimeConfiguration the configuration.json representation
      */
-    addGrammarsToAppConfig: function(grammars, appConfig, directories, _resources, runtimeConfiguration){
+    addGrammarsToAppConfig: function(grammars: GrammarBuildEntry[], appConfig: BuildAppConfig | WebpackAppConfig, directories: DirectoriesInfo, _resources: ResourceConfig, runtimeConfiguration: RuntimeConfiguration): void {
 
         if(!grammars || grammars.length < 1){
             return;

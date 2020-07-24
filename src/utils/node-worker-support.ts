@@ -1,7 +1,7 @@
 
 import logUtils from '../utils/log-utils';
-// var log = logUtils.log;
-var warn = logUtils.warn;
+// const log = logUtils.log;
+const warn = logUtils.warn;
 
 //////// async / threaded grammar compiler support: ////////////////
 var asyncSupport = false;
@@ -10,7 +10,7 @@ try {
     // log('#################### start detecting async grammar support...')
     var Threads = require('webworker-threads');
     var thread = Threads.create();
-    thread.eval(function testAsync(){return true;}).eval('testAsync()', function(_err, _result){
+    thread.eval(function testAsync(){return true;}).eval('testAsync()', function(_err: Error, _result: any){
         // log('#################### detected async grammar support -> ', _result, ', error? -> ', _err);
         thread.destroy();
     });

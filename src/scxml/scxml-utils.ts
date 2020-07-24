@@ -1,6 +1,9 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-var _ = require ('lodash');
+
+import { StateOptions , StateModelBuildEntry , StateModelsBuildOption , StateModelMode , StateModelEntry , StateBuildOptions , BuildAppConfig , DirectoriesInfo , ResourceConfig , RuntimeConfiguration } from '../index.d';
+
+import path from 'path';
+import fs from 'fs-extra';
+import _ from 'lodash';
 import fileUtils from '../utils/filepath-utils';
 
 import appConfigUtils from '../utils/module-config-init';
@@ -8,18 +11,19 @@ import directoriesUtil from '../tools/directories-utils';
 import optionUtils from '../tools/option-utils';
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
-var warn = logUtils.warn;
+import { WebpackAppConfig } from '../index-webpack.d';
+const log = logUtils.log;
+const warn = logUtils.warn;
 
-var DEFAULT_MODE = 'extended';
+const DEFAULT_MODE = 'extended';
 
-function readDir(dir, list, options){
+function readDir(dir: string, list: StateModelBuildEntry[], options: StateModelsBuildOption): void {
 
-    var files = fs.readdirSync(dir);
-    var dirs = [];
+    const files = fs.readdirSync(dir);
+    const dirs = [];
 
     //sort file list to prioritize 'dialog.xml' and 'input.xml' (i.e. put at the beginning of the list)
-    var re = /^(dialog|input)\.xml$/i
+    const re = /^(dialog|input)\.xml$/i
     files.sort(function(f1, f2){
         if(f1 === f2) return 0;
         if(re.test(f1)) return -1;
@@ -30,15 +34,15 @@ function readDir(dir, list, options){
     // log('read dir "'+dir+'" -> ', files);//DEBU
 
     files.forEach(function(p){
-        var absPath = path.join(dir, p);
+        const absPath = path.join(dir, p);
         if(fileUtils.isDirectory(absPath)){
             dirs.push(absPath);
             return false;
         } else if(/\.xml$/i.test(p)) {
 
-            var normalized = fileUtils.normalizePath(absPath);
+            const normalized = fileUtils.normalizePath(absPath);
 
-            var defModel, id, modId;
+            let defModel: RegExpExecArray, id: string, modId: string;
             if(/^(dialog|input)(DescriptionSCXML)?\.xml$/i.test(p)){// BACKWARDS COMPATIBILITY: do also accept old/deprecated file names ...DescriptionSCXML.xml
                 // -> state models for input- or dialog-manager
                 defModel = /^(dialog|input)/i.exec(p);
@@ -46,10 +50,11 @@ function readDir(dir, list, options){
                 modId = id === 'dialog'? 'mmirf/dialogManager' : 'mmirf/inputManager';
             } else {
                 // -> custom state models
+                const opt = options && options[id];
                 id = opt && opt.id? opt.id : path.basename(p, path.extname(p));
             }
 
-            var opt = options && options[id];
+            const opt: StateModelBuildEntry = options && options[id];
             if(opt && (opt.exclude || opt.file)){
                 //-> ignore/exclude this scxml!
                 //  (if was not exlcuded, but file was specified -> will be added later in addFromOptions(..))
@@ -100,9 +105,9 @@ function readDir(dir, list, options){
     }
 }
 
-function addFromOptions(stateModels, list, appRootDir){
+function addFromOptions(stateModels: StateModelsBuildOption, list: StateModelBuildEntry[], appRootDir: string): void {
 
-    var s, entry, moduleId;
+    let s: StateModelBuildEntry, entry: StateModelBuildEntry, moduleId: string;
     for(var id in stateModels){
 
         s = stateModels[id];
@@ -146,22 +151,28 @@ function addFromOptions(stateModels, list, appRootDir){
     }
 }
 
-
-function addDefaults(kind, list, _appRootDir){
+/**
+ * add (minimal) default state models for 'dialog' and/or 'input'
+ *
+ * @param kind the mode for the create default models, specified and other than 'minimal', a warning will be printed
+ * @param list INOUT parameter: the list of state model entries, to which the created default models will be added
+ * @param _appRootDir this path to app's root directory
+ */
+function addDefaults(kind: StateModelMode | 'minimal' | '', list: StateModelBuildEntry[], _appRootDir: string): void {
 
     //TODO support other types/kinds than "minimal" engines
     if(kind && kind !== 'minimal'){
         warn('WARN scxml-utils: only support "minimal" for default input- and dialog-engine!');
     }
 
-    var inputEngine = {
+    const inputEngine: StateModelBuildEntry = {
         id: 'input',
         moduleId: 'mmirf/inputManager',
         mode: 'extended',
         file: fileUtils.normalizePath(path.resolve(__dirname, '..', 'defaultValues/inputEngine.scxml'))
     };
 
-    var dialogEngine = {
+    const dialogEngine: StateModelBuildEntry = {
         id: 'dialog',
         moduleId: 'mmirf/dialogManager',
         mode: 'extended',
@@ -171,17 +182,17 @@ function addDefaults(kind, list, _appRootDir){
     list.push(inputEngine, dialogEngine);
 }
 
-function contains(list, id, moduleId){
+function contains(list: StateModelBuildEntry[], id: string, moduleId: string){
     return list.findIndex(function(item){
         return item.id === id || item.moduleId === moduleId;
     }) !== -1;
 }
 
-function toAliasPath(stateModel){
+function toAliasPath(stateModel: StateModelEntry): string {
     return path.normalize(stateModel.file);
 }
 
-function toAliasId(stateModel){
+function toAliasId(stateModel: StateModelBuildEntry): string {
     return 'mmirf/state/'+stateModel.id;
 }
 
@@ -207,7 +218,7 @@ export = {
      * 										ScxmlEntry.mode {"extended" | "simple"}: run SCXML modle in "simple" or "extended" mode, DEFAULT: "extended"
      * @return {Array<ScxmlEntry>} the list of ScxmlEntry objects
      */
-    scxmlFromDir: function(options, appRootDir, stateModels){
+    scxmlFromDir: function(options: StateOptions, appRootDir: string, stateModels: StateModelEntry[]): StateModelBuildEntry[] {
 
         var dir = options.path;
         if(!path.isAbsolute(dir)){
@@ -220,7 +231,7 @@ export = {
         return list;
     },
 
-    scxmlFromOptions: function(options, appRootDir, stateModels){
+    scxmlFromOptions: function(options: StateOptions, appRootDir: string, stateModels: StateModelEntry[]): StateModelBuildEntry[] {
 
         var models = options.models;
 
@@ -230,9 +241,9 @@ export = {
         return list;
     },
 
-    scxmlDefaults: function(options, appRootDir, stateModels){
+    scxmlDefaults: function(options: StateBuildOptions, appRootDir: string, stateModels: StateModelEntry[]): StateModelBuildEntry[] {
 
-        var kind = options && options.type;
+        const kind = options && options.defaultType;
 
         var list = stateModels || [];
         addDefaults(kind, list, appRootDir);
@@ -248,7 +259,7 @@ export = {
      * @param  {{Array<ScxmlEntry>}} stateModels
      * @return {{Array<ScxmlEntry>}}
      */
-    applyDefaultOptions: function(options, stateModels){
+    applyDefaultOptions: function(options: StateOptions, stateModels: StateModelEntry[]): StateModelBuildEntry[] {
 
         stateModels.forEach(function(st){
             [
@@ -276,7 +287,7 @@ export = {
      * @param  {ResourcesConfig} resources the resources configuration
      * @param  {[type]} _runtimeConfiguration the configuration.json representation
      */
-    addStatesToAppConfig: function(stateModels, appConfig, directories, resources, _runtimeConfiguration){
+    addStatesToAppConfig: function(stateModels: StateModelBuildEntry[], appConfig: WebpackAppConfig, directories: DirectoriesInfo, resources: ResourceConfig, _runtimeConfiguration: RuntimeConfiguration): void {
 
         if(!stateModels || stateModels.length < 1){
             return;
@@ -308,7 +319,7 @@ export = {
             var aliasId = toAliasId(s);
             appConfigUtils.addIncludeModule(appConfig, aliasId, toAliasPath(s));
             directoriesUtil.addStateModel(directories, aliasId);
-            if(appConfig.includeStateModelXmls){
+            if((appConfig as BuildAppConfig).includeStateModelXmls){
                 directoriesUtil.addStateModelXml(directories, aliasId);
             }
 

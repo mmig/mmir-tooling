@@ -2,7 +2,7 @@
 import meow from 'meow';
 import _ from 'lodash';
 
-function init(opt?, helpText?: string){
+function init(opt?: meow.Options<meow.AnyFlags>, helpText?: string){
 
     const help = helpText? helpText : `
   Usage

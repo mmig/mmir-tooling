@@ -1,13 +1,21 @@
 
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import fs from 'fs-extra';
+import path from 'path';
 import fileUtils from '../utils/filepath-utils';
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
-// var warn = logUtils.warn;
+import { AppConfig , ResourcesOptions } from '../index.d';
+const log = logUtils.log;
+// const warn = logUtils.warn;
 
-function parseRootDir(dir, parseOptions, options){
+/**
+ *
+ * @param  dir
+ * @param  parseOptions
+ * @param  [options] in/out parameter (will be created, if omitted)
+ * @return return (modified) options argument or a newly created AppConfig
+ */
+function parseRootDir(dir: string, parseOptions: ResourcesOptions, options: AppConfig): AppConfig {
 
     options = options || {};
     var files = fs.readdirSync(dir);
@@ -19,7 +27,7 @@ function parseRootDir(dir, parseOptions, options){
         if(fileUtils.isDirectory(absPath)){
 
             var dirName = path.basename(absPath).toLowerCase();
-            if(options[dirName] === false || (parseOptions.exclude && parseOptions.exclude.find(function(item){ return item === dirName;}))){
+            if(parseOptions[dirName] === false || (parseOptions.exclude && parseOptions.exclude.find(function(item){ return item === dirName;}))){
                 log('parsing resources: excluding resources for ', dirName, parseOptions.exclude);
                 return;////////// EARLY EXIT ////////////////
             }
@@ -45,7 +53,14 @@ function parseRootDir(dir, parseOptions, options){
     return options;
 }
 
-function parseConfigDir(dir, parseOptions, options){
+ /**
+  *
+  * @param  dir
+  * @param  parseOptions
+  * @param  [options] in/out parameter (will be created, if omitted)
+  * @return return (modified) options argument or a newly created AppConfig
+  */
+function parseConfigDir(dir: string, parseOptions: ResourcesOptions, options: AppConfig): AppConfig {
 
     options = options || {};
     var files = fs.readdirSync(dir);
@@ -108,7 +123,7 @@ export = {
      * 																								or "settings/grammar" for excluding the sources of JSON grammars (i.e. exclude the sources for compiled grammars)
      * @return {AppConfig} the AppConfig with the 'path' option set for the corresponding resource type, so that the corresponding utils/loaders will the the resources from that path
      */
-    resourcePathsFrom(directory, parseOptions){
+    resourcePathsFrom(directory: string, parseOptions: ResourcesOptions): AppConfig {
 
         parseOptions = parseOptions || {};
         var configOptions = {};
@@ -124,10 +139,10 @@ export = {
      * @param  {AppConfig} generatedConfig the generated AppConfig containing the path-field for discovered resources
      * @return {AppConfig} the merge AppConfig (same as userConfig)
      */
-    mergeResourceConfigs(userConfig, generatedConfig){
+    mergeResourceConfigs(userConfig: AppConfig, generatedConfig: AppConfig): AppConfig {
 
-        var entry;
-        for(var n in generatedConfig){
+        let entry: any;
+        for(let n in generatedConfig){
             entry = generatedConfig[n];
             if(!userConfig[n] && userConfig[n] !== false){
 

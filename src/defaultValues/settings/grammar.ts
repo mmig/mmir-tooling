@@ -1,4 +1,6 @@
 
+import { Grammar } from 'mmir-lib';
+
 import _ from 'lodash';
 
 var defaultGrammar = {
@@ -7,7 +9,7 @@ var defaultGrammar = {
   "utterances": {}
 };
 
-function getDefault(_id){
+function getDefault(_id: string): Grammar {
     return _.cloneDeep(defaultGrammar);
 }
 

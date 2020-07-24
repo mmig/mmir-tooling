@@ -1,4 +1,7 @@
 
+import { BuildAppConfig , ResourceConfig, GrammarBuildEntry , ImplementationBuildEntry , StateModelBuildEntry , ViewBuildEntry , BuildConfig } from '../index.d';
+import { WebpackAppConfig } from '../index-webpack.d';
+
 import process from 'process';
 
 import appConfigUtils from '../utils/module-config-init';
@@ -13,10 +16,10 @@ import viewUtils from '../view/view-utils';
 import pluginsUtil from '../tools/plugins-utils';
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
-var warn = logUtils.warn;
+const log = logUtils.log;
+const warn = logUtils.warn;
 
-export function createBuildConfig(mmirAppConfig, resourcesConfig){
+export function createBuildConfig(mmirAppConfig: BuildAppConfig | WebpackAppConfig, resourcesConfig: ResourceConfig): BuildConfig | string {
 
     mmirAppConfig.rootPath = mmirAppConfig.rootPath || process.cwd();
     var appRootDir = mmirAppConfig.rootPath;
@@ -35,7 +38,10 @@ export function createBuildConfig(mmirAppConfig, resourcesConfig){
     }
 
     var settingsOptions = mmirAppConfig.settings;
-    var settings = settingsUtil.jsonSettingsFromDir(settingsOptions, appRootDir);
+    if(settingsOptions === true){
+        return 'ERROR for appConfig.settings: is set to TRUE but no settings were found, is appConfig.resourcesPath set correctly?';
+    }
+    const settings = settingsUtil.jsonSettingsFromDir(settingsOptions, appRootDir);
     // log('JSON settings: ', settings);
     // log('JSON configuration setting: ', settingsUtil.getConfiguration(settings));
     // log('JSON runtime configuration: ', runtimeConfig);
@@ -53,7 +59,8 @@ export function createBuildConfig(mmirAppConfig, resourcesConfig){
     // log('JSON configuration setting (merge test): ', runtimeConfigEntry);//DEBU
     if(!runtimeConfigEntry.value){
         if(runtimeConfigEntry.file){
-            runtimeConfigEntry.value = settingsUtil.loadSettingsFrom(runtimeConfigEntry.file, runtimeConfigEntry.fileType);
+            const configFile = Array.isArray(runtimeConfigEntry.file)? runtimeConfigEntry.file[0] : runtimeConfigEntry.file;
+            runtimeConfigEntry.value = settingsUtil.loadSettingsFrom(configFile, runtimeConfigEntry.fileType);
         } else {
             warn('could not read configuration settings from file: using empty configuration');
             runtimeConfigEntry.value = {};
@@ -63,7 +70,7 @@ export function createBuildConfig(mmirAppConfig, resourcesConfig){
 
     /////////////////////////////////////////////////////////////////////////////////////
 
-    var includePluginList = mmirAppConfig.includePlugins;
+    var includePluginList = (mmirAppConfig as WebpackAppConfig).includePlugins;
     if(includePluginList){
 
         includePluginList.forEach(function(plugin){
@@ -96,17 +103,21 @@ export function createBuildConfig(mmirAppConfig, resourcesConfig){
     // 	}
     // };
 
+    if(grammarOptions === true){
+        return 'ERROR for appConfig.grammars: is set to TRUE but no grammar options were found, is appConfig.resourcesPath set correctly?';
+    }
     grammarOptions = grammarUtils.parseRuntimeConfigurationForOptions(grammarOptions, runtimeConfig);
-
-    var grammars = [];
+    const grammars: GrammarBuildEntry[] = [];
     if(grammarOptions && grammarOptions.path){
         grammarUtils.jsonGrammarsFromDir(grammarOptions, appRootDir, grammars);
     }
     if(grammarOptions && grammarOptions.grammars){
         grammarUtils.jsonGrammarsFromOptions(grammarOptions, appRootDir, grammars);
     }
+
+    grammarOptions = grammarOptions || {};
     if(grammars.length > 0){
-        grammarUtils.applyDefaultOptions(grammarOptions || {}, grammars);
+        grammarUtils.applyDefaultOptions(grammarOptions, grammars);
     }
 
     // log('JSON grammars: ', grammars, grammarOptions);
@@ -130,7 +141,10 @@ export function createBuildConfig(mmirAppConfig, resourcesConfig){
     // 		}
     // 	}
     // }
-    var states = [];
+    if(stateOptions === true){
+        return 'ERROR for appConfig.states: is set to TRUE but no state options were found, is appConfig.resourcesPath set correctly?';
+    }
+    var states: StateModelBuildEntry[] = [];
     if(stateOptions && stateOptions.path){
         // log('including SCXML models from directory ', stateOptions.path);//DEBU
         scxmlUtils.scxmlFromDir(stateOptions, appRootDir, states);
@@ -140,9 +154,13 @@ export function createBuildConfig(mmirAppConfig, resourcesConfig){
         scxmlUtils.scxmlFromOptions(stateOptions, appRootDir, states);
     }
 
-    if(states.length === 0){
-        log('no SCXML models specified, including minimal default SCXML models for "input" and "dialog"...');//DEBUG
-        scxmlUtils.scxmlDefaults(stateOptions, appRootDir, states);
+    if(stateOptions){
+        if(states.length === 0){
+            log('no SCXML models specified, including minimal default SCXML models for "input" and "dialog"...');//DEBUG
+            scxmlUtils.scxmlDefaults(stateOptions, appRootDir, states);
+        }
+    } else {
+        stateOptions = {};
     }
     scxmlUtils.applyDefaultOptions(stateOptions, states);
 
@@ -153,8 +171,11 @@ export function createBuildConfig(mmirAppConfig, resourcesConfig){
 
     /////////////////////////////////////////////////////////////////////////////////////
 
-    var ctrlOptions = mmirAppConfig.controllers;
-    var ctrlList = [];
+    var ctrlOptions = (mmirAppConfig as WebpackAppConfig).controllers;
+    if(ctrlOptions === true){
+        return 'ERROR for appConfig.controllers: is set to TRUE but no controller options were found, is appConfig.resourcesPath set correctly?';
+    }
+    var ctrlList: ImplementationBuildEntry[] = [];
     if(ctrlOptions && ctrlOptions.path){
         implUtils.implFromDir('controller', ctrlOptions, appRootDir, ctrlList);
     }
@@ -167,8 +188,11 @@ export function createBuildConfig(mmirAppConfig, resourcesConfig){
     log('controllers: ', ctrlList, ctrlOptions);//DEBUG
     implUtils.addImplementationsToAppConfig(ctrlList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
 
-    var helperOptions = mmirAppConfig.helpers;
-    var helperList = [];
+    var helperOptions = (mmirAppConfig as WebpackAppConfig).helpers;
+    if(helperOptions === true){
+        return 'ERROR for appConfig.helpers: is set to TRUE but no helper options were found, is appConfig.resourcesPath set correctly?';
+    }
+    var helperList: ImplementationBuildEntry[] = [];
     if(helperOptions && helperOptions.path){
         implUtils.implFromDir('helper', helperOptions, appRootDir, helperList);
     }
@@ -181,8 +205,11 @@ export function createBuildConfig(mmirAppConfig, resourcesConfig){
     log('helpers: ', helperList, helperOptions);//DEBUG
     implUtils.addImplementationsToAppConfig(helperList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
 
-    var modelOptions = mmirAppConfig.models;
-    var modelList = [];
+    var modelOptions = (mmirAppConfig as WebpackAppConfig).models;
+    if(modelOptions === true){
+        return 'ERROR for appConfig.models: is set to TRUE but no model options were found, is appConfig.resourcesPath set correctly?';
+    }
+    var modelList: ImplementationBuildEntry[] = [];
     if(modelOptions && modelOptions.path){
         implUtils.implFromDir('model', modelOptions, appRootDir, modelList);
     }
@@ -194,7 +221,7 @@ export function createBuildConfig(mmirAppConfig, resourcesConfig){
     }
     log('models: ', modelList, modelOptions);
     implUtils.addImplementationsToAppConfig(modelList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
-    var implList = ctrlList.concat(helperList, modelList);
+    const implList: ImplementationBuildEntry[] = ctrlList.concat(helperList, modelList);
 
 
 
@@ -208,8 +235,11 @@ export function createBuildConfig(mmirAppConfig, resourcesConfig){
     // var viewOptions = {
     // 	path: './views',
     // }
+    if(viewOptions === true){
+        return 'ERROR for appConfig.views: is set to TRUE but no view options were found, is appConfig.resourcesPath set correctly?';
+    }
 
-    var views = [];
+    var views: ViewBuildEntry[] = [];
     if(viewOptions && viewOptions.path){
         views = viewUtils.viewTemplatesFromDir(viewOptions.path, appRootDir);
     }
@@ -269,7 +299,5 @@ export function createBuildConfig(mmirAppConfig, resourcesConfig){
         settings,
         settingsOptions,
         directories
-    }
+    } as BuildConfig;
 }
-
-export type BuildConfig = {grammars: any[], grammarOptions: any, views: any[], viewOptions: any, states: any[], stateOptions: any, implList: any[], ctrlOptions: any, helperOptions: any, modelOptions: any, settings: any, settingsOptions: any, directories: any}

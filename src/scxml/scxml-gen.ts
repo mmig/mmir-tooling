@@ -1,15 +1,29 @@
 
+import { CompilerCallback , StateCompilerOptions } from '../index.d';
+
 import scxml from '@scion-scxml/scxml';
 import { fixRawCompileInjectDataModule } from './scxml-fix-datamodel-declaration';
+
+//err.tagname+'>: '+err.reason + '\n  at '+file+':'+err.line+':'+err.column
+type ScxmlError = {
+    tagname: string;
+    reason: string;
+    line: number;
+    column: number;
+};
+
+function isScxmlError(err: Error | ScxmlError): err is ScxmlError {
+    return !!( err && (err as ScxmlError).tagname && (err as ScxmlError).reason);
+}
 
 //FIXME do fix datamodel declaration in generated scxml model FIXES @scion-scxml/scxml@4.3.25
 //TODO remove when not neccessary any more
 fixRawCompileInjectDataModule(scxml);
 
 // import logUtils from '../utils/log-utils';
-// var log = logUtils.log;
+// const log = logUtils.log;
 
-var MODULE_CODE_PREFIX = 'var ScxmlModel = ';
+const MODULE_CODE_PREFIX = 'var ScxmlModel = ';
 
 //TODO support optional prepare() arguments? ->
 /**
@@ -22,22 +36,22 @@ var MODULE_CODE_PREFIX = 'var ScxmlModel = ';
  * @param  {HostContext} [hostContext]  Context provided by the interpreter host
  */
 
-var MODULE_CODE_SUFFIX = ';\n' +
+const MODULE_CODE_SUFFIX = ';\n' +
                         'ScxmlModel.prepare = function(prepareCallback, executionContext, hostContext) {' + //TODO support optional arguments executionContext & hostContext?
                             //NOTE use setTimeout() for simulating async execution:
                             'if(!prepareCallback) return; setTimeout(function(){prepareCallback(null, ScxmlModel)}, 0);' +
                         '};\nmodule.exports = ScxmlModel;';
 
-var AMD_PREFIX = 'define(["module"],  function(module){\n';
-var AMD_SUFFIX = '\n});';
-var STRICT_MODE = '"use strict";\n';
+const AMD_PREFIX = 'define(["module"],  function(module){\n';
+const AMD_SUFFIX = '\n});';
+const STRICT_MODE = '"use strict";\n';
 
-function toError(errList, file, _map, _meta){
+function toError(errList: ScxmlError | Error | Array<ScxmlError|Error>, file: string, _map: any, _meta: any): Error {
     if(Array.isArray(errList)){
         var sb = [];
         var len = errList.length;
         errList.forEach(function(err, index){
-            if(err.tagname && err.reason){
+            if(isScxmlError(err)){
                 sb.push('SCXML ERROR ('+(index+1)+') in <'+err.tagname+'>: '+err.reason + '\n  at '+file+':'+err.line+':'+err.column);
             } else {
                 sb.push(err && err.stack? err.stack : 'SCXML ERROR ('+(index+1)+') in file '+file+': '+err);
@@ -58,18 +72,18 @@ function toError(errList, file, _map, _meta){
  * @param  {any} [_map] source mapping (unused)
  * @param  {any} [_meta] meta data (unused)
  */
-function compile(content, scxmlFile, options, callback, _map, _meta) {
+function compile(content: string, scxmlFile: string, options: StateCompilerOptions, callback: CompilerCallback, _map: any, _meta: any): void {
 
     // log('mmir-scxml-loader: resource -> ', scxmlFile);//DEBU
-    var i = options.mapping.findIndex(function(g){
+    const i = options.mapping.findIndex(function(g){
         return g.file === scxmlFile;
     });
-    var scxmlInfo = options.mapping[i];
+    const scxmlInfo = options.mapping[i];
 
     // log('mmir-scxml-loader: options for resource -> ', scxmlInfo);//DEBU
 
     if(!scxmlInfo || !scxmlInfo.id){
-        var error;
+        let error: string;
         if(options.mapping.length === 0){
             error = 'failed to parse SCXML definition: empty list for SCXML settings [{id: "the ID", file: "the file path", ...}, ...]';
         }
@@ -87,12 +101,12 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
     // log('mmir-scxml-loader: resource ID at '+i+' -> ', scxmlInfo.id);//, ', parsing content: ', content);//DEBU
 
     //TODO ID optional settable via loader options?
-    var id = scxmlInfo.id;
-    var ignoreRuntimeErrors = typeof scxmlInfo.ignoreErrors === 'boolean'? scxmlInfo.ignoreErrors : (options.config && options.config.ignoreErrors === true);
+    const id = scxmlInfo.id;
+    const ignoreRuntimeErrors = typeof scxmlInfo.ignoreErrors === 'boolean'? scxmlInfo.ignoreErrors : (options.config && options.config.ignoreErrors === true);
     // log('SCXML parsing, ignoreErrors -> ', ignoreRuntimeErrors, ', options.ignoreErrors: ', options.config, scxmlInfo)//DEBU
-    var moduleType = scxmlInfo.moduleType? scxmlInfo.moduleType : (options.config && options.config.moduleType);
+    const moduleType = scxmlInfo.moduleType? scxmlInfo.moduleType : (options.config && options.config.moduleType);
     //log('SCXML parsing, moduleType -> ', moduleType, ', options.config: ', options.config, scxmlInfo)//DEBU
-    var strictMode = typeof scxmlInfo.strict === 'boolean'? scxmlInfo.strict : (options.config && typeof options.config.strict === 'boolean'? options.config.strict : true);
+    const strictMode = typeof scxmlInfo.strict === 'boolean'? scxmlInfo.strict : (options.config && typeof options.config.strict === 'boolean'? options.config.strict : true);
     //log('SCXML parsing, strictMode -> ', strictMode, ', options.config: ', options.config, scxmlInfo)//DEBU
 
     scxml.documentStringToModel(id, content, function(err, model){
@@ -111,7 +125,7 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
                     return;/////////////// EARLY EXIT /////////////////
                 }
 
-                var scxmlCode = MODULE_CODE_PREFIX + fnModel.toString() + MODULE_CODE_SUFFIX;
+                let scxmlCode: string = MODULE_CODE_PREFIX + fnModel.toString() + MODULE_CODE_SUFFIX;
 
                 if(moduleType === 'amd'){
                     scxmlCode = AMD_PREFIX + (strictMode? STRICT_MODE : '') + scxmlCode + AMD_SUFFIX;

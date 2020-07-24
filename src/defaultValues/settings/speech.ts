@@ -1,3 +1,4 @@
+import { SpeechConfig } from 'mmir-lib';
 
 var defaultValues = {
 
@@ -47,7 +48,7 @@ var defaultValues = {
     }
 };
 
-function getDefault(id){
+function getDefault(id: string): SpeechConfig {
     return defaultValues[id] || {};
 }
 

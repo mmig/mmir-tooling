@@ -8,7 +8,7 @@
  * @param  {{[field: string]: any}} globalOpt the global options for that type of element (e.g. GrammarOptions)
  * @param  {any} defaultValue the default value for the option/field (in case neither opt nor globalOpt for that field is defined)
  */
-function applySetting(field, opt, globalOpt, defaultValue){
+function applySetting(field: string, opt: {[field: string]: any}, globalOpt: {[field: string]: any}, defaultValue?: any){
     if(typeof opt[field] === 'undefined'){
         if(typeof globalOpt[field] !== 'undefined'){
             opt[field] = globalOpt[field];

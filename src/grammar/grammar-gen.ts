@@ -1,5 +1,6 @@
 
-import { MmirModule, SemanticInterpreter, GrammarEngineType } from 'mmir-lib';
+import { MmirModule, SemanticInterpreter, GrammarEngineType, Grammar } from 'mmir-lib';
+import { GrammarBuildEntry , GrammarCompilerOptions , CompilerCallback } from '../index.d';
 
 import asyncSupportUtil from '../utils/node-worker-support';
 
@@ -7,14 +8,21 @@ import * as mmir from '../mmir-init';
 const semantic: SemanticInterpreter = (mmir as MmirModule).require('mmirf/semanticInterpreter');
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
-// var warn = logUtils.warn;
+const log = logUtils.log;
+// const warn = logUtils.warn;
 
-var asyncSupport = asyncSupportUtil.isAsyncSupported();
+type AsyncPendingInfo = {
+    jison: number;
+    jscc: number;
+    pegjs: number;
+    reset(): void;
+};
+
+const asyncSupport = asyncSupportUtil.isAsyncSupported();
 
 //helpers for keeping track of pending grammar-compile tasks when in async compile mode
 // -> will not try to destroy the compiler thread as long as there a still tasks for that compiler engine
-function createPendingAsyncGrammarsInfo(){
+function createPendingAsyncGrammarsInfo(): AsyncPendingInfo {
     return {
         jison: 0,
         jscc: 0,
@@ -26,15 +34,15 @@ function createPendingAsyncGrammarsInfo(){
         }
     };
 }
-var pendingAsyncGrammars;
+var pendingAsyncGrammars: AsyncPendingInfo | undefined;
 //////// END: async / threaded grammar compiler ////////////////
 
 
-function getEngine(grammarInfo, options){
+function getEngine(grammarInfo: GrammarBuildEntry, options: GrammarCompilerOptions){
     return grammarInfo.engine || (options.config && options.config.engine) || /*default: */ 'jscc';
 }
 
-function isAsyncCompile(grammarInfo, options){
+function isAsyncCompile(grammarInfo: GrammarBuildEntry, options: GrammarCompilerOptions): boolean {
     return asyncSupport && (typeof grammarInfo.asyncCompile === 'boolean'? grammarInfo.asyncCompile : (!options.config || options.config.asyncCompile !== false));
 }
 
@@ -48,9 +56,9 @@ function isAsyncCompile(grammarInfo, options){
  * @param  {any} [_map] source mapping (unused)
  * @param  {any} [_meta] meta data (unused)
  */
-function compile(content, grammarFile, options, callback, _map, _meta) {
+function compile(content: string, grammarFile: string, options: GrammarCompilerOptions, callback: CompilerCallback, _map: any, _meta: any): void {
 
-    var grammar;
+    let grammar: Grammar;
     try{
         grammar = JSON.parse(content);
     } catch(err){
@@ -61,13 +69,13 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
     // log('mmir-grammer-loader: ', JSON.stringify(grammar));
 
     log('mmir-grammer-loader: resource -> ', grammarFile);//DEBUG
-    var i = options.mapping.findIndex(function(g){
+    const i = options.mapping.findIndex(function(g){
         return g.file === grammarFile;
     });
-    var grammarInfo = options.mapping[i];
+    const grammarInfo = options.mapping[i];
 
     if(!grammarInfo || !grammarInfo.id){
-        var error;
+        var error: string;
         if(options.mapping.length === 0){
             error = 'failed to parse JSON grammar: empty list for grammar settings [{id: "the ID", file: "the file path", ...}, ...]';
         }
@@ -94,27 +102,27 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
             // TODO add ignored (and excluded) grammars to ignore-list of mmir.conf
             // var ignoreGrammarIds = configurationManager.get('ignoreGrammarFiles', void(0));
 
-    var engine = getEngine(grammarInfo, options);
+    const engine = getEngine(grammarInfo, options);
     // log('mmir-grammer-loader: setting compiler "'+engine+'" for grammar "'+grammarInfo.id+'"...');//DEBUG
 
     // var async = grammarInfo.async || (options.config && options.config.async) || /*default: */ false;
     // async = true;//FIXME currently WebWorker library does not handle relative paths for importScripts() correctly -> DISABLE async mode
 
-    var async = isAsyncCompile(grammarInfo, options);
+    const async = isAsyncCompile(grammarInfo, options);
     log('mmir-grammer-loader: using '+(async? 'async' : 'SYNC')+' mode ('+engine+') for grammar "'+grammarInfo.id+'" ...');//DEBUG
 
-    var strictMode = typeof grammarInfo.strict === 'boolean'? grammarInfo.strict : (options.config && typeof options.config.strict === 'boolean'? options.config.strict : true);
+    const strictMode = typeof grammarInfo.strict === 'boolean'? grammarInfo.strict : (options.config && typeof options.config.strict === 'boolean'? options.config.strict : true);
 
     semantic.setGrammarEngine(engine, async, strictMode);
 
     updatePendingAsyncGrammarStarted(engine, async);
 
-    var id = grammarInfo.id;
+    const id = grammarInfo.id;
     semantic.createGrammar(grammar, id, function(result){
 
         log('mmir-grammer-loader: grammar '+id+' compiled...');//DEBUG
 
-        var grammarCode = ';' + result.js_grammar_definition;
+        const grammarCode = ';' + result.js_grammar_definition;
         // log('mmir-grammer-loader: grammar code size ', grammarCode.length);//DEBUG
 
         // try{
@@ -144,11 +152,11 @@ function compile(content, grammarFile, options, callback, _map, _meta) {
  *
  * @param  {GrammarLoadOptions} options the grammar options with property mapping (list of GrammarOptions)
  */
-function initPendingAsyncGrammarInfo(options){
+function initPendingAsyncGrammarInfo(options: GrammarCompilerOptions): void {
 
     if(asyncSupport && !pendingAsyncGrammars){
         // log('mmir-grammer-loader: init [ASYNC PREPARATION] options -> ', options);//DEBUG
-        var pending = createPendingAsyncGrammarsInfo();
+        const pending = createPendingAsyncGrammarsInfo();
         if(options && options.mapping){
             options.mapping.forEach(function(g){
                 if(isAsyncCompile(g, options)){
@@ -163,13 +171,13 @@ function initPendingAsyncGrammarInfo(options){
 }
 
 
-function updatePendingAsyncGrammarStarted(engine, isAsync){
+function updatePendingAsyncGrammarStarted(engine: GrammarEngineType, isAsync: boolean): void {
     if(isAsync){
         pendingAsyncGrammars[engine+'Started'] = true;
     }
 }
 
-function updatePendingAsyncGrammarFinished(grammarInfo, grammarLoadOptions){
+function updatePendingAsyncGrammarFinished(grammarInfo: GrammarBuildEntry, grammarLoadOptions: GrammarCompilerOptions): void {
     if(isAsyncCompile(grammarInfo, grammarLoadOptions)){
         var engine = getEngine(grammarInfo, grammarLoadOptions);
         var pending = pendingAsyncGrammars;
@@ -190,7 +198,7 @@ export = {
     isAsyncSupported: function(){ return asyncSupport;},
     createPendingAsyncGrammarsInfo: createPendingAsyncGrammarsInfo,
     getPendingAsyncGrammars: function(){ return pendingAsyncGrammars; },
-    setPendingAsyncGrammars: function(pending){ pendingAsyncGrammars = pending; },
+    setPendingAsyncGrammars: function(pending: AsyncPendingInfo){ pendingAsyncGrammars = pending; },
     initPendingAsyncGrammarInfo: initPendingAsyncGrammarInfo,
     getEngine: getEngine,
     isAsyncCompile: isAsyncCompile,

@@ -1,7 +1,11 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
+
+import { SettingsBuildOptions , SettingsType , SettingsBuildEntry , SettingsBuildEntryMultiple , RuntimeConfiguration , AsyncGramarExecEntry , DirectoriesInfo , ResourceConfig , BuildAppConfig , SettingsOptions } from '../index.d';
+import { Grammar , SpeechConfig } from 'mmir-lib';
+
+import path from 'path';
+import fs from 'fs-extra';
 import _ from 'lodash';
-import Promise from '../utils/promise';
+import promise from '../utils/promise';
 import fileUtils from '../utils/filepath-utils';
 
 import appConfigUtils from '../utils/module-config-init';
@@ -10,19 +14,19 @@ import directoriesUtil from './directories-utils';
 import optionUtils from './option-utils';
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
-var warn = logUtils.warn;
+const log = logUtils.log;
+const warn = logUtils.warn;
 
 import defaultSettingsConfiguration from '../defaultValues/settings/configuration';
 import defaultSettingsDictionary from '../defaultValues/settings/dictionary';
 import defaultSettingsGrammar from '../defaultValues/settings/grammar';
 import defaultSettingsSpeech from '../defaultValues/settings/speech';
 
-var ALL_SPEECH_CONFIGS_TYPE = 'speech-all';
+const ALL_SPEECH_CONFIGS_TYPE = 'speech-all';
 
-var CONFIG_IGNORE_GRAMMAR_FILES = 'ignoreGrammarFiles';
-var CONFIG_GRAMMAR_ASYNC_EXEC = 'grammarAsyncExecMode';
-var CONFIG_GRAMMAR_DISABLE_STRICT_MODE = 'grammarDisableStrictCompileMode';
+const CONFIG_IGNORE_GRAMMAR_FILES = 'ignoreGrammarFiles';
+const CONFIG_GRAMMAR_ASYNC_EXEC = 'grammarAsyncExecMode';
+const CONFIG_GRAMMAR_DISABLE_STRICT_MODE = 'grammarDisableStrictCompileMode';
 
 /**
  * scan for
@@ -40,7 +44,7 @@ var CONFIG_GRAMMAR_DISABLE_STRICT_MODE = 'grammarDisableStrictCompileMode';
  * @param  {[type]} options [description]
  * @return {[type]} [description]
  */
-function readDir(dir, list, options){
+function readDir(dir: string, list: SettingsBuildEntry[], options: SettingsOptions): void {
 
     var files = fs.readdirSync(dir);
     var dirs = [];
@@ -56,7 +60,7 @@ function readDir(dir, list, options){
 
         } else if(/(configuration|dictionary|grammar|speech)\.js(on)?$/i.test(absPath)){
 
-            var id, type;
+            let id: string, type: SettingsType;
             if(isSettingsType('configuration', absPath)){
                 type = 'configuration';
             } else {
@@ -64,9 +68,9 @@ function readDir(dir, list, options){
                 id = getIdFor(absPath);
             }
 
-            var isAdd = true;
-            var isInline = true;
-            var isForce;//default for force: undefined
+            let isAdd = true;
+            let isInline = true;
+            let isForce: boolean;//default for force: undefined
 
             if(options){
 
@@ -118,15 +122,15 @@ function readDir(dir, list, options){
 // 	//TODO
 // }
 
-function isSettingsType(type, filePath){
+function isSettingsType(type: SettingsType, filePath: string): boolean {
     return new RegExp('^' +  type  + '\.json$', 'i').test(path.basename(filePath));
 }
 
-function getTypeFrom(settingsFilePath){
-    return path.basename(settingsFilePath).replace(/\.js(on)?$/, '');
+function getTypeFrom(settingsFilePath: string): SettingsType {
+    return path.basename(settingsFilePath).replace(/\.js(on)?$/, '') as SettingsType;
 }
 
-function getIdFor(settingsFilePath){
+function getIdFor(settingsFilePath: string): string {
     return path.basename(path.dirname(settingsFilePath));
 }
 
@@ -143,17 +147,17 @@ function getFileType(filePath: string): 'js' | 'json' {
  * @param  {boolean} [async] OPTIONAL (positional argument!) if settings file should be read async (which will return Promise)
  * @return {{[field: string]: any} | Promise<{[field: string]: any}>} the settings object (or if async, a Promise that resolves to the settings object)
  */
-function readSettingsFile(filePath, fileType?: 'json' | 'js', async?: boolean){
+function readSettingsFile(filePath: string, fileType?: 'json' | 'js', async?: boolean): any {
     fileType = fileType || getFileType(filePath);
     if(fileType === 'js'){
-        return !async? requireJson(filePath) : new Promise(function(resolve){resolve(requireJson(filePath))});
+        return !async? requireJson(filePath) : new promise(function(resolve){resolve(requireJson(filePath))});
     } else {
         return !async? readJsonSync(filePath) : readJsonAsync(filePath);
     }
 }
 
 //TODO wrap try/catch -> print webpack-error
-function requireJson(filePath: string){
+function requireJson(filePath: string): any {
     try{
         return require(filePath);
     } catch (err){
@@ -162,15 +166,15 @@ function requireJson(filePath: string){
     }
 }
 
-function readJsonSync(filePath){
+function readJsonSync(filePath: string): any {
     // log('reading ', filePath);//DEBU
     var buffer = fs.readFileSync(filePath);
     return binToJsonObj(buffer, filePath);
 }
 
-function readJsonAsync(filePath){
+async function readJsonAsync(filePath: string): Promise<any> {
     // log('reading ', filePath);//DEBU
-    return new Promise(function(resolve, reject){
+    return new promise(function(resolve, reject){
         fs.readFile(filePath, function(err, buffer){
             if(err){
                 return reject(err);
@@ -181,7 +185,7 @@ function readJsonAsync(filePath){
 }
 
 //TODO wrap try/catch -> print webpack-error
-function binToJsonObj(buffer, filePath){
+function binToJsonObj(buffer: Buffer, filePath: string): any {
     var enc = detectByteOrder(buffer);
     var content = buffer.toString(enc);
     // var content = toUtfString(buffer, enc);// buffer.toString(enc);
@@ -195,7 +199,7 @@ function binToJsonObj(buffer, filePath){
     }
 }
 
-function detectByteOrder(buffer){
+function detectByteOrder(buffer: Buffer): BufferEncoding {
     //from https://docs.microsoft.com/en-us/windows/desktop/Intl/using-byte-order-marks:
     //
     // Byte order mark 		Description
@@ -213,7 +217,7 @@ function detectByteOrder(buffer){
     } else if(buffer[0] === 255 /*FF*/ && buffer[1] === 254 /*FE*/){
         return 'utf16le';
     } else if(buffer[0] === 254 /*FE*/ && buffer[1] === 255 /*FF*/){
-        return 'utf16be';
+        return 'utf16be' as BufferEncoding;
     }
     //try utf8 anyway...
     return 'utf8'
@@ -225,10 +229,11 @@ function detectByteOrder(buffer){
 // 	// var iconv = new Iconv(penc, 'UTF-8');
 // 	// return iconv.convert(buffer).toString();
 // 	import iconv from 'iconv-lite';
+import { WebpackAppConfig } from '../index-webpack.d';
 // 	return iconv.decode(buffer, enc);
 // }
 
-function removeBom(content){
+function removeBom(content: string): string {
     // log('remove BOM? -> ', content.codePointAt(0), content.codePointAt(1), content.codePointAt(2), content.codePointAt(3), content.codePointAt(4));//DEBU
     if(content.codePointAt(0) === 65279 /*FEFF*/ || content.codePointAt(0) === 65534 /*FFFE*/){
         content = content.substring(1);
@@ -241,20 +246,24 @@ function removeBom(content){
  * HELPER load all files for settings-entry
  * @param  {SettingsEntry} s NOTE s.file MUST be an Array!
  */
-function doLoadAllFilesFor(s){
+function doLoadAllFilesFor(s: SettingsBuildEntryMultiple){
     if(!s.value){
         warn('WARN settings-utils: forced merging for "'+s.id+'" ('+s.type+') with multiple file resources: content not loaded yet, loading file content and merging now...');
-        var content = {};
-        s.file.forEach(function(f){
-            _.merge(content, readSettingsFile(f));
-        });
-        s.value = content;
+        if(Array.isArray(s.file)){
+            var content = {};
+            s.file.forEach(function(f){
+                _.merge(content, readSettingsFile(f));
+            });
+            s.value = content;
+        } else {
+            warn('WARN settings-utils: could not merge files for "'+s.id+'" ('+s.type+') since there is no file list: ', s.file);
+        }
     } else {
         log('settings-utils: multiple file resources for "'+s.id+'" ('+s.type+') already merged to ', s.value);
     }
 }
 
-function contains(list, settingsType, settingsId){
+function contains(list: SettingsBuildEntry[], settingsType: SettingsType, settingsId: string): boolean {
     return list.findIndex(function(item){
         return item.id === settingsId && item.type === settingsType;
     }) !== -1;
@@ -267,15 +276,15 @@ function contains(list, settingsType, settingsId){
  * @param  {string|&{id: string}} value
  * @return {boolean}
  */
-function containsEntry(list, value){
+function containsEntry(list: Array<string | &{id: string}>, value: string | &{id: string}): boolean {
     var id = typeof value === 'string'? value : value.id;
     return list.findIndex(function(item){
         return ((typeof item === 'string'? item : item.id) === id);
     }) !== -1;
 }
 
-function normalizeConfigurations(settingsList){
-    var c, conf;
+function normalizeConfigurations(settingsList: SettingsBuildEntry[]): void {
+    var c: SettingsBuildEntry, conf: SettingsBuildEntryMultiple;
     for(var i = 0, size = settingsList.length; i < size; ++i){
         c = settingsList[i];
         if(c.type === 'configuration'){
@@ -285,7 +294,7 @@ function normalizeConfigurations(settingsList){
 
                 //if "include" was set to "file", the file contents have not been loaded yet
                 if(!conf.value){
-                    conf.value = readSettingsFile(conf.file, conf.fileType);
+                    conf.value = readSettingsFile(Array.isArray(conf.file)? conf.file[0] : conf.file, conf.fileType);
                 }
                 if(!c.value){
                     c.value = readSettingsFile(c.file, c.fileType);
@@ -321,15 +330,15 @@ function normalizeConfigurations(settingsList){
  * @param  {String} [id] if more than 1 settings-entry for this type can exist, its ID
  * @return {SettingsEntry} the settings-entry
  */
-function createSettingsEntryFor(type, value, id?){
+function createSettingsEntryFor(type: SettingsType, value: any, id?: string): SettingsBuildEntry {
     return {type: type, file: 'settings://'+type+'/options' + (id? '/'+id : ''), include: void(0), value: value, id: id};
 }
 
-function getConfiguration(settingsList){
+function getConfiguration(settingsList: SettingsBuildEntry[]): SettingsBuildEntryMultiple | undefined {
     return settingsList.find(function(item){ return item.type === 'configuration'});
 }
 
-function getSettings(settingsList, type){
+function getSettings(settingsList: SettingsBuildEntry[], type: SettingsType): SettingsBuildEntry[] {
     return settingsList.filter(function(item){ return item.type === type});
 }
 
@@ -338,9 +347,9 @@ function getSettings(settingsList, type){
  *
  * @param  {SettingsType} type the type of settings object, e.g. "speech" or "configuration"
  * @param  {String} id if more than 1 settings-entry for this type can exist, its ID
- * @return {nay} the (default) settings value for id
+ * @return {any} the (default) settings value for id
  */
-function createDefaultSettingsFor(type, id){
+function createDefaultSettingsFor(type: SettingsType | string, id: string): RuntimeConfiguration | Grammar | {[dictKey: string]: string} | SpeechConfig {
     switch(type){
         case 'configuration':
             return defaultSettingsConfiguration.getDefault();
@@ -356,11 +365,11 @@ function createDefaultSettingsFor(type, id){
     return {};
 }
 
-function toAliasId(settings){
+function toAliasId(settings: SettingsBuildEntry): string {
     return 'mmirf/settings/' + settings.type + (settings.id? '/' + settings.id : '');//FIXME formalize IDs for loading views in webpack (?)
 }
 
-function addToConfigList(runtimeConfiguration, configListName, entry){
+function addToConfigList(runtimeConfiguration: RuntimeConfiguration, configListName: string, entry: string | {id: string, [field: string]: any}): void {
 
     //NOTE: special treatment for value TRUE:
     //     in case a config-list is set to TRUE, it means that
@@ -389,7 +398,7 @@ function addToConfigList(runtimeConfiguration, configListName, entry){
  * @param  {Array<SettingsType>|RegExp} [excludeTypePattern] if not specified, always returns FALSE
  * @return {Boolean} TRUE if settings should be excluded
  */
-function isExclude(settingsType, excludeTypePattern){
+function isExclude(settingsType: SettingsType, excludeTypePattern: Array<SettingsType> | RegExp): boolean {
     if(!excludeTypePattern){
         return false;
     }
@@ -401,11 +410,11 @@ function isExclude(settingsType, excludeTypePattern){
 
 export = {
 
-    setGrammarIgnored: function(runtimeConfiguration, grammarId){
+    setGrammarIgnored: function(runtimeConfiguration: RuntimeConfiguration, grammarId: string): void {
 
         addToConfigList(runtimeConfiguration, CONFIG_IGNORE_GRAMMAR_FILES, grammarId);
     },
-    setGrammarAsyncExec: function(runtimeConfiguration, grammarIdOrEntry){
+    setGrammarAsyncExec: function(runtimeConfiguration: RuntimeConfiguration, grammarIdOrEntry: string | AsyncGramarExecEntry): void {
 
         addToConfigList(runtimeConfiguration, CONFIG_GRAMMAR_ASYNC_EXEC, grammarIdOrEntry);
     },
@@ -431,7 +440,7 @@ export = {
      * 																			id: String | undefined
      * 																		}
      */
-    jsonSettingsFromDir: function(options, appRootDir, settingsList?){
+    jsonSettingsFromDir: function(options: SettingsOptions | SettingsBuildOptions | false, appRootDir: string, settingsList?: SettingsBuildEntry[]): SettingsBuildEntry[] {
 
         var dir = options && options.path;
         if(dir && !path.isAbsolute(dir)){
@@ -440,7 +449,7 @@ export = {
 
         var list = settingsList || [];
         if(dir){
-            readDir(dir, list, options);
+            readDir(dir, list, options as SettingsOptions);
         }
 
         return list;
@@ -462,7 +471,7 @@ export = {
      */
     loadSettingsFrom: readSettingsFile,
     getFileType: getFileType,
-    getAllSpeechConfigsType: function(){ return ALL_SPEECH_CONFIGS_TYPE; },
+    getAllSpeechConfigsType: function(): 'speech-all' { return ALL_SPEECH_CONFIGS_TYPE; },
     /**
      * apply the "global" options from `options` or default values to the entries
      * from `settingsList` if its corresponding options-field is not explicitly specified.
@@ -471,7 +480,7 @@ export = {
      * @param  {{Array<SettingsEntry>}} settingsList
      * @return {{Array<SettingsEntry>}}
      */
-    applyDefaultOptions: function(options, settingsList){
+    applyDefaultOptions: function(options: SettingsBuildOptions, settingsList: SettingsBuildEntry[]): SettingsBuildEntry[] {
         settingsList.forEach(function(g){
             [
                 {name: 'include', defaultValue: 'inline'},
@@ -484,25 +493,25 @@ export = {
 
         return settingsList;
     },
-    addSettingsToAppConfig: function(settings, appConfig, directories, _resources, runtimeConfig, settingsOptions, ignoreMissingDictionaries?: boolean){
+    addSettingsToAppConfig: function(settings: SettingsBuildEntry[], appConfig: BuildAppConfig | WebpackAppConfig, directories: DirectoriesInfo, _resources: ResourceConfig, runtimeConfig: RuntimeConfiguration, settingsOptions: SettingsOptions | SettingsBuildOptions | false, ignoreMissingDictionaries?: boolean){
 
         if(!settings || settings.length < 1){
             return;
         }
 
         //get speech-config settings that should be applied to speech-configs
-        var iall = settings.findIndex(function(s){
+        const iall = settings.findIndex(function(s){
             return s.type === ALL_SPEECH_CONFIGS_TYPE;
         });
-        var allSpeechSettings;
+        let allSpeechSettings: SettingsBuildEntry;
         if(iall !== -1){
             allSpeechSettings = settings[iall];
             //remove from settings list (will be merged into each speech-config, see below)
             settings.splice(iall, 1);
         }
 
-        var regExpExcludeType = settingsOptions.excludeTypePattern;
-        var dicts = ignoreMissingDictionaries? null : new Map();
+        const regExpExcludeType = settingsOptions && settingsOptions.excludeTypePattern;
+        const dicts = ignoreMissingDictionaries? null : new Map();
 
         settings.forEach(function(s){
 
@@ -565,7 +574,7 @@ export = {
             var missing = [];
             languages.forEach(function(l){
                 var dict = dicts.get(l);
-                if(!dict && settingsOptions.dictionary !== false){
+                if(!dict && settingsOptions && settingsOptions.dictionary !== false){
                     var dictEntry = createSettingsEntryFor('dictionary', createDefaultSettingsFor('dictionary', l), l);
                     missing.push(dictEntry);
                     settings.push(dictEntry)

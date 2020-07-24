@@ -1,5 +1,9 @@
 
-import * as path from 'path';
+import { AppConfig , BuildAppConfig } from '../index.d';
+import { WebpackAppConfig } from '../index-webpack.d';
+
+import path from 'path';
+import { isWebpackConfig } from '../tools/type-utils';
 
 /**
  * add/overwrite module alias (i.e. mapping module ID to file path)
@@ -7,14 +11,14 @@ import * as path from 'path';
  * @param  {{paths?: {[moduleId: string]: string}}} mmirAppConfig the app-specific configuration: applies module-path-specifications from mmirAppConfig.paths
  * @param  {[{[moduleId: string]: string}]} alias the (default) mapping of module IDs to (absolute) paths
  */
-var addAliasFrom = function(mmirAppConfig, alias){
+function addAliasFrom(mmirAppConfig: AppConfig | BuildAppConfig | WebpackAppConfig, alias: {[moduleId: string]: string}): void {
 
-    if(mmirAppConfig && mmirAppConfig.paths){
+    if(isWebpackConfig(mmirAppConfig)){
         // log('adding/overwriting paths with app paths: ', mmirAppConfig.paths);
         // Object.assign(alias, mmirAppConfig.paths);
-        var appRoot = mmirAppConfig.rootPath || process.cwd();
-        var p;
-        for (var n in mmirAppConfig.paths) {
+        const appRoot = mmirAppConfig.rootPath || process.cwd();
+        let p: string;
+        for (let n in mmirAppConfig.paths) {
             p = mmirAppConfig.paths[n];
             alias[n] = path.isAbsolute(p)? p : path.join(appRoot, p);
             // aliasList.push(n);
@@ -30,29 +34,31 @@ var addAliasFrom = function(mmirAppConfig, alias){
 
 }
 
-function contains(list, entry){
+function contains(list: any[], entry: any): boolean {
     return list.findIndex(function(item){
         return item === entry;
     }) !== -1;
 }
 
-function toAliasPath(moduleFilePath){
+function toAliasPath(moduleFilePath: string): string {
     return path.normalize(moduleFilePath);
 }
 
-function registerModuleId(appConfig, id, file){
+function registerModuleId(appConfig: WebpackAppConfig, id: string, file: string): void {
     doRegisterModuleId(appConfig, id, file);
 }
 
-function addAutoLoadModule(appConfig, id, file){
+function addAutoLoadModule(appConfig: WebpackAppConfig, id: string, file: string): void {
     doAddModule(appConfig, 'loadAfterInit', id, file);
 }
 
-function addIncludeModule(appConfig, id, file?){
+function addIncludeModule(appConfig: WebpackAppConfig, id: string, file?: string): void {
     doAddModule(appConfig, 'includeModules', id, file);
 }
 
-function doAddModule(appConfig, includeType, id, file?){
+type IncludeType = 'loadAfterInit' | 'loadBeforeInit' | 'includeModules';
+
+function doAddModule(appConfig: WebpackAppConfig, includeType: IncludeType, id: string, file?: string): void {
 
     if(file){
         doRegisterModuleId(appConfig, id, file);
@@ -67,7 +73,7 @@ function doAddModule(appConfig, includeType, id, file?){
     }
 }
 
-function doRegisterModuleId(appConfig, id, file){
+function doRegisterModuleId(appConfig: WebpackAppConfig, id: string, file: string){
 
     if(!appConfig.paths){
         appConfig.paths = {};
@@ -75,7 +81,7 @@ function doRegisterModuleId(appConfig, id, file){
     appConfig.paths[id] = toAliasPath(file);
 }
 
-function addAppSettings(appConfig, id, settings){
+function addAppSettings(appConfig: WebpackAppConfig, id: string, settings: any){
 
     if(!appConfig.runtimeSettings){
         appConfig.runtimeSettings = {};
@@ -84,23 +90,23 @@ function addAppSettings(appConfig, id, settings){
 }
 
 export = {
-    addModulePaths: function(userConfig, mmirAppConfig){
-        if(userConfig.modulePaths){
-            for(var p in userConfig.modulePaths){
-                mmirAppConfig.paths[p] = userConfig.modulePaths[p];
-            }
-        }
-    },
-    addModuleConfigs: function(userConfig, mmirAppConfig){
-        if(userConfig.moduleConfigs){
-            if(!mmirAppConfig.config){
-                mmirAppConfig.config = {};
-            }
-            for(var c in userConfig.moduleConfigs){
-                mmirAppConfig.config[c] = userConfig.moduleConfigs[c];
-            }
-        }
-    },
+    // addModulePaths: function(userConfig, mmirAppConfig: WebpackAppConfig){
+    //     if(userConfig.modulePaths){
+    //         for(var p in userConfig.modulePaths){
+    //             mmirAppConfig.paths[p] = userConfig.modulePaths[p];
+    //         }
+    //     }
+    // },
+    // addModuleConfigs: function(userConfig, mmirAppConfig: WebpackAppConfig){
+    //     if(userConfig.moduleConfigs){
+    //         if(!mmirAppConfig.config){
+    //             mmirAppConfig.config = {};
+    //         }
+    //         for(var c in userConfig.moduleConfigs){
+    //             mmirAppConfig.config[c] = userConfig.moduleConfigs[c];
+    //         }
+    //     }
+    // },
     addAliasFrom: addAliasFrom,
 
     /** add alias (i.e. "lookup information" for module ID -> file) for module */

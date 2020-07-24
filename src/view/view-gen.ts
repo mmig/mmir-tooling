@@ -1,15 +1,17 @@
 
-import { MmirModule, Controller as ControllerClass } from 'mmir-lib';
+import { ViewEntry , ViewCompilerOptions , CompilerCallback } from '../index.d';
+import { MmirModule, Controller as ControllerClass, View, Partial, Layout } from 'mmir-lib';
+
 import * as mmir from '../mmir-init';
 var Controller: typeof ControllerClass = (mmir as MmirModule).require('mmirf/controller');
 
 import logUtils from '../utils/log-utils';
-// var log = logUtils.log;
-var warn = logUtils.warn;
+// const log = logUtils.log;
+const warn = logUtils.warn;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function getCtrl(viewInfo){
+function getCtrl(viewInfo: ViewEntry): ControllerClass {
     var name = viewInfo.ctrlName;
     var constr = function(){};
     var def = {
@@ -38,7 +40,7 @@ function getCtrl(viewInfo){
  * @param  {any} [_map] source mapping (unused)
  * @param  {any} [_meta] meta data (unused)
  */
-function compile(content, viewFile, options, callback, _map, _meta) {
+function compile(content: string, viewFile: string, options: ViewCompilerOptions, callback: CompilerCallback, _map: any, _meta: any) {
 
     var i = options.mapping.findIndex(function(v){
         return v.file === viewFile;
@@ -46,7 +48,7 @@ function compile(content, viewFile, options, callback, _map, _meta) {
     var viewInfo = options.mapping[i];
 
     if(!viewInfo || !viewInfo.id){
-        var error;
+        let error: string;
         if(options.mapping.length === 0){
             error = 'failed to parse view template: empty list for grammar settings [{id: "the ID", file: "the file path", ...}, ...]';
         }
@@ -64,7 +66,7 @@ function compile(content, viewFile, options, callback, _map, _meta) {
     var strictMode = typeof viewInfo.strict === 'boolean'? viewInfo.strict : (options.config && typeof options.config.strict === 'boolean'? options.config.strict : true);
 
     var viewConstr = (mmir as MmirModule).require(viewInfo.viewImpl);
-    var viewInstance;
+    var viewInstance: View | Partial | Layout;
     if(viewInfo.isLayout){
         viewInstance = new viewConstr(viewInfo.viewName, content);
     } else {

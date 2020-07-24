@@ -1,5 +1,5 @@
 
-function getDefault(_id){
+function getDefault(_id: string): {[id:string]: string} {
     return {};
 }
 

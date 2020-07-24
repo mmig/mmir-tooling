@@ -1,26 +1,28 @@
+
 import { lstatSync } from 'fs';
 import { sep } from 'path';
-var reNormalize = sep !== '/' ? new RegExp(sep.replace(/\\/g, '\\\\'), 'g') : null;
+
+const reNormalize = sep !== '/' ? new RegExp(sep.replace(/\\/g, '\\\\'), 'g') : null;
 
 import logUtils from '../utils/log-utils';
-var log = logUtils.log;
+const log = logUtils.log;
 
-var normalizePath = function(path) {
+const normalizePath = function(path: string): string {
     if (reNormalize) {
         path = path.replace(reNormalize, '/');
     }
     return path;
 }
 
-var createFileTestFunc = function(absolutePaths, debugStr){
+const createFileTestFunc = function(absolutePaths: string[], debugStr?: string): (path: string) => boolean {
 
     debugStr = debugStr || '';
 
-    var reTest = absolutePaths.map(function(absolutePath) {
+    const reTest = absolutePaths.map(function(absolutePath) {
         return new RegExp('^' + absolutePath.replace(/\./g, '\\.') + '$');
     });
 
-    return function(path) {
+    return function(path: string): boolean {
         path = normalizePath(path);
         for (var i = 0, size = reTest.length; i < size; ++i) {
             var re = reTest[i];
@@ -33,7 +35,7 @@ var createFileTestFunc = function(absolutePaths, debugStr){
     };
 }
 
-var isDirectory = function(path){
+const isDirectory = function(path: string): boolean {
     return lstatSync(path).isDirectory();
 }
 
