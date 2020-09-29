@@ -776,7 +776,7 @@ export interface ControllerOptions extends ImplementationOption {
      * `path/<controller ID>.js`
      */
     path?: string;
-    controllers?: boolean | {[id: string]: ImplementationEntry};
+    controllers?: boolean | {[id: string]: ImplementationEntry | boolean};
 }
 
 /**
@@ -796,7 +796,7 @@ export interface HelperOptions extends ImplementationOption {
      * `path/.../<controller ID>Helper.js`
      */
     path?: string;
-    helpers?: boolean | {[id: string]: ImplementationEntry};
+    helpers?: boolean | {[id: string]: ImplementationEntry | boolean};
 }
 
 /**
@@ -816,7 +816,7 @@ export interface ModelOptions extends ImplementationOption {
      * `path/<model ID>.js`
      */
     path?: string;
-    models?: boolean | {[id: string]: ImplementationEntry};
+    models?: boolean | {[id: string]: ImplementationEntry | boolean};
 }
 
 export type AnyImplementationOptions = ModelOptions | HelperOptions | ControllerOptions;
@@ -844,7 +844,7 @@ export interface ImplementationEntry extends ImplementationOption {
     file?: string;
 
     /** the implementation's name (usually the ID with capitalized first letter) */
-    name: string;
+    name?: string;
 
     /** the implementation's type (should not be explicitly specified) */
     type?: ImplementationType;
