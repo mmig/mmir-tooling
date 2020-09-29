@@ -1,4 +1,9 @@
 
+/**
+ * @packageDocumentation
+ * @module mmir-webpack
+ */
+
 import { AppConfig , ModulePaths, ModuleId, ModuleConfigOptions, SettingsOptions, RuntimeConfiguration, PluginOptions, ControllerOptions, HelperOptions, ModelOptions } from './index.d';
 
 /**

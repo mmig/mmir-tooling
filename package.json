@@ -43,7 +43,7 @@
     "eclint": "^2.8.1",
     "mmir-lib": "^6.1.0",
     "typedoc": "^0.19.2",
-    "typedoc-plugin-external-module-name": "^3.0.0",
+    "typedoc-plugin-external-module-name": "^4.0.3",
     "typedoc-plugin-markdown": "^3.0.3",
     "typescript": "^3.9.7"
   },

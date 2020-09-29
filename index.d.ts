@@ -1,3 +1,9 @@
+
+/**
+ * @packageDocumentation
+ * @module mmir-tooling
+ */
+
 /// <reference types="mmir-lib" />
 
 import { MediaManagerPluginEntry, GrammarEngineType } from 'mmir-lib';//FIXME
