@@ -120,5 +120,16 @@ export interface WebpackAppConfig extends AppConfig {
     /** configuration for webpack plugins (for internal use) */
     webpackPlugins?: any[];
 
+    /**
+     * (for internal use: will be filled/set by compiler)
+     *
+     * dictionary for mmir runtime settings:
+     *  * `"mmirf/settings/configuration"`: the (normalized/merged) `RuntimeConfiguration` for the mmir app (~ `configuration.json`)
+     *  * `"mmirf/settings/directories"`: the directories/files/URI information for loading/accessing speech-configuration, controllers, views etc. (~ `directories.json`)
+     *  * `"mmirf/settings/speech/{lang}"`: the speech (input/output) configuration for language code `lang` (~ `lang/speech.json`)
+     *  * `"mmirf/settings/dictionary/{lang}"`: the dictionary (internat. labels) for language code `lang` (~ `lang/dictionary.json`)
+     *  * `"mmirf/settings/grammar/{lang}"`: the JSON definition for the grammar of language code `lang` (~ `lang/grammar.json`)
+     *
+     */
     runtimeSettings?: {[settingsId: string]: any};
 }
