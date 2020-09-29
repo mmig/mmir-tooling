@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.fixRawCompileInjectDataModule = void 0;
 const lodash_1 = __importDefault(require("lodash"));
 const log_utils_1 = __importDefault(require("../utils/log-utils"));
 const warn = log_utils_1.default.warn;

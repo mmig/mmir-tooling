@@ -44,7 +44,7 @@ declare const _default: {
      * @param  {{Array<ImplEntry>}} implList
      * @return {{Array<ImplEntry>}}
      */
-    applyDefaultOptions: (options: AnyImplementationOptions, implList: ViewBuildEntry[] | ImplementationBuildEntry[]) => ViewBuildEntry[] | ImplementationBuildEntry[];
+    applyDefaultOptions: (options: AnyImplementationOptions, implList: ImplementationBuildEntry[] | ViewBuildEntry[]) => ImplementationBuildEntry[] | ViewBuildEntry[];
     /**
      * add implementations to (webpack) app build configuration
      *

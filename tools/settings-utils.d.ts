@@ -66,7 +66,7 @@ declare const _default: {
      * 																			id: String | undefined
      * 																		}
      */
-    jsonSettingsFromDir: (options: false | SettingsOptions | SettingsBuildOptions, appRootDir: string, settingsList?: SettingsBuildEntry[]) => SettingsBuildEntry[];
+    jsonSettingsFromDir: (options: SettingsOptions | SettingsBuildOptions | false, appRootDir: string, settingsList?: SettingsBuildEntry[]) => SettingsBuildEntry[];
     createSettingsEntryFor: typeof createSettingsEntryFor;
     createDefaultSettingsFor: typeof createDefaultSettingsFor;
     normalizeConfigurations: typeof normalizeConfigurations;
@@ -77,7 +77,7 @@ declare const _default: {
      */
     loadSettingsFrom: typeof readSettingsFile;
     getFileType: typeof getFileType;
-    getAllSpeechConfigsType: () => "speech-all";
+    getAllSpeechConfigsType: () => 'speech-all';
     /**
      * apply the "global" options from `options` or default values to the entries
      * from `settingsList` if its corresponding options-field is not explicitly specified.
@@ -87,7 +87,7 @@ declare const _default: {
      * @return {{Array<SettingsEntry>}}
      */
     applyDefaultOptions: (options: SettingsBuildOptions, settingsList: SettingsBuildEntry[]) => SettingsBuildEntry[];
-    addSettingsToAppConfig: (settings: SettingsBuildEntry[], appConfig: BuildAppConfig | WebpackAppConfig, directories: DirectoriesInfo, _resources: ResourceConfig, runtimeConfig: RuntimeConfiguration, settingsOptions: false | SettingsOptions | SettingsBuildOptions, ignoreMissingDictionaries?: boolean) => void;
+    addSettingsToAppConfig: (settings: SettingsBuildEntry[], appConfig: BuildAppConfig | WebpackAppConfig, directories: DirectoriesInfo, _resources: ResourceConfig, runtimeConfig: RuntimeConfiguration, settingsOptions: SettingsOptions | SettingsBuildOptions | false, ignoreMissingDictionaries?: boolean) => void;
     isExcludeType: typeof isExclude;
     configEntryIgnoreGrammar: string;
     configEntryAsyncExecGrammar: string;

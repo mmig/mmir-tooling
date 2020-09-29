@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createBuildConfig = void 0;
 const process_1 = __importDefault(require("process"));
 const module_config_init_1 = __importDefault(require("../utils/module-config-init"));
 const directories_utils_1 = __importDefault(require("../tools/directories-utils"));

@@ -30,6 +30,6 @@ declare const _default: {
     addStateModelXml: typeof addStateModelXml;
     createDirectoriesJson: typeof createDirectoriesJson;
     getLanguages: typeof getLanguages;
-    setMode: (mode: "file" | "id") => void;
+    setMode: (mode: 'id' | 'file') => void;
 };
 export = _default;
