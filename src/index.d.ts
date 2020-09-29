@@ -567,7 +567,7 @@ export interface StateModelOption {
      * (the `moduleId` will be automatically set for `inputManager` and `dialogManager`)
      *
      */
-    moduleId?: string,
+    moduleId?: string;
 
     /** if `true`, the corresponding resource will be excluded (when parsing `path`) */
     exclude?: boolean;
@@ -697,7 +697,7 @@ export type MediaManagerPluginsConfig = {
         android?: Array<mmir.MediaManagerPluginEntry>;
         ios?: Array<mmir.MediaManagerPluginEntry>;
         [env: string]: Array<mmir.MediaManagerPluginEntry>
-    }
+    };
 };
 
 export type AsyncGramarExecEntry = {id: string, phrase: string};
@@ -1064,18 +1064,18 @@ export interface CompilerCallback {
 }
 
 export type BuildConfig = {
-    grammars: GrammarBuildEntry[],
-    grammarOptions: GrammarBuildOptions,
-    views: ViewBuildEntry[],
-    viewOptions: ViewBuildOptions,
-    states: StateModelBuildEntry[],
-    stateOptions: StateBuildOptions,
-    implList: ImplementationBuildEntry[],
-    ctrlOptions: ControllerOptions,
-    helperOptions: HelperOptions,
-    modelOptions: ModelOptions,
-    settings: SettingsBuildEntry[],
-    settingsOptions: SettingsBuildOptions,
-    directories: DirectoriesInfo,
-    directoriesTargetDir?: string
+    grammars: GrammarBuildEntry[];
+    grammarOptions: GrammarBuildOptions;
+    views: ViewBuildEntry[];
+    viewOptions: ViewBuildOptions;
+    states: StateModelBuildEntry[];
+    stateOptions: StateBuildOptions;
+    implList: ImplementationBuildEntry[];
+    ctrlOptions: ControllerOptions;
+    helperOptions: HelperOptions;
+    modelOptions: ModelOptions;
+    settings: SettingsBuildEntry[];
+    settingsOptions: SettingsBuildOptions;
+    directories: DirectoriesInfo;
+    directoriesTargetDir?: string;
 }
