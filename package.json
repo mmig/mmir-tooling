@@ -14,11 +14,19 @@
   "bin": {
     "mmirinstall": "./bin/cli-mmir-install.js"
   },
+  "typesVersions": {
+    "<3.8": {
+      "*": [
+        "typings3.6/*"
+      ]
+    }
+  },
   "scripts": {
-    "build": "npm run build:clean && tsc && npm run build:copy && npm run build:assets",
+    "build": "npm run build:clean && tsc && npm run build:copy && npm run build:assets && npm run build:compat",
     "build:clean": "node -e require('fs-extra').emptyDirSync('build')",
     "build:copy": "node -e require('fs-extra').copy('build','./')",
-    "build:assets": "node -e require('fs-extra').copy('assets','./')",
+    "build:assets": "node -e require('fs-extra').copy('assets','./'),require('fs-extra').copy('assets','./build')",
+    "build:compat": "node -e require('fs-extra').emptyDirSync('typings3.6') && dtsdownlevel build --dir ../typings3.6",
     "test": "node test.js",
     "doc": "npm run doc:clean && npm run doc:gen",
     "doc:clean": "node -e require('fs-extra').emptyDirSync('docs')",
@@ -42,6 +50,7 @@
     "cross-var": "^1.1.0",
     "eclint": "^2.8.1",
     "mmir-lib": "^6.1.0",
+    "mmir-plugin-exports": "^2.1.1",
     "typedoc": "^0.19.2",
     "typedoc-plugin-external-module-name": "^4.0.3",
     "typedoc-plugin-markdown": "^3.0.3",

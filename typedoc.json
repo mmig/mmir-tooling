@@ -1,7 +1,7 @@
 {
   "includeDeclarations": true,
   "excludeExternals": false,
-  "exclude": ["node_modules/!(mmir-)*/**"],
+  "exclude": ["node_modules/!(mmir-)*/**","build","typings3.6"],
   "excludePrivate": true,
   "readme": "none",
   "mode": "modules",
