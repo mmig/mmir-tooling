@@ -1,30 +1,23 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var path = __importStar(require("path"));
-var fs = __importStar(require("fs-extra"));
-var _ = require('lodash');
-var filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
-var module_config_init_1 = __importDefault(require("../utils/module-config-init"));
-var directories_utils_1 = __importDefault(require("../tools/directories-utils"));
-var option_utils_1 = __importDefault(require("../tools/option-utils"));
-var log_utils_1 = __importDefault(require("../utils/log-utils"));
-var log = log_utils_1.default.log;
-var warn = log_utils_1.default.warn;
-var DEFAULT_MODE = 'extended';
+const path_1 = __importDefault(require("path"));
+const fs_extra_1 = __importDefault(require("fs-extra"));
+const lodash_1 = __importDefault(require("lodash"));
+const filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
+const module_config_init_1 = __importDefault(require("../utils/module-config-init"));
+const directories_utils_1 = __importDefault(require("../tools/directories-utils"));
+const option_utils_1 = __importDefault(require("../tools/option-utils"));
+const log_utils_1 = __importDefault(require("../utils/log-utils"));
+const log = log_utils_1.default.log;
+const warn = log_utils_1.default.warn;
+const DEFAULT_MODE = 'extended';
 function readDir(dir, list, options) {
-    var files = fs.readdirSync(dir);
-    var dirs = [];
+    const files = fs_extra_1.default.readdirSync(dir);
+    const dirs = [];
     //sort file list to prioritize 'dialog.xml' and 'input.xml' (i.e. put at the beginning of the list)
-    var re = /^(dialog|input)\.xml$/i;
+    const re = /^(dialog|input)\.xml$/i;
     files.sort(function (f1, f2) {
         if (f1 === f2)
             return 0;
@@ -36,14 +29,14 @@ function readDir(dir, list, options) {
     });
     // log('read dir "'+dir+'" -> ', files);//DEBU
     files.forEach(function (p) {
-        var absPath = path.join(dir, p);
+        const absPath = path_1.default.join(dir, p);
         if (filepath_utils_1.default.isDirectory(absPath)) {
             dirs.push(absPath);
             return false;
         }
         else if (/\.xml$/i.test(p)) {
-            var normalized = filepath_utils_1.default.normalizePath(absPath);
-            var defModel, id, modId;
+            const normalized = filepath_utils_1.default.normalizePath(absPath);
+            let defModel, id, modId;
             if (/^(dialog|input)(DescriptionSCXML)?\.xml$/i.test(p)) { // BACKWARDS COMPATIBILITY: do also accept old/deprecated file names ...DescriptionSCXML.xml
                 // -> state models for input- or dialog-manager
                 defModel = /^(dialog|input)/i.exec(p);
@@ -52,9 +45,10 @@ function readDir(dir, list, options) {
             }
             else {
                 // -> custom state models
-                id = opt && opt.id ? opt.id : path.basename(p, path.extname(p));
+                const opt = options && options[id];
+                id = opt && opt.id ? opt.id : path_1.default.basename(p, path_1.default.extname(p));
             }
-            var opt = options && options[id];
+            const opt = options && options[id];
             if (opt && (opt.exclude || opt.file)) {
                 //-> ignore/exclude this scxml!
                 //  (if was not exlcuded, but file was specified -> will be added later in addFromOptions(..))
@@ -103,13 +97,13 @@ function readDir(dir, list, options) {
     }
 }
 function addFromOptions(stateModels, list, appRootDir) {
-    var s, entry, moduleId;
+    let s, entry, moduleId;
     for (var id in stateModels) {
         s = stateModels[id];
         if (s && s.file && !s.exclude) {
-            entry = _.cloneDeep(s);
-            if (!path.isAbsolute(entry.file)) {
-                entry.file = path.resolve(appRootDir, entry.file);
+            entry = lodash_1.default.cloneDeep(s);
+            if (!path_1.default.isAbsolute(entry.file)) {
+                entry.file = path_1.default.resolve(appRootDir, entry.file);
             }
             entry.file = filepath_utils_1.default.normalizePath(entry.file);
             if (entry.id && entry.id !== id) {
@@ -143,22 +137,29 @@ function addFromOptions(stateModels, list, appRootDir) {
         // }
     }
 }
+/**
+ * add (minimal) default state models for 'dialog' and/or 'input'
+ *
+ * @param kind the mode for the create default models, specified and other than 'minimal', a warning will be printed
+ * @param list INOUT parameter: the list of state model entries, to which the created default models will be added
+ * @param _appRootDir this path to app's root directory
+ */
 function addDefaults(kind, list, _appRootDir) {
     //TODO support other types/kinds than "minimal" engines
     if (kind && kind !== 'minimal') {
         warn('WARN scxml-utils: only support "minimal" for default input- and dialog-engine!');
     }
-    var inputEngine = {
+    const inputEngine = {
         id: 'input',
         moduleId: 'mmirf/inputManager',
         mode: 'extended',
-        file: filepath_utils_1.default.normalizePath(path.resolve(__dirname, '..', 'defaultValues/inputEngine.scxml'))
+        file: filepath_utils_1.default.normalizePath(path_1.default.resolve(__dirname, '..', 'defaultValues/inputEngine.scxml'))
     };
-    var dialogEngine = {
+    const dialogEngine = {
         id: 'dialog',
         moduleId: 'mmirf/dialogManager',
         mode: 'extended',
-        file: filepath_utils_1.default.normalizePath(path.resolve(__dirname, '..', 'defaultValues/dialogEngine.scxml'))
+        file: filepath_utils_1.default.normalizePath(path_1.default.resolve(__dirname, '..', 'defaultValues/dialogEngine.scxml'))
     };
     list.push(inputEngine, dialogEngine);
 }
@@ -168,7 +169,7 @@ function contains(list, id, moduleId) {
     }) !== -1;
 }
 function toAliasPath(stateModel) {
-    return path.normalize(stateModel.file);
+    return path_1.default.normalize(stateModel.file);
 }
 function toAliasId(stateModel) {
     return 'mmirf/state/' + stateModel.id;
@@ -196,8 +197,8 @@ module.exports = {
      */
     scxmlFromDir: function (options, appRootDir, stateModels) {
         var dir = options.path;
-        if (!path.isAbsolute(dir)) {
-            dir = path.resolve(appRootDir, dir);
+        if (!path_1.default.isAbsolute(dir)) {
+            dir = path_1.default.resolve(appRootDir, dir);
         }
         var list = stateModels || [];
         readDir(dir, list, options.models);
@@ -210,7 +211,7 @@ module.exports = {
         return list;
     },
     scxmlDefaults: function (options, appRootDir, stateModels) {
-        var kind = options && options.type;
+        const kind = options && options.defaultType;
         var list = stateModels || [];
         addDefaults(kind, list, appRootDir);
         return list;

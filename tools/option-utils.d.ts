@@ -7,7 +7,11 @@
  * @param  {{[field: string]: any}} globalOpt the global options for that type of element (e.g. GrammarOptions)
  * @param  {any} defaultValue the default value for the option/field (in case neither opt nor globalOpt for that field is defined)
  */
-declare function applySetting(field: any, opt: any, globalOpt: any, defaultValue: any): void;
+declare function applySetting(field: string, opt: {
+    [field: string]: any;
+}, globalOpt: {
+    [field: string]: any;
+}, defaultValue?: any): void;
 declare const _default: {
     applySetting: typeof applySetting;
 };

@@ -1,5 +1,8 @@
+import { StateCompilerOptions } from '../index.d';
+declare function prepareCompile(options: StateCompilerOptions): Promise<void>;
+declare function compile(loadOptions: StateCompilerOptions): Promise<Array<Error | Error[]> | any[]>;
 declare const _default: {
-    prepareCompile: (options: any) => Promise<void>;
-    compile: (loadOptions: any) => Promise<any[]>;
+    prepareCompile: typeof prepareCompile;
+    compile: typeof compile;
 };
 export = _default;

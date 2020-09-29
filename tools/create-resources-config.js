@@ -2,7 +2,7 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var lodash_1 = __importDefault(require("lodash"));
+const lodash_1 = __importDefault(require("lodash"));
 var mmirModuleBaseConfig = lodash_1.default.cloneDeep(require('mmir-lib/lib/modulesBaseConfig'));
 // //remove paths that match the ID from mmir base paths:
 // var removePathsList = ['jquery'];

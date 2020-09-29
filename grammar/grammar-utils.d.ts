@@ -1,6 +1,8 @@
-declare function parseRuntimeConfigurationForOptions(options: any, config: any): any;
-declare function toAliasPath(grammar: any): string;
-declare function toAliasId(grammar: any): string;
+import { GrammarEntry, GrammarBuildEntry, GrammarOptions, BuildAppConfig, DirectoriesInfo, ResourceConfig, RuntimeConfiguration } from '../index.d';
+import { WebpackAppConfig } from '../index-webpack.d';
+declare function parseRuntimeConfigurationForOptions(options: GrammarOptions | false, config: RuntimeConfiguration): GrammarOptions | null;
+declare function toAliasPath(grammar: GrammarEntry): string;
+declare function toAliasId(grammar: GrammarBuildEntry): string;
 declare const _default: {
     /**
      * parse directories for JSON grammars and create/return GrammarEntry list
@@ -41,7 +43,7 @@ declare const _default: {
      * 																												in a Worker (during build)
      * @return {Array<GrammarEntry>} the list of GrammarEntry objects
      */
-    jsonGrammarsFromDir: (options: any, appRootDir: any, grammarList: any) => any;
+    jsonGrammarsFromDir: (options: GrammarOptions, appRootDir: string, grammarList: GrammarEntry[]) => GrammarBuildEntry[];
     /**
      * add grammars from options.grammar map {[grammarID: string]: GrammarOption}, if the GrammarOption has a <code>file</code> field set.
      * @param  {GrammarOptions} options the grammar options with field options.grammars
@@ -49,7 +51,7 @@ declare const _default: {
      * @param  {{Array<GrammarEntry>}} [grammarList] OPTIONAL
      * @return {{Array<GrammarEntry>}}
      */
-    jsonGrammarsFromOptions: (options: any, appRootDir: any, grammarList: any) => any;
+    jsonGrammarsFromOptions: (options: GrammarOptions, appRootDir: string, grammarList: GrammarEntry[]) => GrammarBuildEntry[];
     /**
      * parse RuntimeConfiguration for grammar-related settings and "convert" them to the corresponding GrammarOptions
      * @param  {GrammarOptions} options the grammar options
@@ -65,7 +67,7 @@ declare const _default: {
      * @param  {{Array<GrammarEntry>}} grammarList
      * @return {{Array<GrammarEntry>}}
      */
-    applyDefaultOptions: (options: any, grammarList: any) => any;
+    applyDefaultOptions: (options: GrammarOptions, grammarList: GrammarEntry[]) => GrammarBuildEntry[];
     /**
      * add grammars to (webpack) app build configuration
      *
@@ -82,7 +84,7 @@ declare const _default: {
      * @param  {ResourcesConfig} _resources the resources configuration
      * @param  {[type]} runtimeConfiguration the configuration.json representation
      */
-    addGrammarsToAppConfig: (grammars: any, appConfig: any, directories: any, _resources: any, runtimeConfiguration: any) => void;
+    addGrammarsToAppConfig: (grammars: GrammarBuildEntry[], appConfig: BuildAppConfig | WebpackAppConfig, directories: DirectoriesInfo, _resources: ResourceConfig, runtimeConfiguration: RuntimeConfiguration) => void;
     toAliasId: typeof toAliasId;
     toAliasPath: typeof toAliasPath;
 };

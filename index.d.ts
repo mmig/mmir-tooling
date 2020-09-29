@@ -1,5 +1,9 @@
 /// <reference types="mmir-lib" />
 
+import { MediaManagerPluginEntry, GrammarEngineType } from 'mmir-lib';//FIXME
+
+export * from './index-webpack';
+
 /**
  * `mmir-tooling` generates/compiles/builds _mmir_ resources, e.g.
  * grammars or state-models.
@@ -269,10 +273,16 @@ export interface GrammarBuildOptions extends GrammarOptions, BuildOptions {
     /** @override */
     grammars?: {[grammarId: string]: GrammarBuildEntry};
 }
-export interface GrammarBuildEntry extends GrammarEntry, BuildOptions {}
+export interface GrammarBuildEntry extends GrammarEntry, BuildOptions {
+    fileType?: 'json' | 'js';
+}
 
 export interface ViewBuildOptions extends ViewOptions, BuildOptions {}
 export interface ViewBuildEntry extends ViewEntry, BuildOptions {}
+
+export interface ImplementationBuildEntry extends ImplementationEntry {
+    id?: string;
+}
 
 export interface SettingsBuildOptions extends SettingsOptions, BuildOptions {
     /** @override */
@@ -284,7 +294,12 @@ export interface SettingsBuildOptions extends SettingsOptions, BuildOptions {
     /** @override */
     speech?: boolean | {[id: string]: SettingsBuildEntry};
 }
-export interface SettingsBuildEntry extends SettingsEntryOptions, BuildOptions {}
+export interface SettingsBuildEntry extends SettingsEntryOptions, BuildOptions {
+    value?: any;
+}
+export interface SettingsBuildEntryMultiple extends SettingsEntryOptionsMultiple, BuildOptions {
+    value?: any;
+}
 
 export interface StateBuildOptions extends StateOptions, BuildOptions {
     /**
@@ -292,14 +307,45 @@ export interface StateBuildOptions extends StateOptions, BuildOptions {
      * @default "amd"
      */
     moduleType?: "amd" | "commonjs";
+
+    models?: StateModelsBuildOption;
+
+    /**
+     * if default models for 'input' and 'dialog' are created, specifies their
+     * mode
+     * (defaults will be created, if no definition for the models is specified
+     *  or can be found the the resources path(s))
+     */
+    defaultType?: StateModelMode | 'minimal';
 }
-export interface StateModelBuildEntry extends StateModelEntry, BuildOptions {}
+export interface StateModelBuildEntry extends StateModelEntry, BuildOptions {
+
+    /**
+     * The ID for state model
+     *
+     * NOTE: should not be set manually:
+     *      ID will be derived from entry key of models property of the containing StateOptions
+     */
+    id?: string;
+
+    /**
+     * the module type of the generated/compiled state machine
+     * @default "amd"
+     */
+    moduleType?: "amd" | "commonjs";
+}
+
+export interface StateModelsBuildOption extends StateModelsOption {
+    dialog?: StateModelBuildEntry;
+    input?: StateModelBuildEntry;
+    [id: string]: StateModelBuildEntry;
+}
 
 export interface GrammarOption {
     /** the Grammar engine that will be used to compile the executable grammar.
      * @default "jscc"
      */
-    engine?: "jscc" | "jison" | "pegjs";
+    engine?: GrammarEngineType;
     /**
      * if `true`, and thread-webworker is available, grammar will be compiled paralelized / in a separate thread
      * @default true
@@ -392,8 +438,13 @@ export interface SettingsOptions {
      */
     excludeTypePattern?: RegExp | Array<SettingsType>;
 
+    /**can be used to include the resource as separate file, instead of bundeling via webpack
+     * @default "inline" if webpack build, otherwise "file"
+     */
+    include?: 'inline' | 'file';
+
     /** options for the configuration.json (or .js) entry; if FALSE, the resource will be ignored */
-    configuration?: boolean | SettingsEntryOptions;
+    configuration?: boolean | SettingsEntryOptionsMultiple;
     /** options-map for the dictionary.json (or .js) entries where id is (usually) the language code; if `false`, these resources will be ignored */
     dictionary?: boolean | {[id: string]: SettingsEntryOptions};
     /** options-map for the grammar.json (or .js) entries where id is (usually) the language code; if `false`, these resources will be ignored */
@@ -402,7 +453,17 @@ export interface SettingsOptions {
     speech?: boolean | {[id: string]: SettingsEntryOptions};
 }
 
-export interface SettingsEntryOptions {
+export interface SettingsEntryOptions extends SettingsEntryOptionsBase {
+    /**  for explicitly specifying the settings-resource directly (e.g. instead or in addition of parsing `path` for settings resource files) */
+    file?: string;
+}
+
+export interface SettingsEntryOptionsMultiple extends SettingsEntryOptionsBase {
+    /**  for explicitly specifying the settings-resource directly (e.g. instead or in addition of parsing `path` for settings resource files) */
+    file?: string | string[];
+}
+
+export interface SettingsEntryOptionsBase {
     /** if `true`, the corresponding resource will be excluded (when parsing `path`) */
     exclude?: boolean;
 
@@ -410,9 +471,6 @@ export interface SettingsEntryOptions {
      * @default "inline"
      */
     include?: 'inline' | 'file';
-
-    /**  for explicitly specifying the settings-resource directly (e.g. instead or in addition of parsing `path` for settings resource files) */
-    file?: string;
 
     /** the settings-type _(should not be set manually)_ */
     type?: SettingsType;
@@ -430,7 +488,7 @@ export interface SettingsEntryOptions {
     fileType?: 'js' | 'json';
 }
 
-export type SettingsType = 'configuration' | 'dictionary' | 'grammar' | 'speech';
+export type SettingsType = 'configuration' | 'dictionary' | 'grammar' | 'speech' | 'speech-all';
 
 /**
  * @example
@@ -480,14 +538,18 @@ export interface StateOptions extends StateModelOption {
      * NOTE: for custom state-models whichs' files are determined by parsing [[StateOptions.path]],
      *       the `id` will be the file name (case sensitive, without extension).
      */
-    models?: {dialog?: StateModelEntry, input?: StateModelEntry, [id: string]: StateModelEntry};
+    models?: StateModelsOption;
+}
+
+export interface StateModelsOption {
+    /** default state model for dialog states */
+    dialog?: StateModelEntry;
+    /** default state model for input states */
+    input?: StateModelEntry;
+    [id: string]: StateModelEntry;
 }
 
 export interface StateModelOption {
-
-    //DISABLED should not be used -> ID will be derived from entry key of models property
-    // /** the ID for state model */
-    // id?: string;
 
     /**
      * the module ID for state interpreter:
@@ -508,7 +570,7 @@ export interface StateModelOption {
      * run SCXML model in "simple" or "extended" mode
      * @default "extended"
      */
-    mode?: "extended" | "simple";
+    mode?: StateModelMode;
 
     /** if `true`, runtime errors will be ignored.
      *  if `false` (or omitted) the compilation will fail with an error message
@@ -526,6 +588,8 @@ export interface StateModelOption {
      */
     strict?: boolean;
 }
+
+export type StateModelMode = "extended" | "simple";
 
 export interface StateModelEntry extends StateModelOption {
     /**  for explicitly specifying the state-machine directly (e.g. instead or in addition of parsing `path`) */
@@ -546,7 +610,7 @@ export interface RuntimeConfiguration {
     language?: string;
 
     /** grammar-compiler/-engine for compiling new grammars */
-    grammarCompiler?: "jscc" | "jison" | "pegjs";
+    grammarCompiler?: GrammarEngineType;
     /** if selected language only has JSON grammar, prevents automatic compilation */
     usePrecompiledGrammarsOnly?: boolean;
     /** if JSON grammar is compiled during runtime, use async (i.e. web worker) compilation */
@@ -568,7 +632,7 @@ export interface RuntimeConfiguration {
      * a phrase that should be immediately interpreted, after grammar has been loaded in the WebWorkers
      * (for large grammars, this may reduce delays for subsequent calls, by fully initializing the grammar)
      */
-    grammarAsyncExecMode?: Array<string> | Array<{id: string, phrase: string}> | true;
+    grammarAsyncExecMode?: Array<string | AsyncGramarExecEntry> | true;
 
     /**
      * detect if compiled state-models (i.e. JS-compiled SCXML files) are present & should be used
@@ -594,7 +658,7 @@ export interface RuntimeConfiguration {
     usePrecompiledViews?: boolean;
 
     /** configuration for media plugins, e.g. for speech recognition (ASR) and synthesis (TTS) */
-    mediaManager?: {plugins: {[env: string]: Array<mmir.MediaManagerPluginEntry>}};
+    mediaManager?: MediaManagerPluginsConfig;
 
     /**
      * dot-separated namespace for accessing the controller implementation's constructors
@@ -618,6 +682,20 @@ export interface RuntimeConfiguration {
     [configField: string]: any;
 }
 
+
+// export type MediaPluginEnvType = 'browser' | 'cordova' | 'android' | 'ios';
+export type MediaManagerPluginsConfig = {
+    plugins?: {
+        browser?: Array<mmir.MediaManagerPluginEntry>;
+        cordova?: Array<mmir.MediaManagerPluginEntry>;
+        android?: Array<mmir.MediaManagerPluginEntry>;
+        ios?: Array<mmir.MediaManagerPluginEntry>;
+        [env: string]: Array<mmir.MediaManagerPluginEntry>
+    }
+};
+
+export type AsyncGramarExecEntry = {id: string, phrase: string};
+
 /** module configuration: analogous to config-entry in requirejs configuration */
 export type ModuleConfigOptions = {[moduleId: string]: ModuleConfig};
 
@@ -633,6 +711,17 @@ export interface ResourcesOptions {
     addModuleExport?: boolean;
     /** excludes the specified resources types when parsing the `resourcesPath` */
     exclude?: Array<ResourceTypeName>;
+
+    /** exclude mmir resource directory `config` from parsing for settings */
+    config?: false;
+    /** exclude mmir resource directory `controllers` from parsing for settings */
+    controllers?: false;
+    /** exclude mmir resource directory `helpers` from parsing for settings */
+    helpers?: false;
+    /** exclude mmir resource directory `models` from parsing for settings */
+    models?: false;
+    /** exclude mmir resource directory `views` from parsing for settings */
+    views?: false;
 }
 
 /** a resource type; corresponds to field names in AppConfig */
@@ -661,6 +750,7 @@ export interface ViewEntry {
     viewImpl: 'mmirf/layout' | 'mmirf/partial' | 'mmirf/view';
     isLayout: boolean;
     isPartial: boolean;
+    strict: boolean;
 }
 
 /**
@@ -686,7 +776,7 @@ export interface ControllerOptions extends ImplementationOption {
      * `path/<controller ID>.js`
      */
     path?: string;
-    controllers?: boolean | {[id: string]: ImplementationEntry};
+    controllers?: boolean | {[id: string]: ImplementationEntry | boolean};
 }
 
 /**
@@ -706,7 +796,7 @@ export interface HelperOptions extends ImplementationOption {
      * `path/.../<controller ID>Helper.js`
      */
     path?: string;
-    helpers?: boolean | {[id: string]: ImplementationEntry};
+    helpers?: boolean | {[id: string]: ImplementationEntry | boolean};
 }
 
 /**
@@ -726,8 +816,10 @@ export interface ModelOptions extends ImplementationOption {
      * `path/<model ID>.js`
      */
     path?: string;
-    models?: boolean | {[id: string]: ImplementationEntry};
+    models?: boolean | {[id: string]: ImplementationEntry | boolean};
 }
+
+export type AnyImplementationOptions = ModelOptions | HelperOptions | ControllerOptions;
 
 export interface ImplementationOption {
 
@@ -752,10 +844,19 @@ export interface ImplementationEntry extends ImplementationOption {
     file?: string;
 
     /** the implementation's name (usually the ID with capitalized first letter) */
-    name: string;
+    name?: string;
 
     /** the implementation's type (should not be explicitly specified) */
-    type?: "controller" | "helper" | "model";
+    type?: ImplementationType;
+}
+
+export type ImplementationType = "controller" | "helper" | "model";
+
+export interface VirtualImplementationEntry {
+    /** module identifier (for use in `require(<moduleName>)`) */
+    moduleName: string;
+    /** (javascript) module code */
+    contents: string;
 }
 
 /**
@@ -798,7 +899,7 @@ export interface PluginOptions {
      */
     id: string;
     /** mode for including the plugin: if the plugin does not support the specified mode, will automatically use "default" mode */
-    mode?: 'wasm' | 'min' | 'default';
+    mode?: PluginModeOption;
     /**
      * configuration for the plugin: specific fields/values depending on the plugin
      * NOTE some plugins require credentials, e.g. "appId" and "appKey"
@@ -811,10 +912,65 @@ export interface PluginOptions {
      * NOTE if the plugin does not support custom build configuration, this
      *      will be ignored.
      */
-    buildConfig?: AppConfig;
+    build?: Array<PluginExportConfigInfo | PluginExportConfigInfoMultiple>;
 }
 
-export type PluginConfig = {[config: string]: any};
+export type PluginModeOption = 'wasm' | 'min' | 'default';
+
+export type PluginConfig = MediaManagerPluginEntry & {[config: string]: any};
+
+export type PluginExportInfo = {
+    id: string;
+    paths: {[moduleId: string]: string};
+    workers: string[];
+    modules: string[];
+    files: string[];
+    dependencies: string[];
+    modes?: {[pluginModeOption: string]: PluginExportModeEntry};
+    buildConfig?: PluginExportBuildConfig;
+    /**
+     * HELPER returns all entries for field <code>type</code>, (recursively) including the
+     *        corresponding field from dependencies
+     * @param       {"paths" | "workers" | "modules" | "dependencies" | "files"} type the field for which to gather entries
+     * @param       {"min" | String} [mode] OPTIONAL if the type should be modified according to a mode
+     * @param       {Boolean} [isResolve] OPTIONAL for type "paths" will make the paths absolute w.r.t. the corresponding module/dependency
+     *                                             (NOTE the absolute path may not be normalized, i.e. contain mixed path separators);
+     * @return      {Object|Array} the "collected" entries for the requested type
+     */
+    getAll(type: PluginExportType, mode?: PluginModeOption | string, isResolve?: boolean): string[] | {[moduleId: string]: string} | {[pluginModeOption: string]: PluginExportModeEntry};
+    /**
+     * HELPER returns list of (mmir) build configurations (to be merged into the main mmir build configuration)
+     *
+     * @param       {Object} [buildConfigsMap] OPTIONAL a map for already included buildConfigs: {[buildConfig: BuildConfig]: Boolean}
+     * @return      {Array<BuildConfig>} a list of (mmir) build configurations; may be empty
+     */
+    getBuildConfig?: (buildConfigsMap?: {[buildConfig: string]: boolean}) => PluginExportBuildConfig[];
+};
+
+export type PluginExportType = 'paths' | 'workers' | 'modules' | 'dependencies' | 'files';
+export type PluginExportModeEntry = {[modulePathOverrideId: string]: string} & {files?: string[]};
+
+export type SpeechConfigField = 'language' | 'voice';
+
+export interface PluginExportConfigInfoMultiple {
+  pluginName: string [];
+  plugins: {[pluginId: string]: PluginExportConfigInfo};
+}
+
+export interface PluginExportConfigInfo {
+  pluginName: string;
+  config?: string[];
+  /** may (or may not) contain a default value for entry of field config */
+  defaultValues?: {[configField: string]: any};
+  speechConfig?: Array<SpeechConfigField>;
+  /** may (or may not) contain a default value for entry of field speechConfig */
+  defaultSpeechValues?: {[speechConfigField: string]: any};
+  /** optional configuration for the AppConfig / BuildAppConfig / WebpackAppConfig */
+  buildConfigs?: PluginExportBuildConfig[];
+}
+
+/** configuration fields of AppConfig / BuildAppConfig / WebpackAppConfig  that a plugin can use to specify additional build configurations */
+export type PluginExportBuildConfig = {[appBuildConfigField: string]: any};
 
 /**
  * Additional configuration for speech output (TTS: Text To Speech) for mmir plugins:
@@ -843,4 +999,77 @@ export interface TTSPluginSpeechConfig {
     long?: string | {[languageCode: string]: string};
     /** voice name or feature (may not be supported by selected TTS plugin) */
     voice?: 'male' | 'female' | string | {[languageCode: string]: 'male' | 'female' | string};
+}
+
+export interface ResourceConfig {
+    paths: {[moduleId: string]: string};
+
+    // paths for web worker entry points (i.e. new Worker(<path>)):
+    workers: string[];
+    //paths for "raw" files that will be included as-is (i.e. copied)
+    fileResources: string[];
+    //path for text resources
+    textResources: string[];
+    //path mappings for copied files etc (i.e. will be included/copied to the specified relative file path/name)
+    resourcesPaths: {[moduleIdAndSubPath: string]: string};
+}
+
+export interface DirectoriesInfo {
+    "/controllers": string[];
+    "/views": string[];
+    "/models": string[];
+    "/config": string[];
+    "/config/languages": string[];
+    "/config/states": string[];
+    "/helpers": string[];
+    "/gen": string[];
+
+    "/gen/grammar"?: string[];
+    "/gen/view"?: string[];
+
+    [resourceId: string]: string[];
+}
+
+export interface ViewCompilerOptions {
+    mapping: ViewBuildEntry[];
+    config: ViewBuildOptions;
+}
+
+export interface StateCompilerOptions {
+    mapping: StateModelBuildEntry[];
+    config: StateBuildOptions;
+}
+
+export interface ImplementationCompilerOptions {
+    mapping: ImplementationBuildEntry[];
+    config: ImplementationOption;
+}
+
+export interface GrammarCompilerOptions {
+    mapping: GrammarBuildEntry[];
+    config: GrammarBuildOptions;
+}
+
+
+// export type CompilerCallback = (error: null | string | Error | any, code: string, map: any, meta: any) => void;
+export interface CompilerCallback {
+    (error: null | string | Error | any, code: string, map: any, meta: any): void;
+    (error: string | Error | any, code?: string, map?: any, meta?: any): void;
+}
+
+export type BuildConfig = {
+    grammars: GrammarBuildEntry[],
+    grammarOptions: GrammarBuildOptions,
+    views: ViewBuildEntry[],
+    viewOptions: ViewBuildOptions,
+    states: StateModelBuildEntry[],
+    stateOptions: StateBuildOptions,
+    implList: ImplementationBuildEntry[],
+    ctrlOptions: ControllerOptions,
+    helperOptions: HelperOptions,
+    modelOptions: ModelOptions,
+    settings: SettingsBuildEntry[],
+    settingsOptions: SettingsBuildOptions,
+    directories: DirectoriesInfo,
+    directoriesTargetDir?: string
 }

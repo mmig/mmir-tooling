@@ -3,5 +3,5 @@ function getDefault() {
     return {};
 }
 module.exports = {
-    getDefault: getDefault
+    getDefault
 };

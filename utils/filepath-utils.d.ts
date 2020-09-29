@@ -1,6 +1,6 @@
 declare const _default: {
-    normalizePath: (path: any) => any;
-    createFileTestFunc: (absolutePaths: any, debugStr: any) => (path: any) => boolean;
-    isDirectory: (path: any) => boolean;
+    normalizePath: (path: string) => string;
+    createFileTestFunc: (absolutePaths: string[], debugStr?: string) => (path: string) => boolean;
+    isDirectory: (path: string) => boolean;
 };
 export = _default;

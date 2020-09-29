@@ -1,3 +1,5 @@
+import { SettingsBuildOptions, SettingsType, SettingsBuildEntry, SettingsBuildEntryMultiple, RuntimeConfiguration, AsyncGramarExecEntry, DirectoriesInfo, ResourceConfig, BuildAppConfig, SettingsOptions } from '../index.d';
+import { Grammar, SpeechConfig } from 'mmir-lib';
 declare function getFileType(filePath: string): 'js' | 'json';
 /**
  * read settings file as JSON or "plain" CommonJS module and return PlainObject
@@ -7,8 +9,9 @@ declare function getFileType(filePath: string): 'js' | 'json';
  * @param  {boolean} [async] OPTIONAL (positional argument!) if settings file should be read async (which will return Promise)
  * @return {{[field: string]: any} | Promise<{[field: string]: any}>} the settings object (or if async, a Promise that resolves to the settings object)
  */
-declare function readSettingsFile(filePath: any, fileType?: 'json' | 'js', async?: boolean): any;
-declare function normalizeConfigurations(settingsList: any): void;
+declare function readSettingsFile(filePath: string, fileType?: 'json' | 'js', async?: boolean): any;
+import { WebpackAppConfig } from '../index-webpack.d';
+declare function normalizeConfigurations(settingsList: SettingsBuildEntry[]): void;
 /**
  * HELPER create a non-file settings entry (i.e. not loaded from a file)
  *
@@ -17,23 +20,19 @@ declare function normalizeConfigurations(settingsList: any): void;
  * @param  {String} [id] if more than 1 settings-entry for this type can exist, its ID
  * @return {SettingsEntry} the settings-entry
  */
-declare function createSettingsEntryFor(type: any, value: any, id?: any): {
-    type: any;
-    file: string;
-    include: any;
-    value: any;
-    id: any;
-};
-declare function getConfiguration(settingsList: any): any;
-declare function getSettings(settingsList: any, type: any): any;
+declare function createSettingsEntryFor(type: SettingsType, value: any, id?: string): SettingsBuildEntry;
+declare function getConfiguration(settingsList: SettingsBuildEntry[]): SettingsBuildEntryMultiple | undefined;
+declare function getSettings(settingsList: SettingsBuildEntry[], type: SettingsType): SettingsBuildEntry[];
 /**
  * HELPER create default for settings type
  *
  * @param  {SettingsType} type the type of settings object, e.g. "speech" or "configuration"
  * @param  {String} id if more than 1 settings-entry for this type can exist, its ID
- * @return {nay} the (default) settings value for id
+ * @return {any} the (default) settings value for id
  */
-declare function createDefaultSettingsFor(type: any, id: any): any;
+declare function createDefaultSettingsFor(type: SettingsType | string, id: string): RuntimeConfiguration | Grammar | {
+    [dictKey: string]: string;
+} | SpeechConfig;
 /**
  * check if settings entry should be excluded
  *
@@ -41,10 +40,10 @@ declare function createDefaultSettingsFor(type: any, id: any): any;
  * @param  {Array<SettingsType>|RegExp} [excludeTypePattern] if not specified, always returns FALSE
  * @return {Boolean} TRUE if settings should be excluded
  */
-declare function isExclude(settingsType: any, excludeTypePattern: any): any;
+declare function isExclude(settingsType: SettingsType, excludeTypePattern: Array<SettingsType> | RegExp): boolean;
 declare const _default: {
-    setGrammarIgnored: (runtimeConfiguration: any, grammarId: any) => void;
-    setGrammarAsyncExec: (runtimeConfiguration: any, grammarIdOrEntry: any) => void;
+    setGrammarIgnored: (runtimeConfiguration: RuntimeConfiguration, grammarId: string) => void;
+    setGrammarAsyncExec: (runtimeConfiguration: RuntimeConfiguration, grammarIdOrEntry: string | AsyncGramarExecEntry) => void;
     /**
      * parse for JSON settings files
      *
@@ -67,7 +66,7 @@ declare const _default: {
      * 																			id: String | undefined
      * 																		}
      */
-    jsonSettingsFromDir: (options: any, appRootDir: any, settingsList?: any) => any;
+    jsonSettingsFromDir: (options: false | SettingsOptions | SettingsBuildOptions, appRootDir: string, settingsList?: SettingsBuildEntry[]) => SettingsBuildEntry[];
     createSettingsEntryFor: typeof createSettingsEntryFor;
     createDefaultSettingsFor: typeof createDefaultSettingsFor;
     normalizeConfigurations: typeof normalizeConfigurations;
@@ -78,7 +77,7 @@ declare const _default: {
      */
     loadSettingsFrom: typeof readSettingsFile;
     getFileType: typeof getFileType;
-    getAllSpeechConfigsType: () => string;
+    getAllSpeechConfigsType: () => "speech-all";
     /**
      * apply the "global" options from `options` or default values to the entries
      * from `settingsList` if its corresponding options-field is not explicitly specified.
@@ -87,8 +86,8 @@ declare const _default: {
      * @param  {{Array<SettingsEntry>}} settingsList
      * @return {{Array<SettingsEntry>}}
      */
-    applyDefaultOptions: (options: any, settingsList: any) => any;
-    addSettingsToAppConfig: (settings: any, appConfig: any, directories: any, _resources: any, runtimeConfig: any, settingsOptions: any, ignoreMissingDictionaries?: boolean) => void;
+    applyDefaultOptions: (options: SettingsBuildOptions, settingsList: SettingsBuildEntry[]) => SettingsBuildEntry[];
+    addSettingsToAppConfig: (settings: SettingsBuildEntry[], appConfig: BuildAppConfig | WebpackAppConfig, directories: DirectoriesInfo, _resources: ResourceConfig, runtimeConfig: RuntimeConfiguration, settingsOptions: false | SettingsOptions | SettingsBuildOptions, ignoreMissingDictionaries?: boolean) => void;
     isExcludeType: typeof isExclude;
     configEntryIgnoreGrammar: string;
     configEntryAsyncExecGrammar: string;

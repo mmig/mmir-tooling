@@ -2,9 +2,9 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var log_utils_1 = __importDefault(require("../utils/log-utils"));
-var log = log_utils_1.default.log;
-// var warn = logUtils.warn;
+const log_utils_1 = __importDefault(require("../utils/log-utils"));
+const log = log_utils_1.default.log;
+// const warn = logUtils.warn;
 function getExportCodeFor(varName) {
     return '\n' +
         // 'if(typeof module !== "undefined" && module.exports) {' +
@@ -22,13 +22,13 @@ function getExportCodeFor(varName) {
  * @param  {any} [_meta] meta data (unused)
  */
 function compile(content, implFile, options, callback, _map, _meta) {
-    var i = options.mapping.findIndex(function (impl) {
+    const i = options.mapping.findIndex(function (impl) {
         return impl.file === implFile;
     });
-    var implInfo = options.mapping[i];
+    const implInfo = options.mapping[i];
     log('mmir-impl-loader: options for resource -> ', implInfo); //DEBUG
     if (!implInfo || !implInfo.name) {
-        var error;
+        let error;
         if (options.mapping.length === 0) {
             error = 'failed to parse implementation: empty list for impl. settings [{id: "the ID", file: "the file path", ...}, ...]';
         }
@@ -44,7 +44,7 @@ function compile(content, implFile, options, callback, _map, _meta) {
         callback(error);
         return; /////////////// EARLY EXIT /////////////////
     }
-    var implCode = content;
+    let implCode = content;
     if (implInfo.addModuleExport) {
         var name = typeof implInfo.addModuleExport === 'string' ? implInfo.addModuleExport : implInfo.name;
         log('mmir-impl-loader: adding module.exports for resource ' + implInfo.id + ' -> ', name); //DEBUG

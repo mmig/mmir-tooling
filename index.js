@@ -1,53 +1,55 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var path = __importStar(require("path"));
-var array_flatten_1 = require("array-flatten");
-var promise_1 = __importDefault(require("./utils/promise"));
-var directories_utils_1 = __importDefault(require("./tools/directories-utils"));
-var create_build_config_1 = require("./tools/create-build-config");
-var create_resources_config_1 = __importDefault(require("./tools/create-resources-config"));
-var grammar_compiler_1 = __importDefault(require("./compiler/grammar-compiler"));
-var view_compiler_1 = __importDefault(require("./compiler/view-compiler"));
-var scxml_compiler_1 = __importDefault(require("./compiler/scxml-compiler"));
-var settings_compiler_1 = __importDefault(require("./compiler/settings-compiler"));
-var cli_utils_1 = __importDefault(require("./utils/cli-utils"));
-var getTargetDir = function (appConfig, mainOptions, optType) {
-    return mainOptions[optType + 'Options'].targetDir || (appConfig.targetDir && path.join(appConfig.targetDir, 'gen', optType));
-};
-var resolveTargetDir = function (appDir, targetDir) {
-    if (!path.isAbsolute(targetDir)) {
-        return path.join(appDir, targetDir);
+const path_1 = __importDefault(require("path"));
+const array_flatten_1 = require("array-flatten");
+const promise_1 = __importDefault(require("./utils/promise"));
+const directories_utils_1 = __importDefault(require("./tools/directories-utils"));
+const create_build_config_1 = require("./tools/create-build-config");
+const create_resources_config_1 = __importDefault(require("./tools/create-resources-config"));
+const grammar_compiler_1 = __importDefault(require("./compiler/grammar-compiler"));
+const view_compiler_1 = __importDefault(require("./compiler/view-compiler"));
+const scxml_compiler_1 = __importDefault(require("./compiler/scxml-compiler"));
+const settings_compiler_1 = __importDefault(require("./compiler/settings-compiler"));
+const cli_utils_1 = __importDefault(require("./utils/cli-utils"));
+function getTargetDir(appConfig, mainOptions, optType) {
+    return mainOptions[optType + 'Options'].targetDir || (appConfig.targetDir && path_1.default.join(appConfig.targetDir, 'gen', optType));
+}
+function resolveTargetDir(appDir, targetDir) {
+    if (!path_1.default.isAbsolute(targetDir)) {
+        return path_1.default.join(appDir, targetDir);
     }
     return targetDir;
-};
-var processTargetDirs = function (appDir, appConfig, buildConfig) {
+}
+function processTargetDirs(appDir, appConfig, buildConfig) {
     if (typeof buildConfig.stateOptions === 'undefined') {
         buildConfig.stateOptions = {};
     }
     if (buildConfig.grammarOptions)
-        buildConfig.grammarOptions.targetDir = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'grammar') || path.join('www', 'gen', 'grammar'));
+        buildConfig.grammarOptions.targetDir = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'grammar') || path_1.default.join('www', 'gen', 'grammar'));
     if (buildConfig.viewOptions)
-        buildConfig.viewOptions.targetDir = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view') || path.join('www', 'gen', 'view'));
+        buildConfig.viewOptions.targetDir = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'view') || path_1.default.join('www', 'gen', 'view'));
     if (buildConfig.stateOptions)
-        buildConfig.stateOptions.targetDir = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'state') || path.join('www', 'gen', 'state'));
+        buildConfig.stateOptions.targetDir = resolveTargetDir(appDir, getTargetDir(appConfig, buildConfig, 'state') || path_1.default.join('www', 'gen', 'state'));
     buildConfig.directoriesTargetDir = resolveTargetDir(appDir, appConfig.directoriesTargetDir ?
         appConfig.directoriesTargetDir : appConfig.targetDir ?
-        path.join(appConfig.targetDir, 'gen') : path.join('www', 'gen'));
+        path_1.default.join(appConfig.targetDir, 'gen') : path_1.default.join('www', 'gen'));
     if (buildConfig.settingsOptions) {
-        buildConfig.settingsOptions.targetDir = resolveTargetDir(appDir, appConfig.settingsOptions && appConfig.settingsOptions.targetDir ?
-            appConfig.settingsOptions.targetDir : appConfig.targetDir ?
-            path.join(appConfig.targetDir, 'config') : path.join('www', 'config'));
+        buildConfig.settingsOptions.targetDir = resolveTargetDir(appDir, appConfig.settings && appConfig.settings.targetDir ?
+            appConfig.settings.targetDir : appConfig.targetDir ?
+            path_1.default.join(appConfig.targetDir, 'config') : path_1.default.join('www', 'config'));
     }
-};
+}
 /**
  * HELPER disable build options that are not supported in "bare build"
  *
@@ -56,7 +58,7 @@ var processTargetDirs = function (appDir, appConfig, buildConfig) {
  * @param  {any} buildConfig the build options (or sub-build options)
  * @param  {string | Array<string>} resType the build-option name or path to a sub-build option
  */
-var checkBuildOptions = function (buildConfig, resType, resTypeMessage) {
+function checkBuildOptions(buildConfig, resType, resTypeMessage) {
     if (Array.isArray(resType)) {
         resTypeMessage = resTypeMessage || resType.join('.');
         var optName = resType.shift();
@@ -76,8 +78,9 @@ var checkBuildOptions = function (buildConfig, resType, resTypeMessage) {
             buildConfig[resType] = false;
         }
     }
-};
-var compileResources = function (mmirAppConfig) {
+}
+;
+function compileResources(mmirAppConfig) {
     //set defaults specific for tooling-build
     directories_utils_1.default.setMode('file');
     mmirAppConfig.includeViewTemplates = typeof mmirAppConfig.includeViewTemplates === 'boolean' ? mmirAppConfig.includeViewTemplates : true;
@@ -89,11 +92,11 @@ var compileResources = function (mmirAppConfig) {
     // checkBuildOptions(mmirAppConfig, ['settings', 'configuration']);
     // checkBuildOptions(mmirAppConfig, ['settings', 'grammar']);
     // checkBuildOptions(mmirAppConfig, ['settings', 'speech']);
-    var resourcesConfig = create_resources_config_1.default();
-    var buildConfig = create_build_config_1.createBuildConfig(mmirAppConfig, resourcesConfig);
-    var appRootDir = mmirAppConfig.rootPath;
+    const resourcesConfig = create_resources_config_1.default();
+    const buildConfig = create_build_config_1.createBuildConfig(mmirAppConfig, resourcesConfig);
+    const appRootDir = mmirAppConfig.rootPath;
     // const moduleRules = [];
-    var tasks = [];
+    const tasks = [];
     processTargetDirs(appRootDir, mmirAppConfig, buildConfig);
     tasks.push(settings_compiler_1.default.prepareWriteSettings(buildConfig.settings, buildConfig.settingsOptions).then(function () {
         return settings_compiler_1.default.writeSettings(buildConfig.settings, buildConfig.settingsOptions);
@@ -185,34 +188,36 @@ var compileResources = function (mmirAppConfig) {
     // 	});
     // }
     return tasks;
-};
-var getErrors = function (taskResults) {
+}
+function getErrors(taskResults) {
     if (taskResults instanceof Error) {
-        return [taskResults.stack ? taskResults.stack : taskResults];
+        return [taskResults];
     }
     if (Array.isArray(taskResults)) {
         return array_flatten_1.flatten(taskResults).filter(function (err) { return !!err; });
     }
     return taskResults ? [taskResults] : [];
-};
+}
 module.exports = {
     /**
      * @param  {[type]} mmirAppConfig app-specific configuration for mmir-lib
      */
     apply: function (mmirAppConfig) {
-        cli_utils_1.default.parseCli();
-        mmirAppConfig = mmirAppConfig || {
-            rootPath: process.cwd(),
-            resourcesPath: 'www',
-            controllers: false,
-            helpers: false,
-            models: false,
-            settings: {
-                configuration: false,
-                speech: false
-            }
-        };
-        var taskList = compileResources(mmirAppConfig);
-        return promise_1.default.all(taskList).then(getErrors).catch(getErrors);
+        return __awaiter(this, void 0, void 0, function* () {
+            cli_utils_1.default.parseCli();
+            mmirAppConfig = mmirAppConfig || {
+                rootPath: process.cwd(),
+                resourcesPath: 'www',
+                controllers: false,
+                helpers: false,
+                models: false,
+                settings: {
+                    configuration: false,
+                    speech: false
+                }
+            };
+            var taskList = compileResources(mmirAppConfig);
+            return promise_1.default.all(taskList).then(getErrors).catch(getErrors);
+        });
     }
 };

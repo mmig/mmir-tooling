@@ -1,33 +1,35 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var path = __importStar(require("path"));
-var fs = __importStar(require("fs-extra"));
-var lodash_1 = __importDefault(require("lodash"));
-var promise_1 = __importDefault(require("../utils/promise"));
-var filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
-var module_config_init_1 = __importDefault(require("../utils/module-config-init"));
-var directories_utils_1 = __importDefault(require("./directories-utils"));
-var option_utils_1 = __importDefault(require("./option-utils"));
-var log_utils_1 = __importDefault(require("../utils/log-utils"));
-var log = log_utils_1.default.log;
-var warn = log_utils_1.default.warn;
-var configuration_1 = __importDefault(require("../defaultValues/settings/configuration"));
-var dictionary_1 = __importDefault(require("../defaultValues/settings/dictionary"));
-var grammar_1 = __importDefault(require("../defaultValues/settings/grammar"));
-var speech_1 = __importDefault(require("../defaultValues/settings/speech"));
-var ALL_SPEECH_CONFIGS_TYPE = 'speech-all';
-var CONFIG_IGNORE_GRAMMAR_FILES = 'ignoreGrammarFiles';
-var CONFIG_GRAMMAR_ASYNC_EXEC = 'grammarAsyncExecMode';
-var CONFIG_GRAMMAR_DISABLE_STRICT_MODE = 'grammarDisableStrictCompileMode';
+const path_1 = __importDefault(require("path"));
+const fs_extra_1 = __importDefault(require("fs-extra"));
+const lodash_1 = __importDefault(require("lodash"));
+const promise_1 = __importDefault(require("../utils/promise"));
+const filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
+const module_config_init_1 = __importDefault(require("../utils/module-config-init"));
+const directories_utils_1 = __importDefault(require("./directories-utils"));
+const option_utils_1 = __importDefault(require("./option-utils"));
+const log_utils_1 = __importDefault(require("../utils/log-utils"));
+const log = log_utils_1.default.log;
+const warn = log_utils_1.default.warn;
+const configuration_1 = __importDefault(require("../defaultValues/settings/configuration"));
+const dictionary_1 = __importDefault(require("../defaultValues/settings/dictionary"));
+const grammar_1 = __importDefault(require("../defaultValues/settings/grammar"));
+const speech_1 = __importDefault(require("../defaultValues/settings/speech"));
+const ALL_SPEECH_CONFIGS_TYPE = 'speech-all';
+const CONFIG_IGNORE_GRAMMAR_FILES = 'ignoreGrammarFiles';
+const CONFIG_GRAMMAR_ASYNC_EXEC = 'grammarAsyncExecMode';
+const CONFIG_GRAMMAR_DISABLE_STRICT_MODE = 'grammarDisableStrictCompileMode';
 /**
  * scan for
  *
@@ -45,17 +47,17 @@ var CONFIG_GRAMMAR_DISABLE_STRICT_MODE = 'grammarDisableStrictCompileMode';
  * @return {[type]} [description]
  */
 function readDir(dir, list, options) {
-    var files = fs.readdirSync(dir);
+    var files = fs_extra_1.default.readdirSync(dir);
     var dirs = [];
     // log('read dir "'+dir+'" -> ', files);
     files.forEach(function (p) {
-        var absPath = path.join(dir, p);
+        var absPath = path_1.default.join(dir, p);
         if (filepath_utils_1.default.isDirectory(absPath)) {
             dirs.push(absPath);
             return false;
         }
         else if (/(configuration|dictionary|grammar|speech)\.js(on)?$/i.test(absPath)) {
-            var id, type;
+            let id, type;
             if (isSettingsType('configuration', absPath)) {
                 type = 'configuration';
             }
@@ -63,9 +65,9 @@ function readDir(dir, list, options) {
                 type = getTypeFrom(absPath);
                 id = getIdFor(absPath);
             }
-            var isAdd = true;
-            var isInline = true;
-            var isForce; //default for force: undefined
+            let isAdd = true;
+            let isInline = true;
+            let isForce; //default for force: undefined
             if (options) {
                 isInline = !/file/i.test(options.include);
                 if (options[type] === false) {
@@ -110,13 +112,13 @@ function readDir(dir, list, options) {
 // 	//TODO
 // }
 function isSettingsType(type, filePath) {
-    return new RegExp('^' + type + '\.json$', 'i').test(path.basename(filePath));
+    return new RegExp('^' + type + '\.json$', 'i').test(path_1.default.basename(filePath));
 }
 function getTypeFrom(settingsFilePath) {
-    return path.basename(settingsFilePath).replace(/\.js(on)?$/, '');
+    return path_1.default.basename(settingsFilePath).replace(/\.js(on)?$/, '');
 }
 function getIdFor(settingsFilePath) {
-    return path.basename(path.dirname(settingsFilePath));
+    return path_1.default.basename(path_1.default.dirname(settingsFilePath));
 }
 function getFileType(filePath) {
     return /\.js$/i.test(filePath) ? 'js' : 'json';
@@ -150,17 +152,19 @@ function requireJson(filePath) {
 }
 function readJsonSync(filePath) {
     // log('reading ', filePath);//DEBU
-    var buffer = fs.readFileSync(filePath);
+    var buffer = fs_extra_1.default.readFileSync(filePath);
     return binToJsonObj(buffer, filePath);
 }
 function readJsonAsync(filePath) {
-    // log('reading ', filePath);//DEBU
-    return new promise_1.default(function (resolve, reject) {
-        fs.readFile(filePath, function (err, buffer) {
-            if (err) {
-                return reject(err);
-            }
-            resolve(binToJsonObj(buffer, filePath));
+    return __awaiter(this, void 0, void 0, function* () {
+        // log('reading ', filePath);//DEBU
+        return new promise_1.default(function (resolve, reject) {
+            fs_extra_1.default.readFile(filePath, function (err, buffer) {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(binToJsonObj(buffer, filePath));
+            });
         });
     });
 }
@@ -204,12 +208,6 @@ function detectByteOrder(buffer) {
     //try utf8 anyway...
     return 'utf8';
 }
-// function toUtfString(buffer, enc){
-// 	var penc = enc.replace('utf', 'utf-');
-// 	// var Iconv = require('iconv').Iconv;
-// 	// var iconv = new Iconv(penc, 'UTF-8');
-// 	// return iconv.convert(buffer).toString();
-// 	import iconv from 'iconv-lite';
 // 	return iconv.decode(buffer, enc);
 // }
 function removeBom(content) {
@@ -227,11 +225,16 @@ function removeBom(content) {
 function doLoadAllFilesFor(s) {
     if (!s.value) {
         warn('WARN settings-utils: forced merging for "' + s.id + '" (' + s.type + ') with multiple file resources: content not loaded yet, loading file content and merging now...');
-        var content = {};
-        s.file.forEach(function (f) {
-            lodash_1.default.merge(content, readSettingsFile(f));
-        });
-        s.value = content;
+        if (Array.isArray(s.file)) {
+            var content = {};
+            s.file.forEach(function (f) {
+                lodash_1.default.merge(content, readSettingsFile(f));
+            });
+            s.value = content;
+        }
+        else {
+            warn('WARN settings-utils: could not merge files for "' + s.id + '" (' + s.type + ') since there is no file list: ', s.file);
+        }
     }
     else {
         log('settings-utils: multiple file resources for "' + s.id + '" (' + s.type + ') already merged to ', s.value);
@@ -264,7 +267,7 @@ function normalizeConfigurations(settingsList) {
                 // log("INFO settings-utils: encountered multiple configuration.json definition: merging configuration, some values may get overwritten");//DEBU
                 //if "include" was set to "file", the file contents have not been loaded yet
                 if (!conf.value) {
-                    conf.value = readSettingsFile(conf.file, conf.fileType);
+                    conf.value = readSettingsFile(Array.isArray(conf.file) ? conf.file[0] : conf.file, conf.fileType);
                 }
                 if (!c.value) {
                     c.value = readSettingsFile(c.file, c.fileType);
@@ -313,7 +316,7 @@ function getSettings(settingsList, type) {
  *
  * @param  {SettingsType} type the type of settings object, e.g. "speech" or "configuration"
  * @param  {String} id if more than 1 settings-entry for this type can exist, its ID
- * @return {nay} the (default) settings value for id
+ * @return {any} the (default) settings value for id
  */
 function createDefaultSettingsFor(type, id) {
     switch (type) {
@@ -398,8 +401,8 @@ module.exports = {
      */
     jsonSettingsFromDir: function (options, appRootDir, settingsList) {
         var dir = options && options.path;
-        if (dir && !path.isAbsolute(dir)) {
-            dir = path.resolve(appRootDir, dir);
+        if (dir && !path_1.default.isAbsolute(dir)) {
+            dir = path_1.default.resolve(appRootDir, dir);
         }
         var list = settingsList || [];
         if (dir) {
@@ -449,17 +452,17 @@ module.exports = {
             return;
         }
         //get speech-config settings that should be applied to speech-configs
-        var iall = settings.findIndex(function (s) {
+        const iall = settings.findIndex(function (s) {
             return s.type === ALL_SPEECH_CONFIGS_TYPE;
         });
-        var allSpeechSettings;
+        let allSpeechSettings;
         if (iall !== -1) {
             allSpeechSettings = settings[iall];
             //remove from settings list (will be merged into each speech-config, see below)
             settings.splice(iall, 1);
         }
-        var regExpExcludeType = settingsOptions.excludeTypePattern;
-        var dicts = ignoreMissingDictionaries ? null : new Map();
+        const regExpExcludeType = settingsOptions && settingsOptions.excludeTypePattern;
+        const dicts = ignoreMissingDictionaries ? null : new Map();
         settings.forEach(function (s) {
             if (isExclude(s.type, regExpExcludeType)) {
                 return;
@@ -516,7 +519,7 @@ module.exports = {
             var missing = [];
             languages.forEach(function (l) {
                 var dict = dicts.get(l);
-                if (!dict && settingsOptions.dictionary !== false) {
+                if (!dict && settingsOptions && settingsOptions.dictionary !== false) {
                     var dictEntry = createSettingsEntryFor('dictionary', createDefaultSettingsFor('dictionary', l), l);
                     missing.push(dictEntry);
                     settings.push(dictEntry);

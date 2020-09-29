@@ -1,11 +1,14 @@
-declare function createPendingAsyncGrammarsInfo(): {
+import { GrammarEngineType } from 'mmir-lib';
+import { GrammarBuildEntry, GrammarCompilerOptions, CompilerCallback } from '../index.d';
+declare type AsyncPendingInfo = {
     jison: number;
     jscc: number;
     pegjs: number;
-    reset: () => void;
+    reset(): void;
 };
-declare function getEngine(grammarInfo: any, options: any): any;
-declare function isAsyncCompile(grammarInfo: any, options: any): any;
+declare function createPendingAsyncGrammarsInfo(): AsyncPendingInfo;
+declare function getEngine(grammarInfo: GrammarBuildEntry, options: GrammarCompilerOptions): GrammarEngineType;
+declare function isAsyncCompile(grammarInfo: GrammarBuildEntry, options: GrammarCompilerOptions): boolean;
 /**
  * compile a JSON grammar into an executable JS grammar
  *
@@ -16,20 +19,20 @@ declare function isAsyncCompile(grammarInfo: any, options: any): any;
  * @param  {any} [_map] source mapping (unused)
  * @param  {any} [_meta] meta data (unused)
  */
-declare function compile(content: any, grammarFile: any, options: any, callback: any, _map: any, _meta: any): void;
+declare function compile(content: string, grammarFile: string, options: GrammarCompilerOptions, callback: CompilerCallback, _map: any, _meta: any): void;
 /**
  * HELPER create info-object that helps deciding when to shut-down an async grammar compiler (i.e. stop its thread)
  *
  * @param  {GrammarLoadOptions} options the grammar options with property mapping (list of GrammarOptions)
  */
-declare function initPendingAsyncGrammarInfo(options: any): void;
-declare function updatePendingAsyncGrammarFinished(grammarInfo: any, grammarLoadOptions: any): void;
+declare function initPendingAsyncGrammarInfo(options: GrammarCompilerOptions): void;
+declare function updatePendingAsyncGrammarFinished(grammarInfo: GrammarBuildEntry, grammarLoadOptions: GrammarCompilerOptions): void;
 declare const _default: {
     compile: typeof compile;
     isAsyncSupported: () => boolean;
     createPendingAsyncGrammarsInfo: typeof createPendingAsyncGrammarsInfo;
-    getPendingAsyncGrammars: () => any;
-    setPendingAsyncGrammars: (pending: any) => void;
+    getPendingAsyncGrammars: () => AsyncPendingInfo;
+    setPendingAsyncGrammars: (pending: AsyncPendingInfo) => void;
     initPendingAsyncGrammarInfo: typeof initPendingAsyncGrammarInfo;
     getEngine: typeof getEngine;
     isAsyncCompile: typeof isAsyncCompile;

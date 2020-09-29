@@ -2,9 +2,9 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var log_utils_1 = __importDefault(require("../utils/log-utils"));
-// var log = logUtils.log;
-var warn = log_utils_1.default.warn;
+const log_utils_1 = __importDefault(require("../utils/log-utils"));
+// const log = logUtils.log;
+const warn = log_utils_1.default.warn;
 //////// async / threaded grammar compiler support: ////////////////
 var asyncSupport = false;
 try {

@@ -1,38 +1,31 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var path = __importStar(require("path"));
-var fs = __importStar(require("fs-extra"));
-var _ = require('lodash');
-var filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
-var module_config_init_1 = __importDefault(require("../utils/module-config-init"));
-var directories_utils_1 = __importDefault(require("../tools/directories-utils"));
-var option_utils_1 = __importDefault(require("../tools/option-utils"));
-var log_utils_1 = __importDefault(require("../utils/log-utils"));
-var log = log_utils_1.default.log;
-var warn = log_utils_1.default.warn;
+const path_1 = __importDefault(require("path"));
+const fs_extra_1 = __importDefault(require("fs-extra"));
+const lodash_1 = __importDefault(require("lodash"));
+const filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
+const module_config_init_1 = __importDefault(require("../utils/module-config-init"));
+const directories_utils_1 = __importDefault(require("../tools/directories-utils"));
+const option_utils_1 = __importDefault(require("../tools/option-utils"));
+const log_utils_1 = __importDefault(require("../utils/log-utils"));
+const log = log_utils_1.default.log;
+const warn = log_utils_1.default.warn;
 //mode: 'controller' | 'helper' | 'model'
 function readDir(mode, dir, list, options, generalOptions) {
-    var files = fs.readdirSync(dir);
+    var files = fs_extra_1.default.readdirSync(dir);
     var dirs = [];
     // log('read dir "'+dir+'" -> ', files);
     files.forEach(function (p) {
-        var absPath = path.join(dir, p);
+        var absPath = path_1.default.join(dir, p);
         if (filepath_utils_1.default.isDirectory(absPath)) {
             dirs.push(absPath);
             return false;
         }
         else {
             var normalized = filepath_utils_1.default.normalizePath(absPath);
-            var id = path.basename(absPath, '.js');
+            var id = path_1.default.basename(absPath, '.js');
             switch (mode) {
                 case 'helper':
                     if (!/Helper$/.test(id)) {
@@ -73,14 +66,14 @@ function readDir(mode, dir, list, options, generalOptions) {
         }
     }
 }
-function addFromOptions(implMap, list, appRootDir, generalOptions) {
+function addFromOptions(implMap, list, appRootDir, _generalOptions) {
     var impl, entry;
     for (var id in implMap) {
         impl = implMap[id];
         if (impl && impl.file && !impl.exclude) {
-            entry = _.cloneDeep(impl);
-            if (!path.isAbsolute(entry.file)) {
-                entry.file = path.resolve(appRootDir, entry.file);
+            entry = lodash_1.default.cloneDeep(impl);
+            if (!path_1.default.isAbsolute(entry.file)) {
+                entry.file = path_1.default.resolve(appRootDir, entry.file);
             }
             entry.file = filepath_utils_1.default.normalizePath(entry.file);
             if (entry.id && entry.id !== id) {
@@ -117,7 +110,7 @@ function toImplName(id) {
     return id[0].toUpperCase() + id.substring(1);
 }
 function toAliasPath(impl) {
-    return path.normalize(impl.file).replace(/\.js$/i, '');
+    return path_1.default.normalize(impl.file).replace(/\.js$/i, '');
 }
 function toAliasId(impl) {
     return 'mmirf/' + impl.type + '/' + impl.id; //FIXME formalize IDs for loading views in webpack (?)
@@ -150,8 +143,8 @@ module.exports = {
      */
     implFromDir: function (mode, options, appRootDir, implList) {
         var dir = options.path;
-        if (!path.isAbsolute(dir)) {
-            dir = path.resolve(appRootDir, dir);
+        if (!path_1.default.isAbsolute(dir)) {
+            dir = path_1.default.resolve(appRootDir, dir);
         }
         var list = implList || [];
         readDir(mode, dir, list, options[mode + 's'], options);

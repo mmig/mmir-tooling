@@ -1,29 +1,29 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var fs = __importStar(require("fs-extra"));
-var path = __importStar(require("path"));
-var filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
-var log_utils_1 = __importDefault(require("../utils/log-utils"));
-var log = log_utils_1.default.log;
-// var warn = logUtils.warn;
+const fs_extra_1 = __importDefault(require("fs-extra"));
+const path_1 = __importDefault(require("path"));
+const filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
+const log_utils_1 = __importDefault(require("../utils/log-utils"));
+const log = log_utils_1.default.log;
+// const warn = logUtils.warn;
+/**
+ *
+ * @param  dir
+ * @param  parseOptions
+ * @param  [options] in/out parameter (will be created, if omitted)
+ * @return return (modified) options argument or a newly created AppConfig
+ */
 function parseRootDir(dir, parseOptions, options) {
     options = options || {};
-    var files = fs.readdirSync(dir);
+    var files = fs_extra_1.default.readdirSync(dir);
     // log('parse root dir "'+dir+'" -> ', files);
     files.forEach(function (p) {
-        var absPath = path.join(dir, p);
+        var absPath = path_1.default.join(dir, p);
         if (filepath_utils_1.default.isDirectory(absPath)) {
-            var dirName = path.basename(absPath).toLowerCase();
-            if (options[dirName] === false || (parseOptions.exclude && parseOptions.exclude.find(function (item) { return item === dirName; }))) {
+            var dirName = path_1.default.basename(absPath).toLowerCase();
+            if (parseOptions[dirName] === false || (parseOptions.exclude && parseOptions.exclude.find(function (item) { return item === dirName; }))) {
                 log('parsing resources: excluding resources for ', dirName, parseOptions.exclude);
                 return; ////////// EARLY EXIT ////////////////
             }
@@ -46,9 +46,16 @@ function parseRootDir(dir, parseOptions, options) {
     });
     return options;
 }
+/**
+ *
+ * @param  dir
+ * @param  parseOptions
+ * @param  [options] in/out parameter (will be created, if omitted)
+ * @return return (modified) options argument or a newly created AppConfig
+ */
 function parseConfigDir(dir, parseOptions, options) {
     options = options || {};
-    var files = fs.readdirSync(dir);
+    var files = fs_extra_1.default.readdirSync(dir);
     // log('parse config dir "'+dir+'" -> ', files);
     if (!parseOptions.exclude || !parseOptions.exclude.find(function (item) { return item === 'settings'; })) {
         options.settings = { path: filepath_utils_1.default.normalizePath(dir) };
@@ -64,9 +71,9 @@ function parseConfigDir(dir, parseOptions, options) {
     else
         log('parsing resources: excluding all settings resources for ', dir, parseOptions.exclude); //DEBUG
     files.forEach(function (p) {
-        var absPath = path.join(dir, p);
+        var absPath = path_1.default.join(dir, p);
         if (filepath_utils_1.default.isDirectory(absPath)) {
-            var dirName = path.basename(absPath).toLowerCase();
+            var dirName = path_1.default.basename(absPath).toLowerCase();
             switch (dirName) {
                 case 'languages':
                     if (options.grammars !== false && (!parseOptions.exclude || !parseOptions.exclude.find(function (item) { return item === 'grammar'; }))) {
@@ -102,7 +109,7 @@ module.exports = {
      * 																								or "settings/grammar" for excluding the sources of JSON grammars (i.e. exclude the sources for compiled grammars)
      * @return {AppConfig} the AppConfig with the 'path' option set for the corresponding resource type, so that the corresponding utils/loaders will the the resources from that path
      */
-    resourcePathsFrom: function (directory, parseOptions) {
+    resourcePathsFrom(directory, parseOptions) {
         parseOptions = parseOptions || {};
         var configOptions = {};
         parseRootDir(directory, parseOptions, configOptions);
@@ -115,9 +122,9 @@ module.exports = {
      * @param  {AppConfig} generatedConfig the generated AppConfig containing the path-field for discovered resources
      * @return {AppConfig} the merge AppConfig (same as userConfig)
      */
-    mergeResourceConfigs: function (userConfig, generatedConfig) {
-        var entry;
-        for (var n in generatedConfig) {
+    mergeResourceConfigs(userConfig, generatedConfig) {
+        let entry;
+        for (let n in generatedConfig) {
             entry = generatedConfig[n];
             if (!userConfig[n] && userConfig[n] !== false) {
                 userConfig[n] = entry;

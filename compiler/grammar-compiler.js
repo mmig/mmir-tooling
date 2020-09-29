@@ -1,71 +1,74 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var path = __importStar(require("path"));
-var fs = __importStar(require("fs-extra"));
-var grammar_gen_1 = __importDefault(require("../grammar/grammar-gen"));
-var checksum_util_1 = __importDefault(require("../utils/checksum-util"));
-var settings_utils_1 = __importDefault(require("../tools/settings-utils"));
-var promise_1 = __importDefault(require("../utils/promise"));
-var log_utils_1 = __importDefault(require("../utils/log-utils"));
-var log = log_utils_1.default.log;
-var warn = log_utils_1.default.warn;
-var getGrammarTargetPath = function (grammarInfo) {
-    return path.join(grammarInfo.targetDir, grammarInfo.id + '.js');
-};
-var getGrammarChecksumPath = function (grammarInfo) {
-    return path.join(grammarInfo.targetDir, grammarInfo.id + checksum_util_1.default.getFileExt());
-};
-var getChecksumContent = function (content, type) {
+const path_1 = __importDefault(require("path"));
+const fs_extra_1 = __importDefault(require("fs-extra"));
+const grammar_gen_1 = __importDefault(require("../grammar/grammar-gen"));
+const checksum_util_1 = __importDefault(require("../utils/checksum-util"));
+const settings_utils_1 = __importDefault(require("../tools/settings-utils"));
+const promise_1 = __importDefault(require("../utils/promise"));
+const log_utils_1 = __importDefault(require("../utils/log-utils"));
+const log = log_utils_1.default.log;
+const warn = log_utils_1.default.warn;
+function getGrammarTargetPath(grammarInfo) {
+    return path_1.default.join(grammarInfo.targetDir, grammarInfo.id + '.js');
+}
+function getGrammarChecksumPath(grammarInfo) {
+    return path_1.default.join(grammarInfo.targetDir, grammarInfo.id + checksum_util_1.default.getFileExt());
+}
+function getChecksumContent(content, type) {
     return checksum_util_1.default.createContent(content, type);
-};
-var getAdditionalChecksumInfo = function (grammarInfo) {
+}
+function getAdditionalChecksumInfo(grammarInfo) {
     return grammarInfo.engine + ' ' + grammar_gen_1.default.fileVersion;
-};
-var checkUpToDate = function (grammarInfo, jsonContent) {
+}
+function checkUpToDate(grammarInfo, jsonContent) {
     return checksum_util_1.default.upToDate(jsonContent, getGrammarChecksumPath(grammarInfo), getGrammarTargetPath(grammarInfo), getAdditionalChecksumInfo(grammarInfo));
-};
-var setPendingAsyncGrammarFinished = function (g) {
+}
+function setPendingAsyncGrammarFinished(g) {
     if (!g.asyncCompile) {
         log('did not update pending grammar count for ' + g.id + ' with engine ' + g.engine + ', since it would have been sync-compiled.');
         return;
     }
     grammar_gen_1.default.updatePendingAsyncGrammarFinished(g, {});
-};
-var writeGrammar = function (_err, grammarCode, _map, meta) {
+}
+function writeGrammar(_err, grammarCode, _map, meta) {
     var g = meta && meta.info;
     var grammarPath = getGrammarTargetPath(g);
     var checksumContent = getChecksumContent(meta.json, getAdditionalChecksumInfo(g));
     var checksumPath = getGrammarChecksumPath(g);
     log('###### writing compiled grammar to file (length ' + grammarCode.length + ') ', grammarPath, ' -> ', checksumContent);
     return promise_1.default.all([
-        fs.writeFile(grammarPath, grammarCode, 'utf8').catch(function (err) {
+        fs_extra_1.default.writeFile(grammarPath, grammarCode, 'utf8').catch(function (err) {
             var msg = 'ERROR writing compiled grammar to ' + grammarPath + ': ';
             warn(msg, err);
             return err.stack ? err : new Error(msg + err);
         }),
-        fs.writeFile(checksumPath, checksumContent, 'utf8').catch(function (err) {
+        fs_extra_1.default.writeFile(checksumPath, checksumContent, 'utf8').catch(function (err) {
             var msg = 'ERROR writing checksum file for compiled grammar to ' + checksumPath + ': ';
             warn(msg, err);
             return err.stack ? err : new Error(msg + err);
         })
     ]);
-};
-var prepareCompile = function (options) {
+}
+;
+function prepareCompile(options) {
     grammar_gen_1.default.initPendingAsyncGrammarInfo(options);
-    return fs.ensureDir(options.config.targetDir);
-};
-var compile = function (grammarLoadOptions) {
-    var tasks = [];
-    grammarLoadOptions.mapping.forEach(function (g) {
+    return fs_extra_1.default.ensureDir(options.config.targetDir);
+}
+function compile(grammarLoadOptions) {
+    const tasks = [];
+    grammarLoadOptions.mapping.forEach(g => {
         g.targetDir = grammarLoadOptions.config.targetDir;
         if (!g.engine) {
             g.engine = grammar_gen_1.default.getEngine(g, grammarLoadOptions);
@@ -74,47 +77,50 @@ var compile = function (grammarLoadOptions) {
             g.asyncCompile = grammar_gen_1.default.isAsyncCompile(g, grammarLoadOptions);
         }
         g.force = typeof g.force === 'boolean' ? g.force : grammarLoadOptions.config.force;
-        var t = settings_utils_1.default.loadSettingsFrom(g.file, g.fileType, true).then(function (grammarJsonObj) {
-            log('###### start processing grammar ' + g.id + ' (engine ' + g.engine + ', asyncCompile ' + g.asyncCompile + ')...');
-            var content;
-            try {
-                content = JSON.stringify(grammarJsonObj);
-            }
-            catch (err) {
-                var msg = 'ERROR parsing grammar definition from ' + (g ? g.file : '<UNKNOWN>') + ': ';
-                warn(msg, err);
-                return promise_1.default.reject(err.stack ? err : new Error(msg + err));
-            }
-            var doCompile = function () {
-                return new promise_1.default(function (resolve, reject) {
-                    grammar_gen_1.default.compile(content, g.file, grammarLoadOptions, function (err, grammarCode, _map, meta) {
-                        if (err) {
-                            var msg = 'ERROR compiling grammar ' + (g ? g.file : '') + ': ';
-                            warn(msg, err);
-                            return resolve(err.stack ? err : new Error(msg + err));
+        const t = settings_utils_1.default.loadSettingsFrom(g.file, g.fileType, true).then(function (grammarJsonObj) {
+            return __awaiter(this, void 0, void 0, function* () {
+                log('###### start processing grammar ' + g.id + ' (engine ' + g.engine + ', asyncCompile ' + g.asyncCompile + ')...');
+                let content;
+                try {
+                    content = JSON.stringify(grammarJsonObj);
+                }
+                catch (err) {
+                    const msg = 'ERROR parsing grammar definition from ' + (g ? g.file : '<UNKNOWN>') + ': ';
+                    warn(msg, err);
+                    return promise_1.default.reject(err.stack ? err : new Error(msg + err));
+                }
+                function doCompile() {
+                    return new promise_1.default(function (resolve, reject) {
+                        grammar_gen_1.default.compile(content, g.file, grammarLoadOptions, function (err, grammarCode, _map, meta) {
+                            if (err) {
+                                const msg = 'ERROR compiling grammar ' + (g ? g.file : '') + ': ';
+                                warn(msg, err);
+                                return resolve(err.stack ? err : new Error(msg + err));
+                            }
+                            writeGrammar(err, grammarCode, _map, meta).then(function () {
+                                resolve();
+                            }).catch(function (err) { reject(err); });
+                        }, null, { info: g, json: content });
+                    });
+                }
+                ;
+                if (!g.force) {
+                    return checkUpToDate(g, content).then(function (isUpToDate) {
+                        if (isUpToDate) {
+                            log('compiled grammar is up-to-date at ' + getGrammarTargetPath(g));
+                            setPendingAsyncGrammarFinished(g);
                         }
-                        writeGrammar(err, grammarCode, _map, meta).then(function () {
-                            resolve();
-                        }).catch(function (err) { reject(err); });
-                    }, null, { info: g, json: content });
-                });
-            };
-            if (!g.force) {
-                return checkUpToDate(g, content).then(function (isUpToDate) {
-                    if (isUpToDate) {
-                        log('compiled grammar is up-to-date at ' + getGrammarTargetPath(g));
-                        setPendingAsyncGrammarFinished(g);
-                    }
-                    else {
-                        return doCompile();
-                    }
-                });
-            }
-            else {
-                return doCompile();
-            }
+                        else {
+                            return doCompile();
+                        }
+                    });
+                }
+                else {
+                    return doCompile();
+                }
+            });
         }).catch(function (err) {
-            var msg = 'ERROR compiling grammar ' + g.file + ': ';
+            const msg = 'ERROR compiling grammar ' + g.file + ': ';
             warn(msg, err);
             setPendingAsyncGrammarFinished(g);
             return err.stack ? err : new Error(msg + err);
@@ -122,7 +128,7 @@ var compile = function (grammarLoadOptions) {
         tasks.push(t);
     });
     return promise_1.default.all(tasks);
-};
+}
 module.exports = {
     prepareCompile: prepareCompile,
     compile: compile

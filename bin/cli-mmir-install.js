@@ -1,22 +1,31 @@
 #!/usr/bin/env node
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var meow = __importStar(require("meow"));
-var path = __importStar(require("path"));
-var install_mmir_lib_1 = __importDefault(require("../utils/install-mmir-lib"));
-var appName = 'mmirinstall';
+const meow_1 = __importDefault(require("meow"));
+const path_1 = __importDefault(require("path"));
+const install_mmir_lib_1 = __importDefault(require("../utils/install-mmir-lib"));
+const appName = 'mmirinstall';
 function main() {
-    var cli = meow.default("\n        Usage\n            " + appName + " <target directory>\n\n        Options\n            --force, -f    force overwriting files in target directory\n            --src, -s      source directory for mmir-lib library files\n                                            DEFAUL directory of installed mmir-lib package:\n                                            " + install_mmir_lib_1.default.getMmirDir() + "\n            --help         show usage information\n            --verbose, -v  show additional information\n                                            DEFAULT: false\n\n        Examples\n            " + appName + " www/mmirf\n            " + appName + " --force src/mmirf\n    ", {
+    var cli = meow_1.default(`
+        Usage
+            ${appName} <target directory>
+
+        Options
+            --force, -f    force overwriting files in target directory
+            --src, -s      source directory for mmir-lib library files
+                                            DEFAUL directory of installed mmir-lib package:
+                                            ${install_mmir_lib_1.default.getMmirDir()}
+            --help         show usage information
+            --verbose, -v  show additional information
+                                            DEFAULT: false
+
+        Examples
+            ${appName} www/mmirf
+            ${appName} --force src/mmirf
+    `, {
         flags: {
             force: {
                 type: 'boolean',
@@ -48,7 +57,7 @@ function main() {
         var targetDir = cli.input[0];
         if (!force && !install_mmir_lib_1.default.canCopy(targetDir)) {
             console.error('[WARN] Aborted installation: target directory is not empty:');
-            console.error('[WARN]   ' + path.resolve(targetDir));
+            console.error('[WARN]   ' + path_1.default.resolve(targetDir));
             console.error('[INFO] (use option --force for overwriting existing files)');
             return cli.showHelp();
         }
@@ -64,7 +73,7 @@ function main() {
         var srcDir = cli.flags.src;
         if (!install_mmir_lib_1.default.dirExists(srcDir)) {
             console.error('[WARN] Cannot install: source directory does not exist, or is not a directory:');
-            console.error('[WARN]   ' + path.resolve(targetDir));
+            console.error('[WARN]   ' + path_1.default.resolve(targetDir));
             return cli.showHelp();
         }
         install_mmir_lib_1.default.copyFiles(srcDir, targetDir, force).then(function () {
@@ -79,7 +88,11 @@ function main() {
 }
 exports.main = main;
 function handleError(err, cli) {
-    console.error("\n    An Error occurred for:\n        " + appName + " " + cli.input.join(' ') + " -f " + cli.flags.force + " -s " + cli.flags.src + "\n\n    Is the directory path correct?");
+    console.error(`
+    An Error occurred for:
+        ${appName} ${cli.input.join(' ')} -f ${cli.flags.force} -s ${cli.flags.src}
+
+    Is the directory path correct?`);
     if (cli.flags.verbose)
         console.error('\n  ERROR Details:', err);
     else

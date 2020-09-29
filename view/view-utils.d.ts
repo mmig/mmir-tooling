@@ -1,3 +1,5 @@
+import { ViewBuildOptions, ViewEntry, BuildAppConfig, ImplementationBuildEntry, ResourceConfig, RuntimeConfiguration, DirectoriesInfo, ViewBuildEntry } from '../index.d';
+import { WebpackAppConfig } from '../index-webpack.d';
 declare const _default: {
     /**
      * add views from a base-directory that adheres to the structure:
@@ -28,7 +30,7 @@ declare const _default: {
      * 										isPartial: Boolean
      * 									}
      */
-    viewTemplatesFromDir: (dir: any, appRootDir: any, options?: any) => any[];
+    viewTemplatesFromDir: (dir: string, appRootDir: string, options?: ViewBuildOptions) => ViewBuildEntry[];
     /**
      * apply the "global" options from `options` or default values to the entries
      * from `viewList` if its corresponding options-field is not explicitly specified.
@@ -37,7 +39,7 @@ declare const _default: {
      * @param  {{Array<ViewEntry>}} viewList
      * @return {{Array<ViewEntry>}}
      */
-    applyDefaultOptions: (options: any, viewList: any) => any;
+    applyDefaultOptions: (options: ViewBuildOptions, viewList: ViewEntry[]) => ViewEntry[];
     /**
      * add views to (webpack) app build configuration
      *
@@ -51,6 +53,6 @@ declare const _default: {
      * @param  {ResourcesConfig} resources the resources configuration
      * @param  {[type]} runtimeConfiguration the configuration.json representation
      */
-    addViewsToAppConfig: (views: any, ctrls: any, appConfig: any, directories: any, resources: any, _runtimeConfiguration: any) => void;
+    addViewsToAppConfig: (views: ViewEntry[], ctrls: ImplementationBuildEntry[], appConfig: BuildAppConfig | WebpackAppConfig, directories: DirectoriesInfo, resources: ResourceConfig, _runtimeConfiguration: RuntimeConfiguration) => void;
 };
 export = _default;

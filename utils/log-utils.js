@@ -1,27 +1,15 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var console = __importStar(require("console"));
-function defaultLog(_message) {
-    var _optionalParams = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        _optionalParams[_i - 1] = arguments[_i];
-    }
+const console_1 = __importDefault(require("console"));
+function defaultLog(_message, ..._optionalParams) {
     if (_isLog())
-        console.log.apply(console, arguments);
+        console_1.default.log.apply(console_1.default, arguments);
 }
-function defaultWarn(_message) {
-    var _optionalParams = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        _optionalParams[_i - 1] = arguments[_i];
-    }
+function defaultWarn(_message, ..._optionalParams) {
     if (_isWarn())
-        console.error.apply(console, arguments);
+        console_1.default.error.apply(console_1.default, arguments);
 }
 function defaultIsLog() {
     return /^true$/.test(process.env.verbose);
@@ -34,30 +22,22 @@ var _warn = defaultWarn;
 var _isLog = defaultIsLog;
 var _isWarn = defaultIsWarn;
 module.exports = {
-    log: function (_message) {
-        var _optionalParams = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            _optionalParams[_i - 1] = arguments[_i];
-        }
+    log: function (_message, ..._optionalParams) {
         _log.apply(null, arguments);
     },
-    warn: function (_message) {
-        var _optionalParams = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            _optionalParams[_i - 1] = arguments[_i];
-        }
+    warn: function (_message, ..._optionalParams) {
         _warn.apply(null, arguments);
     },
-    setLog: function (func) {
+    setLog(func) {
         _log = func;
     },
-    setWarn: function (func) {
+    setWarn(func) {
         _warn = func;
     },
-    setIsLog: function (func) {
+    setIsLog(func) {
         _isLog = func;
     },
-    setIsWarn: function (func) {
+    setIsWarn(func) {
         _isWarn = func;
     }
 };

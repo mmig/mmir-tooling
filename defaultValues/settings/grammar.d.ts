@@ -1,8 +1,5 @@
-declare function getDefault(_id: any): {
-    "stopwords": any[];
-    "tokens": {};
-    "utterances": {};
-};
+import { Grammar } from 'mmir-lib';
+declare function getDefault(_id: string): Grammar;
 declare const _default: {
     getDefault: typeof getDefault;
 };

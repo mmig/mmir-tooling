@@ -1,3 +1,5 @@
+import { ImplementationType, ImplementationBuildEntry, AnyImplementationOptions, DirectoriesInfo, ResourceConfig, RuntimeConfiguration, BuildAppConfig, ViewBuildEntry } from '../index.d';
+import { WebpackAppConfig } from '../index-webpack.d';
 declare const _default: {
     /**
      * [description]
@@ -24,7 +26,7 @@ declare const _default: {
      *																																				or, if addModuleExport is a String, this String will be used.
      * @return {Array<ImplEntry>} the list of ImplEntry objects
      */
-    implFromDir: (mode: any, options: any, appRootDir: any, implList: any) => any;
+    implFromDir: (mode: ImplementationType, options: AnyImplementationOptions, appRootDir: string, implList: ImplementationBuildEntry[]) => ImplementationBuildEntry[];
     /**
      * add implementations form options[mode+'s'] map {[implID: string]: ImplOption}, if the ImplOption has a <code>file</code> field set.
      * @param  {"controller" | "helper" | "model"} mode the kind of implementation (modules) that the directory contains
@@ -33,7 +35,7 @@ declare const _default: {
      * @param  {{Array<ImplEntry>}} [implList] OPTIONAL
      * @return {{Array<ImplEntry>}}
      */
-    implFromOptions: (mode: any, options: any, appRootDir: any, implList: any) => any;
+    implFromOptions: (mode: ImplementationType, options: AnyImplementationOptions, appRootDir: string, implList: ImplementationBuildEntry[]) => ImplementationBuildEntry[];
     /**
      * apply the "global" options from `options` or default values to the entries
      * from `implList` if its corresponding options-field is not explicitly specified.
@@ -42,7 +44,7 @@ declare const _default: {
      * @param  {{Array<ImplEntry>}} implList
      * @return {{Array<ImplEntry>}}
      */
-    applyDefaultOptions: (options: any, implList: any) => any;
+    applyDefaultOptions: (options: AnyImplementationOptions, implList: ViewBuildEntry[] | ImplementationBuildEntry[]) => ViewBuildEntry[] | ImplementationBuildEntry[];
     /**
      * add implementations to (webpack) app build configuration
      *
@@ -54,6 +56,6 @@ declare const _default: {
      * @param  {ResourcesConfig} _resources the resources configuration
      * @param  {[type]} runtimeConfiguration the configuration.json representation
      */
-    addImplementationsToAppConfig: (implList: any, appConfig: any, directories: any, _resources: any, _runtimeConfiguration: any) => void;
+    addImplementationsToAppConfig: (implList: ImplementationBuildEntry[], appConfig: BuildAppConfig | WebpackAppConfig, directories: DirectoriesInfo, _resources: ResourceConfig, _runtimeConfiguration: RuntimeConfiguration) => void;
 };
 export = _default;

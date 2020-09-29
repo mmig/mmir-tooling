@@ -1,6 +1,7 @@
+declare function checkUpToDate(jsonContent: string, checksumPath: string, targetPath: string, additionalInfo: string): Promise<boolean>;
 declare const _default: {
-    upToDate: (jsonContent: any, checksumPath: any, targetPath: any, additionalInfo: any) => Promise<any>;
-    createContent: (content: any, type: any) => any;
-    getFileExt: () => any;
+    upToDate: typeof checkUpToDate;
+    createContent: (content: string, type?: string) => string;
+    getFileExt: () => string;
 };
 export = _default;

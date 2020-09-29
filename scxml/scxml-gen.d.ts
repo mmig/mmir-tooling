@@ -1,3 +1,4 @@
+import { CompilerCallback, StateCompilerOptions } from '../index.d';
 /**
  * compile an SCXML file to exectuable scion statechart model
  *
@@ -8,7 +9,7 @@
  * @param  {any} [_map] source mapping (unused)
  * @param  {any} [_meta] meta data (unused)
  */
-declare function compile(content: any, scxmlFile: any, options: any, callback: any, _map: any, _meta: any): void;
+declare function compile(content: string, scxmlFile: string, options: StateCompilerOptions, callback: CompilerCallback, _map: any, _meta: any): void;
 declare const _default: {
     compile: typeof compile;
 };

@@ -1,3 +1,4 @@
+import { AppConfig, ResourcesOptions } from '../index.d';
 declare const _default: {
     /**
      * [resourcePathsFrom description]
@@ -9,7 +10,7 @@ declare const _default: {
      * 																								or "settings/grammar" for excluding the sources of JSON grammars (i.e. exclude the sources for compiled grammars)
      * @return {AppConfig} the AppConfig with the 'path' option set for the corresponding resource type, so that the corresponding utils/loaders will the the resources from that path
      */
-    resourcePathsFrom(directory: any, parseOptions: any): {};
+    resourcePathsFrom(directory: string, parseOptions: ResourcesOptions): AppConfig;
     /**
      * HELPER for merging the results of resourcePathsFrom() with the user-supplied AppConfig,
      *        without overwritting user-set options
@@ -17,6 +18,6 @@ declare const _default: {
      * @param  {AppConfig} generatedConfig the generated AppConfig containing the path-field for discovered resources
      * @return {AppConfig} the merge AppConfig (same as userConfig)
      */
-    mergeResourceConfigs(userConfig: any, generatedConfig: any): any;
+    mergeResourceConfigs(userConfig: AppConfig, generatedConfig: AppConfig): AppConfig;
 };
 export = _default;

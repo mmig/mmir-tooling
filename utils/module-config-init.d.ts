@@ -1,11 +1,20 @@
-declare function registerModuleId(appConfig: any, id: any, file: any): void;
-declare function addAutoLoadModule(appConfig: any, id: any, file: any): void;
-declare function addIncludeModule(appConfig: any, id: any, file?: any): void;
-declare function addAppSettings(appConfig: any, id: any, settings: any): void;
+import { AppConfig, BuildAppConfig } from '../index.d';
+import { WebpackAppConfig } from '../index-webpack.d';
+/**
+ * add/overwrite module alias (i.e. mapping module ID to file path)
+ *
+ * @param  {{paths?: {[moduleId: string]: string}}} mmirAppConfig the app-specific configuration: applies module-path-specifications from mmirAppConfig.paths
+ * @param  {[{[moduleId: string]: string}]} alias the (default) mapping of module IDs to (absolute) paths
+ */
+declare function addAliasFrom(mmirAppConfig: AppConfig | BuildAppConfig | WebpackAppConfig, alias: {
+    [moduleId: string]: string;
+}): void;
+declare function registerModuleId(appConfig: WebpackAppConfig, id: string, file: string): void;
+declare function addAutoLoadModule(appConfig: WebpackAppConfig, id: string, file: string): void;
+declare function addIncludeModule(appConfig: WebpackAppConfig, id: string, file?: string): void;
+declare function addAppSettings(appConfig: WebpackAppConfig, id: string, settings: any): void;
 declare const _default: {
-    addModulePaths: (userConfig: any, mmirAppConfig: any) => void;
-    addModuleConfigs: (userConfig: any, mmirAppConfig: any) => void;
-    addAliasFrom: (mmirAppConfig: any, alias: any) => void;
+    addAliasFrom: typeof addAliasFrom;
     /** add alias (i.e. "lookup information" for module ID -> file) for module */
     registerModuleId: typeof registerModuleId;
     /** add alias (i.e. "lookup information") for module AND include module in main script */

@@ -1,31 +1,24 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var path = __importStar(require("path"));
-var lodash_1 = __importDefault(require("lodash"));
-var module_config_init_1 = __importDefault(require("../utils/module-config-init"));
-var settings_utils_1 = __importDefault(require("./settings-utils"));
-var filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
-var log_utils_1 = __importDefault(require("../utils/log-utils"));
-var log = log_utils_1.default.log;
-var warn = log_utils_1.default.warn;
-var asrCoreId = 'mmir-plugin-encoder-core.js';
-var ttsCoreId = 'audiotts.js';
-var applyToAllSpeechConfigs = '__apply-to-all-configs__';
-var ALL_SPEECH_CONFIGS_TYPE = settings_utils_1.default.getAllSpeechConfigsType();
+const path_1 = __importDefault(require("path"));
+const lodash_1 = __importDefault(require("lodash"));
+const module_config_init_1 = __importDefault(require("../utils/module-config-init"));
+const settings_utils_1 = __importDefault(require("./settings-utils"));
+const filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
+const log_utils_1 = __importDefault(require("../utils/log-utils"));
+const log = log_utils_1.default.log;
+const warn = log_utils_1.default.warn;
+const asrCoreId = 'mmir-plugin-encoder-core.js';
+const ttsCoreId = 'audiotts.js';
+const applyToAllSpeechConfigs = '__apply-to-all-configs__';
+const ALL_SPEECH_CONFIGS_TYPE = settings_utils_1.default.getAllSpeechConfigsType();
 /**
  * mapping from file-name to load-module-ID in MediaManager/plugin-loading mechanism
  * (to be used in configuration.json)
  */
-var moduleIdMap = {
+const moduleIdMap = {
     'webaudioinput.js': 'mmir-plugin-encoder-core.js',
     'mmir-plugin-tts-core-xhr.js': 'audiotts.js'
 };
@@ -34,11 +27,11 @@ var moduleIdMap = {
  * mapping from file-name to load-module-ID in MediaManager/plugin-loading mechanism
  * (to be used in configuration.json)
  */
-var implFileIdMap = {
+const implFileIdMap = {
     'webasrgoogleimpl.js': 'mmir-plugin-asr-google-xhr.js',
     'webasrnuanceimpl.js': 'mmir-plugin-asr-nuance-xhr.js'
 };
-var deprecatedImplFileIdMap = {
+const deprecatedImplFileIdMap = {
     'webasratntimpl.js': 'webasrAtntImpl.js',
     'webasrgooglev1impl.js': 'webasrGooglev1Impl.js'
 };
@@ -47,7 +40,7 @@ function isAsrPlugin(pluginId) {
 }
 function resolveAndAddAliasPaths(alias, paths) {
     for (var p in paths) {
-        paths[p] = path.resolve(paths[p]);
+        paths[p] = path_1.default.resolve(paths[p]);
         alias[p] = paths[p];
     }
     return paths;
@@ -110,7 +103,7 @@ function getSpeechConfigDefaultValue(configName, pluginInfo) {
     return pluginInfo.defaultSpeechValues && pluginInfo.defaultSpeechValues[configName];
 }
 function getConfigEnv(pluginConfig, pluginInfo, runtimeConfig) {
-    var env = pluginConfig && pluginConfig.env;
+    let env = pluginConfig && pluginConfig.env;
     if (!env && getConfigDefaultValue('env', pluginInfo)) {
         env = getConfigDefaultValue('env', pluginInfo);
         if (!Array.isArray(env)) {
@@ -133,7 +126,7 @@ function getConfigEnv(pluginConfig, pluginInfo, runtimeConfig) {
 /**
  * create plugin-entry in mediaManager.plugin configuration
  *
- * @param  {MMIRPluginConfig} pluginConfig the (user supplied) plugin-configuration
+ * @param  {PluginConfig | TTSPluginSpeechConfig} pluginConfig the (user supplied) plugin-configuration
  * @param  {MMIRPluginInfo} pluginConfigInfo the plugin-info
  * @param  {string} pluginId the plugin-ID
  * @return {MediaManagerPluginEntry} the plugin-entry for mediaManager.plugin
@@ -191,11 +184,11 @@ function applyPluginSpeechConfig(pluginConfig, settings, pluginConfigInfo) {
             settings_utils_1.default.getSettingsFor(settings, 'speech').forEach(function (sc) {
                 speechConfigs.set(sc.id, sc);
             });
-            var allSpeech = settings.find(function (s) { return s.type === ALL_SPEECH_CONFIGS_TYPE; });
+            const allSpeech = settings.find(function (s) { return s.type === ALL_SPEECH_CONFIGS_TYPE; });
             if (allSpeech) {
                 speechConfigs.set(ALL_SPEECH_CONFIGS_TYPE, allSpeech);
             }
-            var val, name;
+            let val, name;
             applyList.forEach(function (config) {
                 val = config.value;
                 name = config.name;
@@ -290,7 +283,7 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
         //TODO add/apply configuration for core-dependency mmir-plugin-encoder-core ~> silence-detection, if specified
     }
 }
-function addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfig, pluginConfigInfo, pluginId) {
+function addBuildConfig(_pluginConfig, pluginBuildConfig, _runtimeConfig, appConfig, pluginConfigInfo, pluginId) {
     if (Array.isArray(pluginConfigInfo.buildConfigs) && pluginConfigInfo.buildConfigs.length > 0) {
         //NOTE if no pluginConfigInfo.buildConfig is specified, then the plugin does not support build-config settings, so pluginBuildConfig will also be ignored!
         // console.log('plugin-utils.addBuildConfig: applying plugin\'s build configuration ', pluginConfigInfo.buildConfigs)
@@ -379,41 +372,44 @@ function addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfi
     // 	// }
     // });
 }
+function isPluginExportConfigInfoMultiple(pluginInfo) {
+    return Array.isArray(pluginInfo.pluginName);
+}
 module.exports = {
     addPluginInfos: function (pluginSettings, appConfig, _directories, resourcesConfig, runtimeConfig, settings) {
-        var workersList = resourcesConfig.workers;
-        var binFilesList = resourcesConfig.fileResources;
-        var binFilesPaths = resourcesConfig.resourcesPaths;
-        // var _textFilesList = resourcesConfig.textResources;
-        var pluginId = pluginSettings.id;
-        var pluginConfig = pluginSettings.config;
-        var pluginBuildConfig = pluginSettings.build;
-        var mode = pluginSettings.mode;
-        var pluginInfo = require(pluginId + '/module-ids.gen.js');
-        var paths = pluginInfo.getAll('paths', mode, true);
+        const workersList = resourcesConfig.workers;
+        const binFilesList = resourcesConfig.fileResources;
+        const binFilesPaths = resourcesConfig.resourcesPaths;
+        // const _textFilesList = resourcesConfig.textResources;
+        const pluginId = pluginSettings.id;
+        const pluginConfig = pluginSettings.config;
+        const pluginBuildConfig = pluginSettings.build;
+        const mode = pluginSettings.mode;
+        const pluginInfo = require(pluginId + '/module-ids.gen.js');
+        const paths = pluginInfo.getAll('paths', mode, true);
         resolveAndAddAliasPaths(appConfig.paths, paths);
-        var workers = pluginInfo.getAll('workers', mode);
+        const workers = pluginInfo.getAll('workers', mode);
         workers.forEach(function (w) {
             workersList.push(paths[w]);
         });
-        var includeModules = pluginInfo.getAll('modules', mode);
+        const includeModules = pluginInfo.getAll('modules', mode);
         includeModules.forEach(function (mod) {
             module_config_init_1.default.addIncludeModule(appConfig, mod, paths[mod]);
         });
-        var includeFiles = pluginInfo.getAll('files', mode);
+        const includeFiles = pluginInfo.getAll('files', mode);
         includeFiles.forEach(function (mod) {
-            var modPath = paths[mod];
+            const modPath = paths[mod];
             binFilesList.push(modPath);
             //NOTE the module-ID for exported files is <plugin ID>/<file name without extension>
             //     -> specify the include-path for the files (i.e. relative path to which the file is copied) as
             //        <plugin ID>/<file name>
-            binFilesPaths[filepath_utils_1.default.normalizePath(modPath)] = path.normalize(path.join(path.dirname(mod), path.basename(modPath)));
+            binFilesPaths[filepath_utils_1.default.normalizePath(modPath)] = path_1.default.normalize(path_1.default.join(path_1.default.dirname(mod), path_1.default.basename(modPath)));
             // log('  ############### adding exported (raw) file for plugin '+pluginId+' ['+mod+'] -> ', modPath);//DEBUG
             module_config_init_1.default.addIncludeModule(appConfig, mod, modPath);
         });
-        var pluginConfigInfo = require(pluginId + '/module-config.gen.js');
+        const pluginConfigInfo = require(pluginId + '/module-config.gen.js');
         if (pluginConfigInfo.pluginName) {
-            if (Array.isArray(pluginConfigInfo.pluginName)) {
+            if (isPluginExportConfigInfoMultiple(pluginConfigInfo)) {
                 pluginConfigInfo.pluginName.forEach(function (pluginName) {
                     addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo.plugins[pluginName], pluginId);
                     addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfig, pluginConfigInfo.plugins[pluginName], pluginId); //FIXME TODO

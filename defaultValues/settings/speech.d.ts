@@ -1,4 +1,5 @@
-declare function getDefault(id: any): any;
+import { SpeechConfig } from 'mmir-lib';
+declare function getDefault(id: string): SpeechConfig;
 declare const _default: {
     getDefault: typeof getDefault;
 };

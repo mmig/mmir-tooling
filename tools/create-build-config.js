@@ -3,19 +3,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var process_1 = __importDefault(require("process"));
-var module_config_init_1 = __importDefault(require("../utils/module-config-init"));
-var directories_utils_1 = __importDefault(require("../tools/directories-utils"));
-var resources_config_utils_1 = __importDefault(require("../tools/resources-config-utils"));
-var settings_utils_1 = __importDefault(require("../tools/settings-utils"));
-var grammar_utils_1 = __importDefault(require("../grammar/grammar-utils"));
-var scxml_utils_1 = __importDefault(require("../scxml/scxml-utils"));
-var impl_utils_1 = __importDefault(require("../impl/impl-utils"));
-var view_utils_1 = __importDefault(require("../view/view-utils"));
-var plugins_utils_1 = __importDefault(require("../tools/plugins-utils"));
-var log_utils_1 = __importDefault(require("../utils/log-utils"));
-var log = log_utils_1.default.log;
-var warn = log_utils_1.default.warn;
+const process_1 = __importDefault(require("process"));
+const module_config_init_1 = __importDefault(require("../utils/module-config-init"));
+const directories_utils_1 = __importDefault(require("../tools/directories-utils"));
+const resources_config_utils_1 = __importDefault(require("../tools/resources-config-utils"));
+const settings_utils_1 = __importDefault(require("../tools/settings-utils"));
+const grammar_utils_1 = __importDefault(require("../grammar/grammar-utils"));
+const scxml_utils_1 = __importDefault(require("../scxml/scxml-utils"));
+const impl_utils_1 = __importDefault(require("../impl/impl-utils"));
+const view_utils_1 = __importDefault(require("../view/view-utils"));
+const plugins_utils_1 = __importDefault(require("../tools/plugins-utils"));
+const log_utils_1 = __importDefault(require("../utils/log-utils"));
+const log = log_utils_1.default.log;
+const warn = log_utils_1.default.warn;
 function createBuildConfig(mmirAppConfig, resourcesConfig) {
     mmirAppConfig.rootPath = mmirAppConfig.rootPath || process_1.default.cwd();
     var appRootDir = mmirAppConfig.rootPath;
@@ -30,7 +30,10 @@ function createBuildConfig(mmirAppConfig, resourcesConfig) {
         log('adding results from parsing resources directory: ', genAppConfig, ' -> ', mmirAppConfig); //DEBUG
     }
     var settingsOptions = mmirAppConfig.settings;
-    var settings = settings_utils_1.default.jsonSettingsFromDir(settingsOptions, appRootDir);
+    if (settingsOptions === true) {
+        return 'ERROR for appConfig.settings: is set to TRUE but no settings were found, is appConfig.resourcesPath set correctly?';
+    }
+    const settings = settings_utils_1.default.jsonSettingsFromDir(settingsOptions, appRootDir);
     // log('JSON settings: ', settings);
     // log('JSON configuration setting: ', settingsUtil.getConfiguration(settings));
     // log('JSON runtime configuration: ', runtimeConfig);
@@ -48,7 +51,8 @@ function createBuildConfig(mmirAppConfig, resourcesConfig) {
     // log('JSON configuration setting (merge test): ', runtimeConfigEntry);//DEBU
     if (!runtimeConfigEntry.value) {
         if (runtimeConfigEntry.file) {
-            runtimeConfigEntry.value = settings_utils_1.default.loadSettingsFrom(runtimeConfigEntry.file, runtimeConfigEntry.fileType);
+            const configFile = Array.isArray(runtimeConfigEntry.file) ? runtimeConfigEntry.file[0] : runtimeConfigEntry.file;
+            runtimeConfigEntry.value = settings_utils_1.default.loadSettingsFrom(configFile, runtimeConfigEntry.fileType);
         }
         else {
             warn('could not read configuration settings from file: using empty configuration');
@@ -85,16 +89,20 @@ function createBuildConfig(mmirAppConfig, resourcesConfig) {
     //
     // 	}
     // };
+    if (grammarOptions === true) {
+        return 'ERROR for appConfig.grammars: is set to TRUE but no grammar options were found, is appConfig.resourcesPath set correctly?';
+    }
     grammarOptions = grammar_utils_1.default.parseRuntimeConfigurationForOptions(grammarOptions, runtimeConfig);
-    var grammars = [];
+    const grammars = [];
     if (grammarOptions && grammarOptions.path) {
         grammar_utils_1.default.jsonGrammarsFromDir(grammarOptions, appRootDir, grammars);
     }
     if (grammarOptions && grammarOptions.grammars) {
         grammar_utils_1.default.jsonGrammarsFromOptions(grammarOptions, appRootDir, grammars);
     }
+    grammarOptions = grammarOptions || {};
     if (grammars.length > 0) {
-        grammar_utils_1.default.applyDefaultOptions(grammarOptions || {}, grammars);
+        grammar_utils_1.default.applyDefaultOptions(grammarOptions, grammars);
     }
     // log('JSON grammars: ', grammars, grammarOptions);
     grammar_utils_1.default.addGrammarsToAppConfig(grammars, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
@@ -113,6 +121,9 @@ function createBuildConfig(mmirAppConfig, resourcesConfig) {
     // 		}
     // 	}
     // }
+    if (stateOptions === true) {
+        return 'ERROR for appConfig.states: is set to TRUE but no state options were found, is appConfig.resourcesPath set correctly?';
+    }
     var states = [];
     if (stateOptions && stateOptions.path) {
         // log('including SCXML models from directory ', stateOptions.path);//DEBU
@@ -122,15 +133,23 @@ function createBuildConfig(mmirAppConfig, resourcesConfig) {
         // log('including SCXML models from options ', stateOptions.models);//DEBU
         scxml_utils_1.default.scxmlFromOptions(stateOptions, appRootDir, states);
     }
-    if (states.length === 0) {
-        log('no SCXML models specified, including minimal default SCXML models for "input" and "dialog"...'); //DEBUG
-        scxml_utils_1.default.scxmlDefaults(stateOptions, appRootDir, states);
+    if (stateOptions) {
+        if (states.length === 0) {
+            log('no SCXML models specified, including minimal default SCXML models for "input" and "dialog"...'); //DEBUG
+            scxml_utils_1.default.scxmlDefaults(stateOptions, appRootDir, states);
+        }
+    }
+    else {
+        stateOptions = {};
     }
     scxml_utils_1.default.applyDefaultOptions(stateOptions, states);
     // log('SCXML models: ', states, stateOptions);//DEBUG
     scxml_utils_1.default.addStatesToAppConfig(states, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
     /////////////////////////////////////////////////////////////////////////////////////
     var ctrlOptions = mmirAppConfig.controllers;
+    if (ctrlOptions === true) {
+        return 'ERROR for appConfig.controllers: is set to TRUE but no controller options were found, is appConfig.resourcesPath set correctly?';
+    }
     var ctrlList = [];
     if (ctrlOptions && ctrlOptions.path) {
         impl_utils_1.default.implFromDir('controller', ctrlOptions, appRootDir, ctrlList);
@@ -144,6 +163,9 @@ function createBuildConfig(mmirAppConfig, resourcesConfig) {
     log('controllers: ', ctrlList, ctrlOptions); //DEBUG
     impl_utils_1.default.addImplementationsToAppConfig(ctrlList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
     var helperOptions = mmirAppConfig.helpers;
+    if (helperOptions === true) {
+        return 'ERROR for appConfig.helpers: is set to TRUE but no helper options were found, is appConfig.resourcesPath set correctly?';
+    }
     var helperList = [];
     if (helperOptions && helperOptions.path) {
         impl_utils_1.default.implFromDir('helper', helperOptions, appRootDir, helperList);
@@ -157,6 +179,9 @@ function createBuildConfig(mmirAppConfig, resourcesConfig) {
     log('helpers: ', helperList, helperOptions); //DEBUG
     impl_utils_1.default.addImplementationsToAppConfig(helperList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
     var modelOptions = mmirAppConfig.models;
+    if (modelOptions === true) {
+        return 'ERROR for appConfig.models: is set to TRUE but no model options were found, is appConfig.resourcesPath set correctly?';
+    }
     var modelList = [];
     if (modelOptions && modelOptions.path) {
         impl_utils_1.default.implFromDir('model', modelOptions, appRootDir, modelList);
@@ -169,7 +194,7 @@ function createBuildConfig(mmirAppConfig, resourcesConfig) {
     }
     log('models: ', modelList, modelOptions);
     impl_utils_1.default.addImplementationsToAppConfig(modelList, mmirAppConfig, directories, resourcesConfig, runtimeConfig);
-    var implList = ctrlList.concat(helperList, modelList);
+    const implList = ctrlList.concat(helperList, modelList);
     /////////////////////////////////////////////////////////////////////////////////////
     //FIXME include controllers!
     var viewOptions = mmirAppConfig.views;
@@ -177,6 +202,9 @@ function createBuildConfig(mmirAppConfig, resourcesConfig) {
     // var viewOptions = {
     // 	path: './views',
     // }
+    if (viewOptions === true) {
+        return 'ERROR for appConfig.views: is set to TRUE but no view options were found, is appConfig.resourcesPath set correctly?';
+    }
     var views = [];
     if (viewOptions && viewOptions.path) {
         views = view_utils_1.default.viewTemplatesFromDir(viewOptions.path, appRootDir);
@@ -212,19 +240,19 @@ function createBuildConfig(mmirAppConfig, resourcesConfig) {
     module_config_init_1.default.addAppSettings(mmirAppConfig, 'mmirf/settings/directories', directories);
     // log('###### mmirAppConfig: '+ JSON.stringify(mmirAppConfig));
     return {
-        grammars: grammars,
-        grammarOptions: grammarOptions,
-        views: views,
-        viewOptions: viewOptions,
-        states: states,
-        stateOptions: stateOptions,
-        implList: implList,
-        ctrlOptions: ctrlOptions,
-        helperOptions: helperOptions,
-        modelOptions: modelOptions,
-        settings: settings,
-        settingsOptions: settingsOptions,
-        directories: directories
+        grammars,
+        grammarOptions,
+        views,
+        viewOptions,
+        states,
+        stateOptions,
+        implList,
+        ctrlOptions,
+        helperOptions,
+        modelOptions,
+        settings,
+        settingsOptions,
+        directories
     };
 }
 exports.createBuildConfig = createBuildConfig;

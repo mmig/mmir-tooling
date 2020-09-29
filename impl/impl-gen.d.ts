@@ -1,3 +1,4 @@
+import { CompilerCallback, ImplementationCompilerOptions } from '../index.d';
 /**
  * compile/convert implementation (controller, helper, model) as module
  *
@@ -8,7 +9,7 @@
  * @param  {any} [_map] source mapping (unused)
  * @param  {any} [_meta] meta data (unused)
  */
-declare function compile(content: any, implFile: any, options: any, callback: any, _map: any, _meta: any): void;
+declare function compile(content: string, implFile: string, options: ImplementationCompilerOptions, callback: CompilerCallback, _map: any, _meta: any): void;
 declare const _default: {
     compile: typeof compile;
 };

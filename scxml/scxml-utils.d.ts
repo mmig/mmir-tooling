@@ -1,3 +1,5 @@
+import { StateOptions, StateModelBuildEntry, StateModelEntry, StateBuildOptions, DirectoriesInfo, ResourceConfig, RuntimeConfiguration } from '../index.d';
+import { WebpackAppConfig } from '../index-webpack.d';
 declare const _default: {
     /**
      * [description]
@@ -19,9 +21,9 @@ declare const _default: {
      * 										ScxmlEntry.mode {"extended" | "simple"}: run SCXML modle in "simple" or "extended" mode, DEFAULT: "extended"
      * @return {Array<ScxmlEntry>} the list of ScxmlEntry objects
      */
-    scxmlFromDir: (options: any, appRootDir: any, stateModels: any) => any;
-    scxmlFromOptions: (options: any, appRootDir: any, stateModels: any) => any;
-    scxmlDefaults: (options: any, appRootDir: any, stateModels: any) => any;
+    scxmlFromDir: (options: StateOptions, appRootDir: string, stateModels: StateModelEntry[]) => StateModelBuildEntry[];
+    scxmlFromOptions: (options: StateOptions, appRootDir: string, stateModels: StateModelEntry[]) => StateModelBuildEntry[];
+    scxmlDefaults: (options: StateBuildOptions, appRootDir: string, stateModels: StateModelEntry[]) => StateModelBuildEntry[];
     /**
      * apply the "global" options from `options` or default values to the entries
      * from `stateModels` if its corresponding options-field is not explicitly specified.
@@ -30,7 +32,7 @@ declare const _default: {
      * @param  {{Array<ScxmlEntry>}} stateModels
      * @return {{Array<ScxmlEntry>}}
      */
-    applyDefaultOptions: (options: any, stateModels: any) => any;
+    applyDefaultOptions: (options: StateOptions, stateModels: StateModelEntry[]) => StateModelBuildEntry[];
     /**
      * add SCXML models to (webpack) app build configuration
      *
@@ -42,6 +44,6 @@ declare const _default: {
      * @param  {ResourcesConfig} resources the resources configuration
      * @param  {[type]} _runtimeConfiguration the configuration.json representation
      */
-    addStatesToAppConfig: (stateModels: any, appConfig: any, directories: any, resources: any, _runtimeConfiguration: any) => void;
+    addStatesToAppConfig: (stateModels: StateModelBuildEntry[], appConfig: WebpackAppConfig, directories: DirectoriesInfo, resources: ResourceConfig, _runtimeConfiguration: RuntimeConfiguration) => void;
 };
 export = _default;

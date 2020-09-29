@@ -44,5 +44,5 @@ function getDefault(id) {
     return defaultValues[id] || {};
 }
 module.exports = {
-    getDefault: getDefault
+    getDefault
 };

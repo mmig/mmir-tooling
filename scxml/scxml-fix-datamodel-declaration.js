@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_1 = __importDefault(require("lodash"));
-var log_utils_1 = __importDefault(require("../utils/log-utils"));
-var warn = log_utils_1.default.warn;
+const lodash_1 = __importDefault(require("lodash"));
+const log_utils_1 = __importDefault(require("../utils/log-utils"));
+const warn = log_utils_1.default.warn;
 ;
 /**
  * scxml currently does not correctly declare the datamodel variables
@@ -21,7 +21,7 @@ function fixRawCompileInjectDataModule(scxmlCompiler) {
     if (!scxmlCompiler) {
         scxmlCompiler = require('@scion-scxml/scxml');
     }
-    var fixedScxmlCompiler = scxmlCompiler;
+    const fixedScxmlCompiler = scxmlCompiler;
     if (fixedScxmlCompiler.documentStringToModel.__handleRawModule) {
         return;
     }

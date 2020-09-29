@@ -1,3 +1,4 @@
+import { ResourceConfig } from '../index.d';
 /**
  * create config for mmir resources:
  *
@@ -11,11 +12,7 @@
  * @param  {{[moduleId: string]: string}} [customPaths] mapping of additional/overriding module IDs to URI/paths
  * @return {ResourcesConfig} the resource config object
  */
-declare function createResourcesConfig(removePathsList?: any, customPaths?: any): {
-    paths: any;
-    workers: string[];
-    fileResources: string[];
-    textResources: string[];
-    resourcesPaths: {};
-};
+declare function createResourcesConfig(removePathsList?: string[], customPaths?: {
+    [id: string]: string;
+}): ResourceConfig;
 export = createResourcesConfig;

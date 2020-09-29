@@ -1,3 +1,4 @@
+import { ViewCompilerOptions, CompilerCallback } from '../index.d';
 /**
  * compile view defintion (eHTML) into an executable JS view
  *
@@ -8,7 +9,7 @@
  * @param  {any} [_map] source mapping (unused)
  * @param  {any} [_meta] meta data (unused)
  */
-declare function compile(content: any, viewFile: any, options: any, callback: any, _map: any, _meta: any): void;
+declare function compile(content: string, viewFile: string, options: ViewCompilerOptions, callback: CompilerCallback, _map: any, _meta: any): void;
 declare const _default: {
     compile: typeof compile;
 };

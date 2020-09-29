@@ -1,19 +1,21 @@
-declare function addCtrl(json: any, reqId: any): void;
-declare function addHelper(json: any, reqId: any): void;
-declare function addModel(json: any, reqId: any): void;
+import { DirectoriesInfo } from '../index.d';
+declare function createDirectoriesJson(): DirectoriesInfo;
+declare function addCtrl(json: DirectoriesInfo, reqId: string): void;
+declare function addHelper(json: DirectoriesInfo, reqId: string): void;
+declare function addModel(json: DirectoriesInfo, reqId: string): void;
 /**
  *
  * @param {String} reqId  the module ID for require'ing the view
  */
-declare function addView(json: any, reqId: any): void;
-declare function addViewTemplate(json: any, reqId: any): void;
-declare function addGrammar(json: any, reqId: any): void;
-declare function addJsonGrammar(json: any, reqId: any): void;
-declare function addDictionary(json: any, reqId: any): void;
-declare function addSpeechConfig(json: any, reqId: any): void;
-declare function addStateModel(json: any, reqId: any): void;
-declare function addStateModelXml(json: any, reqId: any): void;
-declare function getLanguages(json: any): any;
+declare function addView(json: DirectoriesInfo, reqId: string): void;
+declare function addViewTemplate(json: DirectoriesInfo, reqId: string): void;
+declare function addGrammar(json: DirectoriesInfo, reqId: string): void;
+declare function addJsonGrammar(json: DirectoriesInfo, reqId: string): void;
+declare function addDictionary(json: DirectoriesInfo, reqId: string): void;
+declare function addSpeechConfig(json: DirectoriesInfo, reqId: string): void;
+declare function addStateModel(json: DirectoriesInfo, reqId: string): void;
+declare function addStateModelXml(json: DirectoriesInfo, reqId: string): void;
+declare function getLanguages(json: DirectoriesInfo): string[];
 declare const _default: {
     addCtrl: typeof addCtrl;
     addView: typeof addView;
@@ -26,17 +28,8 @@ declare const _default: {
     addSpeechConfig: typeof addSpeechConfig;
     addStateModel: typeof addStateModel;
     addStateModelXml: typeof addStateModelXml;
-    createDirectoriesJson: () => {
-        "/controllers": any[];
-        "/views": any[];
-        "/models": any[];
-        "/config": string[];
-        "/config/languages": any[];
-        "/config/states": any[];
-        "/helpers": any[];
-        "/gen": string[];
-    };
+    createDirectoriesJson: typeof createDirectoriesJson;
     getLanguages: typeof getLanguages;
-    setMode: (mode: any) => void;
+    setMode: (mode: "file" | "id") => void;
 };
 export = _default;

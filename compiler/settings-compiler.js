@@ -1,36 +1,42 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var fs = __importStar(require("fs-extra"));
-var path = __importStar(require("path"));
+const fs_extra_1 = __importDefault(require("fs-extra"));
+const path_1 = __importDefault(require("path"));
 // import _ from '.lodash';
-var settings_utils_1 = __importDefault(require("../tools/settings-utils"));
-var promise_1 = __importDefault(require("../utils/promise"));
-var log_utils_1 = __importDefault(require("../utils/log-utils"));
-var log = log_utils_1.default.log;
-var warn = log_utils_1.default.warn;
+const settings_utils_1 = __importDefault(require("../tools/settings-utils"));
+const promise_1 = __importDefault(require("../utils/promise"));
+const log_utils_1 = __importDefault(require("../utils/log-utils"));
+const log = log_utils_1.default.log;
+const warn = log_utils_1.default.warn;
 function writeDirectoriesJson(directories, targetDir) {
-    return fs.ensureDir(targetDir).then(function () {
-        return fs.writeFile(path.join(targetDir, 'directories.json'), JSON.stringify(directories), 'utf8').catch(function (err) {
-            var msg = 'ERROR writing directories.json to ' + targetDir + ': ';
-            warn(msg, err);
-            return err.stack ? err : new Error(msg + err);
+    return __awaiter(this, void 0, void 0, function* () {
+        return fs_extra_1.default.ensureDir(targetDir).then(function () {
+            return __awaiter(this, void 0, void 0, function* () {
+                return fs_extra_1.default.writeFile(path_1.default.join(targetDir, 'directories.json'), JSON.stringify(directories), 'utf8').catch(function (err) {
+                    var msg = 'ERROR writing directories.json to ' + targetDir + ': ';
+                    warn(msg, err);
+                    return err.stack ? err : new Error(msg + err);
+                });
+            });
         });
     });
 }
 function getSettingTargetPath(setting, targetDir) {
     if (setting.type === 'configuration') {
-        return path.join(targetDir, 'configuration.json');
+        return path_1.default.join(targetDir, 'configuration.json');
     }
-    var fileName;
+    let fileName;
     switch (setting.type) {
         case 'dictionary':
             fileName = 'dictionary.json';
@@ -45,7 +51,7 @@ function getSettingTargetPath(setting, targetDir) {
             warn('settingsCompiler: cannot determine target file path for settings with unknown type ' + setting.type);
     }
     if (fileName) {
-        return path.join(targetDir, 'languages', setting.id, fileName);
+        return path_1.default.join(targetDir, 'languages', setting.id, fileName);
     }
 }
 function prepareWriteSettings(settings, settingsOptions) {
@@ -79,28 +85,32 @@ function writeSettings(settings, settingsOptions) {
         if (!targetPath) {
             return;
         }
-        var t = fs.pathExists(targetPath).then(function (exists) {
-            if (!exists || setting.force) {
-                return fs.ensureDir(path.dirname(targetPath)).then(function () {
-                    if (setting.include === 'file' && !setting.value) {
-                        return fs.copyFile(setting.file, targetPath).catch(function (err) {
-                            var msg = 'ERROR copying file to ' + targetPath + ': ';
-                            warn(msg, err);
-                            return err.stack ? err : new Error(msg + err);
+        var t = fs_extra_1.default.pathExists(targetPath).then(function (exists) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (!exists || setting.force) {
+                    return fs_extra_1.default.ensureDir(path_1.default.dirname(targetPath)).then(function () {
+                        return __awaiter(this, void 0, void 0, function* () {
+                            if (setting.include === 'file' && !setting.value) {
+                                return fs_extra_1.default.copyFile(setting.file, targetPath).catch(function (err) {
+                                    var msg = 'ERROR copying file to ' + targetPath + ': ';
+                                    warn(msg, err);
+                                    return err.stack ? err : new Error(msg + err);
+                                });
+                            }
+                            else {
+                                return fs_extra_1.default.writeFile(targetPath, JSON.stringify(setting.value), 'utf8').catch(function (err) {
+                                    var msg = 'ERROR writing ' + targetPath + ': ';
+                                    warn(msg, err);
+                                    return err.stack ? err : new Error(msg + err);
+                                });
+                            }
                         });
-                    }
-                    else {
-                        return fs.writeFile(targetPath, JSON.stringify(setting.value), 'utf8').catch(function (err) {
-                            var msg = 'ERROR writing ' + targetPath + ': ';
-                            warn(msg, err);
-                            return err.stack ? err : new Error(msg + err);
-                        });
-                    }
-                });
-            }
-            else {
-                log('omit writing ' + setting.type + ' to ' + targetPath + ', since it already exists'); //: ', setting);
-            }
+                    });
+                }
+                else {
+                    log('omit writing ' + setting.type + ' to ' + targetPath + ', since it already exists'); //: ', setting);
+                }
+            });
         });
         tasks.push(t);
     });
