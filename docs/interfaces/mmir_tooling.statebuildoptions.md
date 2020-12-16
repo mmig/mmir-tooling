@@ -1,10 +1,12 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [StateBuildOptions](mmir_tooling.statebuildoptions.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / StateBuildOptions
 
 # Interface: StateBuildOptions
 
 ## Hierarchy
 
-  ↳ [StateOptions](mmir_tooling.stateoptions.md)
+* [StateOptions](mmir_tooling.stateoptions.md)
 
 * [BuildOptions](mmir_tooling.buildoptions.md)
 
@@ -14,44 +16,57 @@
 
 ### Properties
 
-* [exclude](mmir_tooling.statebuildoptions.md#optional-exclude)
-* [force](mmir_tooling.statebuildoptions.md#optional-force)
-* [ignoreErrors](mmir_tooling.statebuildoptions.md#optional-ignoreerrors)
-* [mode](mmir_tooling.statebuildoptions.md#optional-mode)
-* [models](mmir_tooling.statebuildoptions.md#optional-models)
-* [moduleId](mmir_tooling.statebuildoptions.md#optional-moduleid)
-* [moduleType](mmir_tooling.statebuildoptions.md#optional-moduletype)
-* [path](mmir_tooling.statebuildoptions.md#optional-path)
-* [targetDir](mmir_tooling.statebuildoptions.md#optional-targetdir)
+* [defaultType](mmir_tooling.statebuildoptions.md#defaulttype)
+* [exclude](mmir_tooling.statebuildoptions.md#exclude)
+* [force](mmir_tooling.statebuildoptions.md#force)
+* [ignoreErrors](mmir_tooling.statebuildoptions.md#ignoreerrors)
+* [mode](mmir_tooling.statebuildoptions.md#mode)
+* [models](mmir_tooling.statebuildoptions.md#models)
+* [moduleId](mmir_tooling.statebuildoptions.md#moduleid)
+* [moduleType](mmir_tooling.statebuildoptions.md#moduletype)
+* [path](mmir_tooling.statebuildoptions.md#path)
+* [strict](mmir_tooling.statebuildoptions.md#strict)
+* [targetDir](mmir_tooling.statebuildoptions.md#targetdir)
 
 ## Properties
 
-### `Optional` exclude
+### defaultType
 
-• **exclude**? : *boolean*
+• `Optional` **defaultType**: [StateModelMode](../modules/mmir_tooling.md#statemodelmode) \| \"minimal\"
 
-*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[exclude](mmir_tooling.statebuildoptions.md#optional-exclude)*
+if default models for 'input' and 'dialog' are created, specifies their
+mode
+(defaults will be created, if no definition for the models is specified
+ or can be found the the resources path(s))
+
+___
+
+### exclude
+
+• `Optional` **exclude**: boolean
+
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[exclude](mmir_tooling.statebuildoptions.md#exclude)*
 
 if `true`, the corresponding resource will be excluded (when parsing `path`)
 
 ___
 
-### `Optional` force
+### force
 
-• **force**? : *boolean*
+• `Optional` **force**: boolean
 
-*Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[force](mmir_tooling.buildoptions.md#optional-force)*
+*Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[force](mmir_tooling.buildoptions.md#force)*
 
 if TRUE the targets will be newly created and written to the targetDir,
 even if the existence or up-to-date check returns `true`
 
 ___
 
-### `Optional` ignoreErrors
+### ignoreErrors
 
-• **ignoreErrors**? : *boolean*
+• `Optional` **ignoreErrors**: boolean
 
-*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[ignoreErrors](mmir_tooling.statebuildoptions.md#optional-ignoreerrors)*
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[ignoreErrors](mmir_tooling.statebuildoptions.md#ignoreerrors)*
 
 if `true`, runtime errors will be ignored.
  if `false` (or omitted) the compilation will fail with an error message
@@ -64,11 +79,11 @@ NOTE: if ignored, the runtime errors will be triggered when the state-machine
 
 ___
 
-### `Optional` mode
+### mode
 
-• **mode**? : *"extended" | "simple"*
+• `Optional` **mode**: [StateModelMode](../modules/mmir_tooling.md#statemodelmode)
 
-*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[mode](mmir_tooling.statebuildoptions.md#optional-mode)*
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[mode](mmir_tooling.statebuildoptions.md#mode)*
 
 run SCXML model in "simple" or "extended" mode
 
@@ -76,35 +91,19 @@ run SCXML model in "simple" or "extended" mode
 
 ___
 
-### `Optional` models
+### models
 
-• **models**? : *object*
+• `Optional` **models**: [StateModelsBuildOption](mmir_tooling.statemodelsbuildoption.md)
 
-*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[models](mmir_tooling.statebuildoptions.md#optional-models)*
-
-optionally specify options for found resource, or specifying resources/locations directly
-
-If `input` or `dialog` are missing (e.g. no resources matching them could be found),
-default "minimal" state-models will be used for `inputManager` and `dialogManager`.
-
-NOTE: for custom state-models whichs' files are determined by parsing [StateOptions.path](mmir_tooling.stateoptions.md#optional-path),
-      the `id` will be the file name (case sensitive, without extension).
-
-#### Type declaration:
-
-* \[ **id**: *string*\]: [StateModelEntry](mmir_tooling.statemodelentry.md)
-
-* **dialog**? : *[StateModelEntry](mmir_tooling.statemodelentry.md)*
-
-* **input**? : *[StateModelEntry](mmir_tooling.statemodelentry.md)*
+*Overrides [StateOptions](mmir_tooling.stateoptions.md).[models](mmir_tooling.stateoptions.md#models)*
 
 ___
 
-### `Optional` moduleId
+### moduleId
 
-• **moduleId**? : *string*
+• `Optional` **moduleId**: string
 
-*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[moduleId](mmir_tooling.statebuildoptions.md#optional-moduleid)*
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[moduleId](mmir_tooling.statebuildoptions.md#moduleid)*
 
 the module ID for state interpreter:
 if the interpreter is registered, it can be `require`'d using the `moduleId`, e.g.
@@ -116,9 +115,9 @@ var stateManager = mmir.require(<moduleId>);
 
 ___
 
-### `Optional` moduleType
+### moduleType
 
-• **moduleType**? : *"amd" | "commonjs"*
+• `Optional` **moduleType**: \"amd\" \| \"commonjs\"
 
 the module type of the generated/compiled state machine
 
@@ -126,11 +125,11 @@ the module type of the generated/compiled state machine
 
 ___
 
-### `Optional` path
+### path
 
-• **path**? : *string*
+• `Optional` **path**: string
 
-*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[path](mmir_tooling.statebuildoptions.md#optional-path)*
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[path](mmir_tooling.statebuildoptions.md#path)*
 
 file path for searching (recursively) for SCXML files (state-models):
 ```bash
@@ -149,15 +148,27 @@ Or custom state models (SCXML definitions) with file extension `.xml`.
 
 ___
 
-### `Optional` targetDir
+### strict
 
-• **targetDir**? : *string*
+• `Optional` **strict**: boolean
 
-*Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[targetDir](mmir_tooling.buildoptions.md#optional-targetdir)*
+*Inherited from [StateBuildOptions](mmir_tooling.statebuildoptions.md).[strict](mmir_tooling.statebuildoptions.md#strict)*
+
+set or disable strict-mode for generated JavaScript code
+
+**`default`** true
+
+___
+
+### targetDir
+
+• `Optional` **targetDir**: string
+
+*Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[targetDir](mmir_tooling.buildoptions.md#targetdir)*
 
 directory to which the compiled resources like grammars (and checksum files) will be stored
 
 by default, the relative paths are resolved against the app's root directory;
 if the target directory is missing it will be newly created.
 
-**`default`** [BuildAppConfig.targetDir](mmir_tooling.buildappconfig.md#optional-targetdir) + [ResourceType](../modules/mmir_tooling.md#resourcetype)
+**`default`** [BuildAppConfig.targetDir](mmir_tooling.buildappconfig.md#targetdir) + [ResourceType](../modules/mmir_tooling.md#resourcetype)

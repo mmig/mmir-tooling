@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [ViewBuildOptions](mmir_tooling.viewbuildoptions.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / ViewBuildOptions
 
 # Interface: ViewBuildOptions
 
@@ -14,28 +16,29 @@
 
 ### Properties
 
-* [force](mmir_tooling.viewbuildoptions.md#optional-force)
-* [path](mmir_tooling.viewbuildoptions.md#optional-path)
-* [targetDir](mmir_tooling.viewbuildoptions.md#optional-targetdir)
+* [force](mmir_tooling.viewbuildoptions.md#force)
+* [path](mmir_tooling.viewbuildoptions.md#path)
+* [strict](mmir_tooling.viewbuildoptions.md#strict)
+* [targetDir](mmir_tooling.viewbuildoptions.md#targetdir)
 
 ## Properties
 
-### `Optional` force
+### force
 
-• **force**? : *boolean*
+• `Optional` **force**: boolean
 
-*Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[force](mmir_tooling.buildoptions.md#optional-force)*
+*Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[force](mmir_tooling.buildoptions.md#force)*
 
 if TRUE the targets will be newly created and written to the targetDir,
 even if the existence or up-to-date check returns `true`
 
 ___
 
-### `Optional` path
+### path
 
-• **path**? : *string*
+• `Optional` **path**: string
 
-*Inherited from [ViewBuildOptions](mmir_tooling.viewbuildoptions.md).[path](mmir_tooling.viewbuildoptions.md#optional-path)*
+*Inherited from [ViewBuildOptions](mmir_tooling.viewbuildoptions.md).[path](mmir_tooling.viewbuildoptions.md#path)*
 
 file path for searching view files:
 ```bash
@@ -45,15 +48,27 @@ path/layouts/<controller ID>.ehtml
 
 ___
 
-### `Optional` targetDir
+### strict
 
-• **targetDir**? : *string*
+• `Optional` **strict**: boolean
 
-*Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[targetDir](mmir_tooling.buildoptions.md#optional-targetdir)*
+*Inherited from [ViewBuildOptions](mmir_tooling.viewbuildoptions.md).[strict](mmir_tooling.viewbuildoptions.md#strict)*
+
+set or disable strict-mode for generated JavaScript code
+
+**`default`** true
+
+___
+
+### targetDir
+
+• `Optional` **targetDir**: string
+
+*Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[targetDir](mmir_tooling.buildoptions.md#targetdir)*
 
 directory to which the compiled resources like grammars (and checksum files) will be stored
 
 by default, the relative paths are resolved against the app's root directory;
 if the target directory is missing it will be newly created.
 
-**`default`** [BuildAppConfig.targetDir](mmir_tooling.buildappconfig.md#optional-targetdir) + [ResourceType](../modules/mmir_tooling.md#resourcetype)
+**`default`** [BuildAppConfig.targetDir](mmir_tooling.buildappconfig.md#targetdir) + [ResourceType](../modules/mmir_tooling.md#resourcetype)

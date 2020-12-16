@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [TTSPluginSpeechConfig](mmir_tooling.ttspluginspeechconfig.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / TTSPluginSpeechConfig
 
 # Interface: TTSPluginSpeechConfig
 
@@ -29,30 +31,30 @@ or, if combined with specific settings, use "__apply-to-all-configs__" as langua
 
 ### Properties
 
-* [language](mmir_tooling.ttspluginspeechconfig.md#optional-language)
-* [long](mmir_tooling.ttspluginspeechconfig.md#optional-long)
-* [voice](mmir_tooling.ttspluginspeechconfig.md#optional-voice)
+* [language](mmir_tooling.ttspluginspeechconfig.md#language)
+* [long](mmir_tooling.ttspluginspeechconfig.md#long)
+* [voice](mmir_tooling.ttspluginspeechconfig.md#voice)
 
 ## Properties
 
-### `Optional` language
+### language
 
-• **language**? : *string | object*
+• `Optional` **language**: string \| { [languageCode:string]: string;  }
 
 local with 2-letter language- and country-code, separated with "-", e.g. "de-DE" or "en-US"
 
 ___
 
-### `Optional` long
+### long
 
-• **long**? : *string | object*
+• `Optional` **long**: string \| { [languageCode:string]: string;  }
 
 local with 3-letter language- and country-code, separated with "-", e.g. "deu-DEU" or "eng-USA"
 
 ___
 
-### `Optional` voice
+### voice
 
-• **voice**? : *"male" | "female" | string | object*
+• `Optional` **voice**: \"male\" \| \"female\" \| string \| { [languageCode:string]: \"male\" \| \"female\" \| string;  }
 
 voice name or feature (may not be supported by selected TTS plugin)

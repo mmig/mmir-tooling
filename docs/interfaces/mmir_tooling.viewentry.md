@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [ViewEntry](mmir_tooling.viewentry.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / ViewEntry
 
 # Interface: ViewEntry
 
@@ -17,47 +19,54 @@
 * [id](mmir_tooling.viewentry.md#id)
 * [isLayout](mmir_tooling.viewentry.md#islayout)
 * [isPartial](mmir_tooling.viewentry.md#ispartial)
+* [strict](mmir_tooling.viewentry.md#strict)
 * [viewImpl](mmir_tooling.viewentry.md#viewimpl)
 * [viewName](mmir_tooling.viewentry.md#viewname)
 
 ## Properties
 
-###  ctrlName
+### ctrlName
 
-• **ctrlName**: *string*
-
-___
-
-###  file
-
-• **file**: *string*
+•  **ctrlName**: string
 
 ___
 
-###  id
+### file
 
-• **id**: *string*
-
-___
-
-###  isLayout
-
-• **isLayout**: *boolean*
+•  **file**: string
 
 ___
 
-###  isPartial
+### id
 
-• **isPartial**: *boolean*
-
-___
-
-###  viewImpl
-
-• **viewImpl**: *"mmirf/layout" | "mmirf/partial" | "mmirf/view"*
+•  **id**: string
 
 ___
 
-###  viewName
+### isLayout
 
-• **viewName**: *string*
+•  **isLayout**: boolean
+
+___
+
+### isPartial
+
+•  **isPartial**: boolean
+
+___
+
+### strict
+
+•  **strict**: boolean
+
+___
+
+### viewImpl
+
+•  **viewImpl**: \"mmirf/layout\" \| \"mmirf/partial\" \| \"mmirf/view\"
+
+___
+
+### viewName
+
+•  **viewName**: string

@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [SettingsOptions](mmir_tooling.settingsoptions.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / SettingsOptions
 
 # Interface: SettingsOptions
 
@@ -30,51 +32,62 @@
 
 ### Properties
 
-* [configuration](mmir_tooling.settingsoptions.md#optional-configuration)
-* [dictionary](mmir_tooling.settingsoptions.md#optional-dictionary)
-* [excludeTypePattern](mmir_tooling.settingsoptions.md#optional-excludetypepattern)
-* [grammar](mmir_tooling.settingsoptions.md#optional-grammar)
-* [path](mmir_tooling.settingsoptions.md#optional-path)
-* [speech](mmir_tooling.settingsoptions.md#optional-speech)
+* [configuration](mmir_tooling.settingsoptions.md#configuration)
+* [dictionary](mmir_tooling.settingsoptions.md#dictionary)
+* [excludeTypePattern](mmir_tooling.settingsoptions.md#excludetypepattern)
+* [grammar](mmir_tooling.settingsoptions.md#grammar)
+* [include](mmir_tooling.settingsoptions.md#include)
+* [path](mmir_tooling.settingsoptions.md#path)
+* [speech](mmir_tooling.settingsoptions.md#speech)
 
 ## Properties
 
-### `Optional` configuration
+### configuration
 
-• **configuration**? : *boolean | [SettingsEntryOptions](mmir_tooling.settingsentryoptions.md)*
+• `Optional` **configuration**: boolean \| [SettingsEntryOptionsMultiple](mmir_tooling.settingsentryoptionsmultiple.md)
 
 options for the configuration.json (or .js) entry; if FALSE, the resource will be ignored
 
 ___
 
-### `Optional` dictionary
+### dictionary
 
-• **dictionary**? : *boolean | object*
+• `Optional` **dictionary**: boolean \| { [id:string]: [SettingsEntryOptions](mmir_tooling.settingsentryoptions.md);  }
 
 options-map for the dictionary.json (or .js) entries where id is (usually) the language code; if `false`, these resources will be ignored
 
 ___
 
-### `Optional` excludeTypePattern
+### excludeTypePattern
 
-• **excludeTypePattern**? : *RegExp | Array‹[SettingsType](../modules/mmir_tooling.md#settingstype)›*
+• `Optional` **excludeTypePattern**: RegExp \| Array<[SettingsType](../modules/mmir_tooling.md#settingstype)\>
 
 pattern for excluding settings:
 if pattern matches SettingsEntryOptions.type, the settings will be excluded
 
 ___
 
-### `Optional` grammar
+### grammar
 
-• **grammar**? : *boolean | object*
+• `Optional` **grammar**: boolean \| { [id:string]: [SettingsEntryOptions](mmir_tooling.settingsentryoptions.md);  }
 
 options-map for the grammar.json (or .js) entries where id is (usually) the language code; if `false`, these resources will be ignored
 
 ___
 
-### `Optional` path
+### include
 
-• **path**? : *string*
+• `Optional` **include**: \"inline\" \| \"file\"
+
+can be used to include the resource as separate file, instead of bundeling via webpack
+
+**`default`** "inline" if webpack build, otherwise "file"
+
+___
+
+### path
+
+• `Optional` **path**: string
 
 file path for searching settings:
 ```bash
@@ -86,8 +99,8 @@ configuration.[json | js]
 
 ___
 
-### `Optional` speech
+### speech
 
-• **speech**? : *boolean | object*
+• `Optional` **speech**: boolean \| { [id:string]: [SettingsEntryOptions](mmir_tooling.settingsentryoptions.md);  }
 
 options-map for the speech.json (or .js) entries where id is (usually) the language code; if `false`, these resources will be ignored

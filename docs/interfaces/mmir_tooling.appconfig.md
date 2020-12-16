@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [AppConfig](mmir_tooling.appconfig.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / AppConfig
 
 # Interface: AppConfig
 
@@ -32,26 +34,28 @@ var appConfig = {
 
 * **AppConfig**
 
+  ↳ [WebpackAppConfig](mmir_webpack.webpackappconfig.md)
+
   ↳ [BuildAppConfig](mmir_tooling.buildappconfig.md)
 
 ## Index
 
 ### Properties
 
-* [configuration](mmir_tooling.appconfig.md#optional-configuration)
-* [grammars](mmir_tooling.appconfig.md#optional-grammars)
-* [resourcesPath](mmir_tooling.appconfig.md#optional-resourcespath)
-* [resourcesPathOptions](mmir_tooling.appconfig.md#optional-resourcespathoptions)
-* [rootPath](mmir_tooling.appconfig.md#optional-rootpath)
-* [settings](mmir_tooling.appconfig.md#optional-settings)
-* [states](mmir_tooling.appconfig.md#optional-states)
-* [views](mmir_tooling.appconfig.md#optional-views)
+* [configuration](mmir_tooling.appconfig.md#configuration)
+* [grammars](mmir_tooling.appconfig.md#grammars)
+* [resourcesPath](mmir_tooling.appconfig.md#resourcespath)
+* [resourcesPathOptions](mmir_tooling.appconfig.md#resourcespathoptions)
+* [rootPath](mmir_tooling.appconfig.md#rootpath)
+* [settings](mmir_tooling.appconfig.md#settings)
+* [states](mmir_tooling.appconfig.md#states)
+* [views](mmir_tooling.appconfig.md#views)
 
 ## Properties
 
-### `Optional` configuration
+### configuration
 
-• **configuration**? : *[RuntimeConfiguration](mmir_tooling.runtimeconfiguration.md)*
+• `Optional` **configuration**: [RuntimeConfiguration](mmir_tooling.runtimeconfiguration.md)
 
 Specify additional (mmir) runtime configuration values,
 e.g. in addition to `config/configuration.json`.
@@ -61,9 +65,9 @@ In case of conflicts, these settings will override settings in
 
 ___
 
-### `Optional` grammars
+### grammars
 
-• **grammars**? : *[GrammarOptions](mmir_tooling.grammaroptions.md) | boolean*
+• `Optional` **grammars**: [GrammarOptions](mmir_tooling.grammaroptions.md) \| boolean
 
 Specify how (JSON) grammars should be parsed/included, and/or
 specify additional grammars that should be included.
@@ -74,9 +78,9 @@ If `false`, grammars will be excluded/ignored.
 
 ___
 
-### `Optional` resourcesPath
+### resourcesPath
 
-• **resourcesPath**? : *string*
+• `Optional` **resourcesPath**: string
 
 specify the path to the MMIR resources directory with the default structure:
  ```bash
@@ -103,30 +107,30 @@ options for including them.
 
 ___
 
-### `Optional` resourcesPathOptions
+### resourcesPathOptions
 
-• **resourcesPathOptions**? : *[ResourcesOptions](mmir_tooling.resourcesoptions.md)*
+• `Optional` **resourcesPathOptions**: [ResourcesOptions](mmir_tooling.resourcesoptions.md)
 
 ___
 
-### `Optional` rootPath
+### rootPath
 
-• **rootPath**? : *string*
+• `Optional` **rootPath**: string
 
 used for resolving non-absolute paths: the absolute path to the app's root/sources directory (if omitted the current working directory is used for resolving non-absolute paths)
 
 ___
 
-### `Optional` settings
+### settings
 
-• **settings**? : *[SettingsOptions](mmir_tooling.settingsoptions.md) | boolean*
+• `Optional` **settings**: [SettingsOptions](mmir_tooling.settingsoptions.md) \| boolean
 
 Specify how (mmir) configuration and settings should be parsed/included,
 and/or specify additional settings that should be included.
 
 The `mmir` configuration/settings are the resources that are by default
 located in the mmir `config/` directory
-(with exception of the `states` sub-directory; for those instead use [[WebpackAppConfig.states]]):
+(with exception of the `states` sub-directory; for those instead use [WebpackAppConfig.states](mmir_webpack.webpackappconfig.md#states)):
  ```bash
  config/
        /languages/
@@ -139,13 +143,13 @@ located in the mmir `config/` directory
               /dialog.xml
        /configuration.json
 ```
-(NOTE the `config/states/` sub-directory is handled/configured via the the [states](mmir_tooling.appconfig.md#optional-states) option)
+(NOTE the `config/states/` sub-directory is handled/configured via the the [states](mmir_tooling.appconfig.md#states) option)
 
 ___
 
-### `Optional` states
+### states
 
-• **states**? : *[StateOptions](mmir_tooling.stateoptions.md) | boolean*
+• `Optional` **states**: [StateOptions](mmir_tooling.stateoptions.md) \| boolean
 
 Specify how (SCXML) state-machines/-models should be parsed/included, and/or
 specify additional state-models that should be included.
@@ -158,9 +162,9 @@ see [mmir-tooling/defaultValues](https://github.com/mmig/mmir-tooling/tree/maste
 
 ___
 
-### `Optional` views
+### views
 
-• **views**? : *[ViewOptions](mmir_tooling.viewoptions.md) | boolean*
+• `Optional` **views**: [ViewOptions](mmir_tooling.viewoptions.md) \| boolean
 
 Specify how (mmir) views should be parsed/included, and/or
 specify additional views that should be included.

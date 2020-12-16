@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [PluginOptions](mmir_tooling.pluginoptions.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / PluginOptions
 
 # Interface: PluginOptions
 
@@ -42,16 +44,16 @@ var includePlugins = [
 
 ### Properties
 
-* [buildConfig](mmir_tooling.pluginoptions.md#optional-buildconfig)
-* [config](mmir_tooling.pluginoptions.md#optional-config)
+* [build](mmir_tooling.pluginoptions.md#build)
+* [config](mmir_tooling.pluginoptions.md#config)
 * [id](mmir_tooling.pluginoptions.md#id)
-* [mode](mmir_tooling.pluginoptions.md#optional-mode)
+* [mode](mmir_tooling.pluginoptions.md#mode)
 
 ## Properties
 
-### `Optional` buildConfig
+### build
 
-• **buildConfig**? : *[AppConfig](mmir_tooling.appconfig.md)*
+• `Optional` **build**: Array<[PluginExportConfigInfo](mmir_tooling.pluginexportconfiginfo.md) \| [PluginExportConfigInfoMultiple](mmir_tooling.pluginexportconfiginfomultiple.md)\>
 
 if supported by plugin:
 custom build options.
@@ -61,26 +63,26 @@ NOTE if the plugin does not support custom build configuration, this
 
 ___
 
-### `Optional` config
+### config
 
-• **config**? : *[PluginConfig](../modules/mmir_tooling.md#pluginconfig) | [TTSPluginSpeechConfig](mmir_tooling.ttspluginspeechconfig.md)*
+• `Optional` **config**: [PluginConfig](../modules/mmir_tooling.md#pluginconfig) \| [TTSPluginSpeechConfig](mmir_tooling.ttspluginspeechconfig.md)
 
 configuration for the plugin: specific fields/values depending on the plugin
 NOTE some plugins require credentials, e.g. "appId" and "appKey"
 
 ___
 
-###  id
+### id
 
-• **id**: *string*
+•  **id**: string
 
 the (package) ID of the plugin
 NOTE: the plugin needs to be installed, i.e. "npm install ..."
 
 ___
 
-### `Optional` mode
+### mode
 
-• **mode**? : *"wasm" | "min" | "default"*
+• `Optional` **mode**: [PluginModeOption](../modules/mmir_tooling.md#pluginmodeoption)
 
 mode for including the plugin: if the plugin does not support the specified mode, will automatically use "default" mode

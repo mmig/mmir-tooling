@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [HelperOptions](mmir_tooling.helperoptions.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / HelperOptions
 
 # Interface: HelperOptions
 
@@ -23,18 +25,18 @@ var helperOptions = {
 
 ### Properties
 
-* [addModuleExport](mmir_tooling.helperoptions.md#optional-addmoduleexport)
-* [exclude](mmir_tooling.helperoptions.md#optional-exclude)
-* [helpers](mmir_tooling.helperoptions.md#optional-helpers)
-* [path](mmir_tooling.helperoptions.md#optional-path)
+* [addModuleExport](mmir_tooling.helperoptions.md#addmoduleexport)
+* [exclude](mmir_tooling.helperoptions.md#exclude)
+* [helpers](mmir_tooling.helperoptions.md#helpers)
+* [path](mmir_tooling.helperoptions.md#path)
 
 ## Properties
 
-### `Optional` addModuleExport
+### addModuleExport
 
-• **addModuleExport**? : *boolean | string*
+• `Optional` **addModuleExport**: boolean \| string
 
-*Inherited from [ControllerOptions](mmir_tooling.controlleroptions.md).[addModuleExport](mmir_tooling.controlleroptions.md#optional-addmoduleexport)*
+*Inherited from [ImplementationBuildEntry](mmir_tooling.implementationbuildentry.md).[addModuleExport](mmir_tooling.implementationbuildentry.md#addmoduleexport)*
 
 for automatically converting old-style implementations that are no CommonJS or AMD modules:
 if true, explicitly exports the implementation resource, i.e. adds something like
@@ -47,25 +49,25 @@ If string, the specified string will be used for the export.
 
 ___
 
-### `Optional` exclude
+### exclude
 
-• **exclude**? : *boolean*
+• `Optional` **exclude**: boolean
 
-*Inherited from [ControllerOptions](mmir_tooling.controlleroptions.md).[exclude](mmir_tooling.controlleroptions.md#optional-exclude)*
+*Inherited from [ImplementationBuildEntry](mmir_tooling.implementationbuildentry.md).[exclude](mmir_tooling.implementationbuildentry.md#exclude)*
 
 if `true`, the corresponding implementation will be excluded (when parsing `path`)
 
 ___
 
-### `Optional` helpers
+### helpers
 
-• **helpers**? : *boolean | object*
+• `Optional` **helpers**: boolean \| { [id:string]: [ImplementationEntry](mmir_tooling.implementationentry.md) \| boolean;  }
 
 ___
 
-### `Optional` path
+### path
 
-• **path**? : *string*
+• `Optional` **path**: string
 
 file path for (recursively) searching helper implementation files:
 `path/.../<controller ID>Helper.js`

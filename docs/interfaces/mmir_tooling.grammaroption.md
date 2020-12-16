@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [GrammarOption](mmir_tooling.grammaroption.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / GrammarOption
 
 # Interface: GrammarOption
 
@@ -14,18 +16,19 @@
 
 ### Properties
 
-* [async](mmir_tooling.grammaroption.md#optional-async)
-* [asyncCompile](mmir_tooling.grammaroption.md#optional-asynccompile)
-* [engine](mmir_tooling.grammaroption.md#optional-engine)
-* [exclude](mmir_tooling.grammaroption.md#optional-exclude)
-* [ignore](mmir_tooling.grammaroption.md#optional-ignore)
-* [initPhrase](mmir_tooling.grammaroption.md#optional-initphrase)
+* [async](mmir_tooling.grammaroption.md#async)
+* [asyncCompile](mmir_tooling.grammaroption.md#asynccompile)
+* [engine](mmir_tooling.grammaroption.md#engine)
+* [exclude](mmir_tooling.grammaroption.md#exclude)
+* [ignore](mmir_tooling.grammaroption.md#ignore)
+* [initPhrase](mmir_tooling.grammaroption.md#initphrase)
+* [strict](mmir_tooling.grammaroption.md#strict)
 
 ## Properties
 
-### `Optional` async
+### async
 
-• **async**? : *boolean*
+• `Optional` **async**: boolean
 
 grammar-execution (during runtime) will be asynchronous in a WebWorker/thread
 
@@ -38,9 +41,9 @@ mmir.semantic.interpret('this is my test phrase', function(result){
 
 ___
 
-### `Optional` asyncCompile
+### asyncCompile
 
-• **asyncCompile**? : *boolean*
+• `Optional` **asyncCompile**: boolean
 
 if `true`, and thread-webworker is available, grammar will be compiled paralelized / in a separate thread
 
@@ -48,9 +51,9 @@ if `true`, and thread-webworker is available, grammar will be compiled paraleliz
 
 ___
 
-### `Optional` engine
+### engine
 
-• **engine**? : *"jscc" | "jison" | "pegjs"*
+• `Optional` **engine**: [GrammarEngineType](../modules/mmir_lib.md#grammarenginetype)
 
 the Grammar engine that will be used to compile the executable grammar.
 
@@ -58,18 +61,18 @@ the Grammar engine that will be used to compile the executable grammar.
 
 ___
 
-### `Optional` exclude
+### exclude
 
-• **exclude**? : *boolean*
+• `Optional` **exclude**: boolean
 
 if `true`, the corresponding grammar will be completely excluded, i.e. no executable grammar will be compiled
 from the corresponding JSON grammar
 
 ___
 
-### `Optional` ignore
+### ignore
 
-• **ignore**? : *boolean*
+• `Optional` **ignore**: boolean
 
 if `true`, the grammar will not be loaded (and registered) when the the app is initialized, i.e. needs to be
   "manually" loaded/initialized by app implementation and/or other mechanisms.
@@ -78,12 +81,22 @@ If omitted or `false`, the grammar will be loaded on start-up of the app,
 
 ___
 
-### `Optional` initPhrase
+### initPhrase
 
-• **initPhrase**? : *string*
+• `Optional` **initPhrase**: string
 
 An "initialization phrase" for the grammar, in case of async-exection:
 this phrase will be immediately interpreted, after grammar has been loaded for async-execution in the WebWorkers
 (for large grammars, this may reduce delays for subsequent calls, by fully initializing the grammar)
 
-NOTE will have no effect, if option [async](mmir_tooling.grammaroption.md#optional-async) is not `true`
+NOTE will have no effect, if option [async](mmir_tooling.grammaroption.md#async) is not `true`
+
+___
+
+### strict
+
+• `Optional` **strict**: boolean
+
+set or disable strict-mode for generated JavaScript code
+
+**`default`** true

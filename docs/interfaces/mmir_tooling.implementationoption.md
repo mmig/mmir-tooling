@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [ImplementationOption](mmir_tooling.implementationoption.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / ImplementationOption
 
 # Interface: ImplementationOption
 
@@ -18,14 +20,14 @@
 
 ### Properties
 
-* [addModuleExport](mmir_tooling.implementationoption.md#optional-addmoduleexport)
-* [exclude](mmir_tooling.implementationoption.md#optional-exclude)
+* [addModuleExport](mmir_tooling.implementationoption.md#addmoduleexport)
+* [exclude](mmir_tooling.implementationoption.md#exclude)
 
 ## Properties
 
-### `Optional` addModuleExport
+### addModuleExport
 
-• **addModuleExport**? : *boolean | string*
+• `Optional` **addModuleExport**: boolean \| string
 
 for automatically converting old-style implementations that are no CommonJS or AMD modules:
 if true, explicitly exports the implementation resource, i.e. adds something like
@@ -38,8 +40,8 @@ If string, the specified string will be used for the export.
 
 ___
 
-### `Optional` exclude
+### exclude
 
-• **exclude**? : *boolean*
+• `Optional` **exclude**: boolean
 
 if `true`, the corresponding implementation will be excluded (when parsing `path`)

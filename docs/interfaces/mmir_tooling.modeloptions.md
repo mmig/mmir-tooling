@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [ModelOptions](mmir_tooling.modeloptions.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / ModelOptions
 
 # Interface: ModelOptions
 
@@ -23,18 +25,18 @@ var modelOptions = {
 
 ### Properties
 
-* [addModuleExport](mmir_tooling.modeloptions.md#optional-addmoduleexport)
-* [exclude](mmir_tooling.modeloptions.md#optional-exclude)
-* [models](mmir_tooling.modeloptions.md#optional-models)
-* [path](mmir_tooling.modeloptions.md#optional-path)
+* [addModuleExport](mmir_tooling.modeloptions.md#addmoduleexport)
+* [exclude](mmir_tooling.modeloptions.md#exclude)
+* [models](mmir_tooling.modeloptions.md#models)
+* [path](mmir_tooling.modeloptions.md#path)
 
 ## Properties
 
-### `Optional` addModuleExport
+### addModuleExport
 
-• **addModuleExport**? : *boolean | string*
+• `Optional` **addModuleExport**: boolean \| string
 
-*Inherited from [ControllerOptions](mmir_tooling.controlleroptions.md).[addModuleExport](mmir_tooling.controlleroptions.md#optional-addmoduleexport)*
+*Inherited from [ImplementationBuildEntry](mmir_tooling.implementationbuildentry.md).[addModuleExport](mmir_tooling.implementationbuildentry.md#addmoduleexport)*
 
 for automatically converting old-style implementations that are no CommonJS or AMD modules:
 if true, explicitly exports the implementation resource, i.e. adds something like
@@ -47,25 +49,25 @@ If string, the specified string will be used for the export.
 
 ___
 
-### `Optional` exclude
+### exclude
 
-• **exclude**? : *boolean*
+• `Optional` **exclude**: boolean
 
-*Inherited from [ControllerOptions](mmir_tooling.controlleroptions.md).[exclude](mmir_tooling.controlleroptions.md#optional-exclude)*
+*Inherited from [ImplementationBuildEntry](mmir_tooling.implementationbuildentry.md).[exclude](mmir_tooling.implementationbuildentry.md#exclude)*
 
 if `true`, the corresponding implementation will be excluded (when parsing `path`)
 
 ___
 
-### `Optional` models
+### models
 
-• **models**? : *boolean | object*
+• `Optional` **models**: boolean \| { [id:string]: [ImplementationEntry](mmir_tooling.implementationentry.md) \| boolean;  }
 
 ___
 
-### `Optional` path
+### path
 
-• **path**? : *string*
+• `Optional` **path**: string
 
 file path for searching (data) model implementation files:
 `path/<model ID>.js`

@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [RuntimeConfiguration](mmir_tooling.runtimeconfiguration.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / RuntimeConfiguration
 
 # Interface: RuntimeConfiguration
 
@@ -10,7 +12,7 @@ runtime configuration: same as config/configuration.json
 
 ## Indexable
 
-* \[ **configField**: *string*\]: any
+▪ [configField: string]: any
 
 custom/additional configuration/settings:
 
@@ -21,24 +23,25 @@ or app-specific settings my be specified and used.
 
 ### Properties
 
-* [controllerContext](mmir_tooling.runtimeconfiguration.md#optional-controllercontext)
-* [defaultLayoutName](mmir_tooling.runtimeconfiguration.md#optional-defaultlayoutname)
-* [detectCompiledStateModels](mmir_tooling.runtimeconfiguration.md#optional-detectcompiledstatemodels)
-* [grammarAsyncCompileMode](mmir_tooling.runtimeconfiguration.md#optional-grammarasynccompilemode)
-* [grammarAsyncExecMode](mmir_tooling.runtimeconfiguration.md#optional-grammarasyncexecmode)
-* [grammarCompiler](mmir_tooling.runtimeconfiguration.md#optional-grammarcompiler)
-* [ignoreGrammarFiles](mmir_tooling.runtimeconfiguration.md#optional-ignoregrammarfiles)
-* [language](mmir_tooling.runtimeconfiguration.md#optional-language)
-* [mediaManager](mmir_tooling.runtimeconfiguration.md#optional-mediamanager)
-* [modelContext](mmir_tooling.runtimeconfiguration.md#optional-modelcontext)
-* [usePrecompiledGrammarsOnly](mmir_tooling.runtimeconfiguration.md#optional-useprecompiledgrammarsonly)
-* [usePrecompiledViews](mmir_tooling.runtimeconfiguration.md#optional-useprecompiledviews)
+* [controllerContext](mmir_tooling.runtimeconfiguration.md#controllercontext)
+* [defaultLayoutName](mmir_tooling.runtimeconfiguration.md#defaultlayoutname)
+* [detectCompiledStateModels](mmir_tooling.runtimeconfiguration.md#detectcompiledstatemodels)
+* [grammarAsyncCompileMode](mmir_tooling.runtimeconfiguration.md#grammarasynccompilemode)
+* [grammarAsyncExecMode](mmir_tooling.runtimeconfiguration.md#grammarasyncexecmode)
+* [grammarCompiler](mmir_tooling.runtimeconfiguration.md#grammarcompiler)
+* [grammarDisableStrictCompileMode](mmir_tooling.runtimeconfiguration.md#grammardisablestrictcompilemode)
+* [ignoreGrammarFiles](mmir_tooling.runtimeconfiguration.md#ignoregrammarfiles)
+* [language](mmir_tooling.runtimeconfiguration.md#language)
+* [mediaManager](mmir_tooling.runtimeconfiguration.md#mediamanager)
+* [modelContext](mmir_tooling.runtimeconfiguration.md#modelcontext)
+* [usePrecompiledGrammarsOnly](mmir_tooling.runtimeconfiguration.md#useprecompiledgrammarsonly)
+* [usePrecompiledViews](mmir_tooling.runtimeconfiguration.md#useprecompiledviews)
 
 ## Properties
 
-### `Optional` controllerContext
+### controllerContext
 
-• **controllerContext**? : *string*
+• `Optional` **controllerContext**: string
 
 dot-separated namespace for accessing the controller implementation's constructors
 (within global namespace, e.g. `"app.ctrl" -> [window | self | global].app.ctrl`)
@@ -47,9 +50,9 @@ dot-separated namespace for accessing the controller implementation's constructo
 
 ___
 
-### `Optional` defaultLayoutName
+### defaultLayoutName
 
-• **defaultLayoutName**? : *"Default" | string | null*
+• `Optional` **defaultLayoutName**: \"Default\" \| string \| null
 
 name of the default layout definition when rendering mmir view templates: if `null`, no default layout will be used.
 
@@ -57,9 +60,9 @@ name of the default layout definition when rendering mmir view templates: if `nu
 
 ___
 
-### `Optional` detectCompiledStateModels
+### detectCompiledStateModels
 
-• **detectCompiledStateModels**? : *boolean*
+• `Optional` **detectCompiledStateModels**: boolean
 
 detect if compiled state-models (i.e. JS-compiled SCXML files) are present & should be used
 instead of loading & compiling SCXML files at runtime.
@@ -70,17 +73,17 @@ NOTE this is ignored in `webpack` build (since state-models will always be pre-c
 
 ___
 
-### `Optional` grammarAsyncCompileMode
+### grammarAsyncCompileMode
 
-• **grammarAsyncCompileMode**? : *boolean*
+• `Optional` **grammarAsyncCompileMode**: boolean
 
 if JSON grammar is compiled during runtime, use async (i.e. web worker) compilation
 
 ___
 
-### `Optional` grammarAsyncExecMode
+### grammarAsyncExecMode
 
-• **grammarAsyncExecMode**? : *Array‹string› | Array‹object› | true*
+• `Optional` **grammarAsyncExecMode**: Array<string \| [AsyncGramarExecEntry](../modules/mmir_tooling.md#asyncgramarexecentry)\> \| true
 
 list of (compiled) grammars (IDs) which should be initialized for asynchronous execution, i.e. should be exectuted in WebWorker/thread
 
@@ -92,17 +95,25 @@ a phrase that should be immediately interpreted, after grammar has been loaded i
 
 ___
 
-### `Optional` grammarCompiler
+### grammarCompiler
 
-• **grammarCompiler**? : *"jscc" | "jison" | "pegjs"*
+• `Optional` **grammarCompiler**: [GrammarEngineType](../modules/mmir_lib.md#grammarenginetype)
 
 grammar-compiler/-engine for compiling new grammars
 
 ___
 
-### `Optional` ignoreGrammarFiles
+### grammarDisableStrictCompileMode
 
-• **ignoreGrammarFiles**? : *Array‹string› | true*
+• `Optional` **grammarDisableStrictCompileMode**: boolean
+
+when compiling JSON grammar: disable setting JavaScript strict mode for compiled grammar
+
+___
+
+### ignoreGrammarFiles
+
+• `Optional` **ignoreGrammarFiles**: Array<string\> \| true
 
 list of grammars (IDs) which should not be automatically loaded on startup, even if compiled/JSON grammar is available for the language
 
@@ -110,9 +121,9 @@ If `true`, no file compiled grammars will be loaded on start-up (i.e. all IDs wi
 
 ___
 
-### `Optional` language
+### language
 
-• **language**? : *string*
+• `Optional` **language**: string
 
 The language (code) that will be used by `mmir`, e.g.
 for speech synthesis (TTS) or recognition (ASR).
@@ -123,21 +134,17 @@ Can be changed during runime with [LanguageManager.setLanguage](mmir_lib.languag
 
 ___
 
-### `Optional` mediaManager
+### mediaManager
 
-• **mediaManager**? : *object*
+• `Optional` **mediaManager**: [MediaManagerPluginsConfig](../modules/mmir_tooling.md#mediamanagerpluginsconfig)
 
 configuration for media plugins, e.g. for speech recognition (ASR) and synthesis (TTS)
 
-#### Type declaration:
-
-* **plugins**(): *object*
-
 ___
 
-### `Optional` modelContext
+### modelContext
 
-• **modelContext**? : *string*
+• `Optional` **modelContext**: string
 
 dot-separated namespace for accessing the model implementation's constructors
 (within global namespace, e.g. `"app.ctrl" -> [window | self | global].app.ctrl`)
@@ -146,17 +153,17 @@ dot-separated namespace for accessing the model implementation's constructors
 
 ___
 
-### `Optional` usePrecompiledGrammarsOnly
+### usePrecompiledGrammarsOnly
 
-• **usePrecompiledGrammarsOnly**? : *boolean*
+• `Optional` **usePrecompiledGrammarsOnly**: boolean
 
 if selected language only has JSON grammar, prevents automatic compilation
 
 ___
 
-### `Optional` usePrecompiledViews
+### usePrecompiledViews
 
-• **usePrecompiledViews**? : *boolean*
+• `Optional` **usePrecompiledViews**: boolean
 
 if `false`, (mmir) view templates will be (re-)compiled upon app startup
 

@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [BuildOptions](mmir_tooling.buildoptions.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / BuildOptions
 
 # Interface: BuildOptions
 
@@ -18,6 +20,8 @@
 
   ↳ [SettingsBuildEntry](mmir_tooling.settingsbuildentry.md)
 
+  ↳ [SettingsBuildEntryMultiple](mmir_tooling.settingsbuildentrymultiple.md)
+
   ↳ [StateBuildOptions](mmir_tooling.statebuildoptions.md)
 
   ↳ [StateModelBuildEntry](mmir_tooling.statemodelbuildentry.md)
@@ -26,27 +30,27 @@
 
 ### Properties
 
-* [force](mmir_tooling.buildoptions.md#optional-force)
-* [targetDir](mmir_tooling.buildoptions.md#optional-targetdir)
+* [force](mmir_tooling.buildoptions.md#force)
+* [targetDir](mmir_tooling.buildoptions.md#targetdir)
 
 ## Properties
 
-### `Optional` force
+### force
 
-• **force**? : *boolean*
+• `Optional` **force**: boolean
 
 if TRUE the targets will be newly created and written to the targetDir,
 even if the existence or up-to-date check returns `true`
 
 ___
 
-### `Optional` targetDir
+### targetDir
 
-• **targetDir**? : *string*
+• `Optional` **targetDir**: string
 
 directory to which the compiled resources like grammars (and checksum files) will be stored
 
 by default, the relative paths are resolved against the app's root directory;
 if the target directory is missing it will be newly created.
 
-**`default`** [BuildAppConfig.targetDir](mmir_tooling.buildappconfig.md#optional-targetdir) + [ResourceType](../modules/mmir_tooling.md#resourcetype)
+**`default`** [BuildAppConfig.targetDir](mmir_tooling.buildappconfig.md#targetdir) + [ResourceType](../modules/mmir_tooling.md#resourcetype)

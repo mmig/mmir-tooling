@@ -1,45 +1,53 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [SettingsEntryOptions](mmir_tooling.settingsentryoptions.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / SettingsEntryOptions
 
 # Interface: SettingsEntryOptions
 
 ## Hierarchy
 
-* **SettingsEntryOptions**
+* [SettingsEntryOptionsBase](mmir_tooling.settingsentryoptionsbase.md)
 
-  ↳ [SettingsBuildEntry](mmir_tooling.settingsbuildentry.md)
+  ↳ **SettingsEntryOptions**
+
+  ↳↳ [SettingsBuildEntry](mmir_tooling.settingsbuildentry.md)
 
 ## Index
 
 ### Properties
 
-* [exclude](mmir_tooling.settingsentryoptions.md#optional-exclude)
-* [file](mmir_tooling.settingsentryoptions.md#optional-file)
-* [fileType](mmir_tooling.settingsentryoptions.md#optional-filetype)
-* [id](mmir_tooling.settingsentryoptions.md#optional-id)
-* [include](mmir_tooling.settingsentryoptions.md#optional-include)
-* [type](mmir_tooling.settingsentryoptions.md#optional-type)
+* [exclude](mmir_tooling.settingsentryoptions.md#exclude)
+* [file](mmir_tooling.settingsentryoptions.md#file)
+* [fileType](mmir_tooling.settingsentryoptions.md#filetype)
+* [id](mmir_tooling.settingsentryoptions.md#id)
+* [include](mmir_tooling.settingsentryoptions.md#include)
+* [type](mmir_tooling.settingsentryoptions.md#type)
 
 ## Properties
 
-### `Optional` exclude
+### exclude
 
-• **exclude**? : *boolean*
+• `Optional` **exclude**: boolean
+
+*Inherited from [SettingsBuildEntry](mmir_tooling.settingsbuildentry.md).[exclude](mmir_tooling.settingsbuildentry.md#exclude)*
 
 if `true`, the corresponding resource will be excluded (when parsing `path`)
 
 ___
 
-### `Optional` file
+### file
 
-• **file**? : *string*
+• `Optional` **file**: string
 
 for explicitly specifying the settings-resource directly (e.g. instead or in addition of parsing `path` for settings resource files)
 
 ___
 
-### `Optional` fileType
+### fileType
 
-• **fileType**? : *"js" | "json"*
+• `Optional` **fileType**: \"js\" \| \"json\"
+
+*Inherited from [SettingsBuildEntry](mmir_tooling.settingsbuildentry.md).[fileType](mmir_tooling.settingsbuildentry.md#filetype)*
 
 the settings-file-type _(should not be set manually)_:\
 derived from the file-extension, either "json" or "js".
@@ -52,17 +60,21 @@ any dynamic code is evaluated at compile-time, i.e. the exported settings-object
 
 ___
 
-### `Optional` id
+### id
 
-• **id**? : *string*
+• `Optional` **id**: string
+
+*Inherited from [SettingsBuildEntry](mmir_tooling.settingsbuildentry.md).[id](mmir_tooling.settingsbuildentry.md#id)*
 
 the ID for the settings-resources _(should not be set manually)_
 
 ___
 
-### `Optional` include
+### include
 
-• **include**? : *"inline" | "file"*
+• `Optional` **include**: \"inline\" \| \"file\"
+
+*Inherited from [SettingsBuildEntry](mmir_tooling.settingsbuildentry.md).[include](mmir_tooling.settingsbuildentry.md#include)*
 
 can be used to include the resource as separate file, instead of bundeling via webpack
 
@@ -70,8 +82,10 @@ can be used to include the resource as separate file, instead of bundeling via w
 
 ___
 
-### `Optional` type
+### type
 
-• **type**? : *[SettingsType](../modules/mmir_tooling.md#settingstype)*
+• `Optional` **type**: [SettingsType](../modules/mmir_tooling.md#settingstype)
+
+*Inherited from [SettingsBuildEntry](mmir_tooling.settingsbuildentry.md).[type](mmir_tooling.settingsbuildentry.md#type)*
 
 the settings-type _(should not be set manually)_

@@ -1,10 +1,12 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [GrammarBuildOptions](mmir_tooling.grammarbuildoptions.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / GrammarBuildOptions
 
 # Interface: GrammarBuildOptions
 
 ## Hierarchy
 
-  ↳ [GrammarOptions](mmir_tooling.grammaroptions.md)
+* [GrammarOptions](mmir_tooling.grammaroptions.md)
 
 * [BuildOptions](mmir_tooling.buildoptions.md)
 
@@ -14,24 +16,25 @@
 
 ### Properties
 
-* [async](mmir_tooling.grammarbuildoptions.md#optional-async)
-* [asyncCompile](mmir_tooling.grammarbuildoptions.md#optional-asynccompile)
-* [engine](mmir_tooling.grammarbuildoptions.md#optional-engine)
-* [exclude](mmir_tooling.grammarbuildoptions.md#optional-exclude)
-* [force](mmir_tooling.grammarbuildoptions.md#optional-force)
-* [grammars](mmir_tooling.grammarbuildoptions.md#optional-grammars)
-* [ignore](mmir_tooling.grammarbuildoptions.md#optional-ignore)
-* [initPhrase](mmir_tooling.grammarbuildoptions.md#optional-initphrase)
-* [path](mmir_tooling.grammarbuildoptions.md#optional-path)
-* [targetDir](mmir_tooling.grammarbuildoptions.md#optional-targetdir)
+* [async](mmir_tooling.grammarbuildoptions.md#async)
+* [asyncCompile](mmir_tooling.grammarbuildoptions.md#asynccompile)
+* [engine](mmir_tooling.grammarbuildoptions.md#engine)
+* [exclude](mmir_tooling.grammarbuildoptions.md#exclude)
+* [force](mmir_tooling.grammarbuildoptions.md#force)
+* [grammars](mmir_tooling.grammarbuildoptions.md#grammars)
+* [ignore](mmir_tooling.grammarbuildoptions.md#ignore)
+* [initPhrase](mmir_tooling.grammarbuildoptions.md#initphrase)
+* [path](mmir_tooling.grammarbuildoptions.md#path)
+* [strict](mmir_tooling.grammarbuildoptions.md#strict)
+* [targetDir](mmir_tooling.grammarbuildoptions.md#targetdir)
 
 ## Properties
 
-### `Optional` async
+### async
 
-• **async**? : *boolean*
+• `Optional` **async**: boolean
 
-*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[async](mmir_tooling.grammaroptions.md#optional-async)*
+*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[async](mmir_tooling.grammaroptions.md#async)*
 
 grammar-execution (during runtime) will be asynchronous in a WebWorker/thread
 
@@ -44,11 +47,11 @@ mmir.semantic.interpret('this is my test phrase', function(result){
 
 ___
 
-### `Optional` asyncCompile
+### asyncCompile
 
-• **asyncCompile**? : *boolean*
+• `Optional` **asyncCompile**: boolean
 
-*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[asyncCompile](mmir_tooling.grammaroptions.md#optional-asynccompile)*
+*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[asyncCompile](mmir_tooling.grammaroptions.md#asynccompile)*
 
 if `true`, and thread-webworker is available, grammar will be compiled paralelized / in a separate thread
 
@@ -56,11 +59,11 @@ if `true`, and thread-webworker is available, grammar will be compiled paraleliz
 
 ___
 
-### `Optional` engine
+### engine
 
-• **engine**? : *"jscc" | "jison" | "pegjs"*
+• `Optional` **engine**: [GrammarEngineType](../modules/mmir_lib.md#grammarenginetype)
 
-*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[engine](mmir_tooling.grammaroptions.md#optional-engine)*
+*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[engine](mmir_tooling.grammaroptions.md#engine)*
 
 the Grammar engine that will be used to compile the executable grammar.
 
@@ -68,47 +71,43 @@ the Grammar engine that will be used to compile the executable grammar.
 
 ___
 
-### `Optional` exclude
+### exclude
 
-• **exclude**? : *boolean*
+• `Optional` **exclude**: boolean
 
-*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[exclude](mmir_tooling.grammaroptions.md#optional-exclude)*
+*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[exclude](mmir_tooling.grammaroptions.md#exclude)*
 
 if `true`, the corresponding grammar will be completely excluded, i.e. no executable grammar will be compiled
 from the corresponding JSON grammar
 
 ___
 
-### `Optional` force
+### force
 
-• **force**? : *boolean*
+• `Optional` **force**: boolean
 
-*Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[force](mmir_tooling.buildoptions.md#optional-force)*
+*Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[force](mmir_tooling.buildoptions.md#force)*
 
 if TRUE the targets will be newly created and written to the targetDir,
 even if the existence or up-to-date check returns `true`
 
 ___
 
-### `Optional` grammars
+### grammars
 
-• **grammars**? : *object*
+• `Optional` **grammars**: { [grammarId:string]: [GrammarBuildEntry](mmir_tooling.grammarbuildentry.md);  }
 
-*Overrides [GrammarOptions](mmir_tooling.grammaroptions.md).[grammars](mmir_tooling.grammaroptions.md#optional-grammars)*
+*Overrides [GrammarOptions](mmir_tooling.grammaroptions.md).[grammars](mmir_tooling.grammaroptions.md#grammars)*
 
 **`override`** 
 
-#### Type declaration:
-
-* \[ **grammarId**: *string*\]: [GrammarBuildEntry](mmir_tooling.grammarbuildentry.md)
-
 ___
 
-### `Optional` ignore
+### ignore
 
-• **ignore**? : *boolean*
+• `Optional` **ignore**: boolean
 
-*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[ignore](mmir_tooling.grammaroptions.md#optional-ignore)*
+*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[ignore](mmir_tooling.grammaroptions.md#ignore)*
 
 if `true`, the grammar will not be loaded (and registered) when the the app is initialized, i.e. needs to be
   "manually" loaded/initialized by app implementation and/or other mechanisms.
@@ -117,40 +116,52 @@ If omitted or `false`, the grammar will be loaded on start-up of the app,
 
 ___
 
-### `Optional` initPhrase
+### initPhrase
 
-• **initPhrase**? : *string*
+• `Optional` **initPhrase**: string
 
-*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[initPhrase](mmir_tooling.grammaroptions.md#optional-initphrase)*
+*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[initPhrase](mmir_tooling.grammaroptions.md#initphrase)*
 
 An "initialization phrase" for the grammar, in case of async-exection:
 this phrase will be immediately interpreted, after grammar has been loaded for async-execution in the WebWorkers
 (for large grammars, this may reduce delays for subsequent calls, by fully initializing the grammar)
 
-NOTE will have no effect, if option [async](mmir_tooling.grammarbuildoptions.md#optional-async) is not `true`
+NOTE will have no effect, if option [async](mmir_tooling.grammarbuildoptions.md#async) is not `true`
 
 ___
 
-### `Optional` path
+### path
 
-• **path**? : *string*
+• `Optional` **path**: string
 
-*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[path](mmir_tooling.grammaroptions.md#optional-path)*
+*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[path](mmir_tooling.grammaroptions.md#path)*
 
 file path for searching (recursively) JSON grammars within languages-subdirectory:
 `path/.../<grammar ID>/grammar.json`
 
 ___
 
-### `Optional` targetDir
+### strict
 
-• **targetDir**? : *string*
+• `Optional` **strict**: boolean
 
-*Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[targetDir](mmir_tooling.buildoptions.md#optional-targetdir)*
+*Inherited from [GrammarOptions](mmir_tooling.grammaroptions.md).[strict](mmir_tooling.grammaroptions.md#strict)*
+
+set or disable strict-mode for generated JavaScript code
+
+**`default`** true
+
+___
+
+### targetDir
+
+• `Optional` **targetDir**: string
+
+*Inherited from [BuildOptions](mmir_tooling.buildoptions.md).[targetDir](mmir_tooling.buildoptions.md#targetdir)*
 
 directory to which the compiled resources like grammars (and checksum files) will be stored
 
 by default, the relative paths are resolved against the app's root directory;
 if the target directory is missing it will be newly created.
 
-**`default`** [BuildAppConfig.targetDir](mmir_tooling.buildappconfig.md#optional-targetdir) + [ResourceType](../modules/mmir_tooling.md#resourcetype)
+**`default`** [BuildAppConfig.targetDir](mmir_tooling.buildappconfig.md#targetdir) + [ResourceType](../modules/mmir_tooling.md#resourcetype)

@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [PositionsInfo](mmir_lib.positionsinfo.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-lib](../modules/mmir_lib.md) / PositionsInfo
 
 # Interface: PositionsInfo
 
@@ -8,4 +10,4 @@
 
 ## Indexable
 
-* \[ **processingName**: *string*\]: Array‹[Pos](mmir_lib.pos.md)›
+▪ [processingName: string]: [Pos](mmir_lib.pos.md)[]

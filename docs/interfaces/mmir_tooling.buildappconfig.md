@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [BuildAppConfig](mmir_tooling.buildappconfig.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / BuildAppConfig
 
 # Interface: BuildAppConfig
 
@@ -12,26 +14,26 @@
 
 ### Properties
 
-* [configuration](mmir_tooling.buildappconfig.md#optional-configuration)
-* [directoriesTargetDir](mmir_tooling.buildappconfig.md#optional-directoriestargetdir)
-* [grammars](mmir_tooling.buildappconfig.md#optional-grammars)
-* [includeStateModelXmls](mmir_tooling.buildappconfig.md#optional-includestatemodelxmls)
-* [includeViewTemplates](mmir_tooling.buildappconfig.md#optional-includeviewtemplates)
-* [resourcesPath](mmir_tooling.buildappconfig.md#optional-resourcespath)
-* [resourcesPathOptions](mmir_tooling.buildappconfig.md#optional-resourcespathoptions)
-* [rootPath](mmir_tooling.buildappconfig.md#optional-rootpath)
-* [settings](mmir_tooling.buildappconfig.md#optional-settings)
-* [states](mmir_tooling.buildappconfig.md#optional-states)
-* [targetDir](mmir_tooling.buildappconfig.md#optional-targetdir)
-* [views](mmir_tooling.buildappconfig.md#optional-views)
+* [configuration](mmir_tooling.buildappconfig.md#configuration)
+* [directoriesTargetDir](mmir_tooling.buildappconfig.md#directoriestargetdir)
+* [grammars](mmir_tooling.buildappconfig.md#grammars)
+* [includeStateModelXmls](mmir_tooling.buildappconfig.md#includestatemodelxmls)
+* [includeViewTemplates](mmir_tooling.buildappconfig.md#includeviewtemplates)
+* [resourcesPath](mmir_tooling.buildappconfig.md#resourcespath)
+* [resourcesPathOptions](mmir_tooling.buildappconfig.md#resourcespathoptions)
+* [rootPath](mmir_tooling.buildappconfig.md#rootpath)
+* [settings](mmir_tooling.buildappconfig.md#settings)
+* [states](mmir_tooling.buildappconfig.md#states)
+* [targetDir](mmir_tooling.buildappconfig.md#targetdir)
+* [views](mmir_tooling.buildappconfig.md#views)
 
 ## Properties
 
-### `Optional` configuration
+### configuration
 
-• **configuration**? : *[RuntimeConfiguration](mmir_tooling.runtimeconfiguration.md)*
+• `Optional` **configuration**: [RuntimeConfiguration](mmir_tooling.runtimeconfiguration.md)
 
-*Overrides [AppConfig](mmir_tooling.appconfig.md).[configuration](mmir_tooling.appconfig.md#optional-configuration)*
+*Overrides [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[configuration](mmir_webpack.webpackappconfig.md#configuration)*
 
 `mmir` runtime configuration:
 instead of, or modifying/overwriting configuration settings in `configuration.json`
@@ -41,9 +43,9 @@ NOTE only takes effect, if settings options `inlcude` (or in its sub-option) is 
 
 ___
 
-### `Optional` directoriesTargetDir
+### directoriesTargetDir
 
-• **directoriesTargetDir**? : *string*
+• `Optional` **directoriesTargetDir**: string
 
 directory to which the generated `directories.json` file should be written:
 `directories.json` contains the listing of available mmir resources.
@@ -55,17 +57,17 @@ NOTE if this file is not in the expected location, initialization of
 
 ___
 
-### `Optional` grammars
+### grammars
 
-• **grammars**? : *[GrammarBuildOptions](mmir_tooling.grammarbuildoptions.md) | boolean*
+• `Optional` **grammars**: [GrammarBuildOptions](mmir_tooling.grammarbuildoptions.md) \| boolean
 
-*Overrides [AppConfig](mmir_tooling.appconfig.md).[grammars](mmir_tooling.appconfig.md#optional-grammars)*
+*Overrides [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[grammars](mmir_webpack.webpackappconfig.md#grammars)*
 
 ___
 
-### `Optional` includeStateModelXmls
+### includeStateModelXmls
 
-• **includeStateModelXmls**? : *boolean*
+• `Optional` **includeStateModelXmls**: boolean
 
 if `directories.json` should include the SCXML files (`*.xml`)
 e.g. for up-to-date test & runtime-compilation of state models
@@ -74,9 +76,9 @@ e.g. for up-to-date test & runtime-compilation of state models
 
 ___
 
-### `Optional` includeViewTemplates
+### includeViewTemplates
 
-• **includeViewTemplates**? : *boolean*
+• `Optional` **includeViewTemplates**: boolean
 
 if `directories.json` should include the view template files (`*.ehtml`)
 e.g. for up-to-date test & runtime-compilation of view templates
@@ -85,11 +87,11 @@ e.g. for up-to-date test & runtime-compilation of view templates
 
 ___
 
-### `Optional` resourcesPath
+### resourcesPath
 
-• **resourcesPath**? : *string*
+• `Optional` **resourcesPath**: string
 
-*Inherited from [AppConfig](mmir_tooling.appconfig.md).[resourcesPath](mmir_tooling.appconfig.md#optional-resourcespath)*
+*Inherited from [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[resourcesPath](mmir_webpack.webpackappconfig.md#resourcespath)*
 
 specify the path to the MMIR resources directory with the default structure:
  ```bash
@@ -116,49 +118,49 @@ options for including them.
 
 ___
 
-### `Optional` resourcesPathOptions
+### resourcesPathOptions
 
-• **resourcesPathOptions**? : *[ResourcesOptions](mmir_tooling.resourcesoptions.md)*
+• `Optional` **resourcesPathOptions**: [ResourcesOptions](mmir_tooling.resourcesoptions.md)
 
-*Inherited from [AppConfig](mmir_tooling.appconfig.md).[resourcesPathOptions](mmir_tooling.appconfig.md#optional-resourcespathoptions)*
+*Inherited from [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[resourcesPathOptions](mmir_webpack.webpackappconfig.md#resourcespathoptions)*
 
 ___
 
-### `Optional` rootPath
+### rootPath
 
-• **rootPath**? : *string*
+• `Optional` **rootPath**: string
 
-*Inherited from [AppConfig](mmir_tooling.appconfig.md).[rootPath](mmir_tooling.appconfig.md#optional-rootpath)*
+*Inherited from [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[rootPath](mmir_webpack.webpackappconfig.md#rootpath)*
 
 used for resolving non-absolute paths: the absolute path to the app's root/sources directory (if omitted the current working directory is used for resolving non-absolute paths)
 
 ___
 
-### `Optional` settings
+### settings
 
-• **settings**? : *[SettingsBuildOptions](mmir_tooling.settingsbuildoptions.md) | boolean*
+• `Optional` **settings**: [SettingsBuildOptions](mmir_tooling.settingsbuildoptions.md) \| boolean
 
-*Overrides [AppConfig](mmir_tooling.appconfig.md).[settings](mmir_tooling.appconfig.md#optional-settings)*
+*Overrides [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[settings](mmir_webpack.webpackappconfig.md#settings)*
 
 NOTE settings files may be written to the (settings) targetDir if
-(1) the [[SettingsBuildOptions.include]] option is set to 'file'
-(2) if the file already exists in the targetDir it is overwritten if the [SettingsBuildOptions.force](mmir_tooling.settingsbuildoptions.md#optional-force) option is enabled
+(1) the [SettingsBuildOptions.include](mmir_tooling.settingsbuildoptions.md#include) option is set to 'file'
+(2) if the file already exists in the targetDir it is overwritten if the [SettingsBuildOptions.force](mmir_tooling.settingsbuildoptions.md#force) option is enabled
 
 The `include` and `force` option can be set either in the SettingsBuildOptions, or in the specific SettingsBuildEntry/ies.
 
 ___
 
-### `Optional` states
+### states
 
-• **states**? : *[StateBuildOptions](mmir_tooling.statebuildoptions.md) | boolean*
+• `Optional` **states**: [StateBuildOptions](mmir_tooling.statebuildoptions.md) \| boolean
 
-*Overrides [AppConfig](mmir_tooling.appconfig.md).[states](mmir_tooling.appconfig.md#optional-states)*
+*Overrides [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[states](mmir_webpack.webpackappconfig.md#states)*
 
 ___
 
-### `Optional` targetDir
+### targetDir
 
-• **targetDir**? : *string*
+• `Optional` **targetDir**: string
 
 directory to which the compiled resources (and checksum files) will be stored:
 for each resource type (e.g. grammar, view) a subdirectory will be created into
@@ -173,8 +175,8 @@ if the target directory is missing it will be newly created.
 
 ___
 
-### `Optional` views
+### views
 
-• **views**? : *[ViewBuildOptions](mmir_tooling.viewbuildoptions.md) | boolean*
+• `Optional` **views**: [ViewBuildOptions](mmir_tooling.viewbuildoptions.md) \| boolean
 
-*Overrides [AppConfig](mmir_tooling.appconfig.md).[views](mmir_tooling.appconfig.md#optional-views)*
+*Overrides [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[views](mmir_webpack.webpackappconfig.md#views)*

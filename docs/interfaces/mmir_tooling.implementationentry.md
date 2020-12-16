@@ -1,4 +1,6 @@
-[mmir-tooling 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [ImplementationEntry](mmir_tooling.implementationentry.md)
+**[mmir-tooling 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / ImplementationEntry
 
 # Interface: ImplementationEntry
 
@@ -8,23 +10,25 @@
 
   ↳ **ImplementationEntry**
 
+  ↳↳ [ImplementationBuildEntry](mmir_tooling.implementationbuildentry.md)
+
 ## Index
 
 ### Properties
 
-* [addModuleExport](mmir_tooling.implementationentry.md#optional-addmoduleexport)
-* [exclude](mmir_tooling.implementationentry.md#optional-exclude)
-* [file](mmir_tooling.implementationentry.md#optional-file)
+* [addModuleExport](mmir_tooling.implementationentry.md#addmoduleexport)
+* [exclude](mmir_tooling.implementationentry.md#exclude)
+* [file](mmir_tooling.implementationentry.md#file)
 * [name](mmir_tooling.implementationentry.md#name)
-* [type](mmir_tooling.implementationentry.md#optional-type)
+* [type](mmir_tooling.implementationentry.md#type)
 
 ## Properties
 
-### `Optional` addModuleExport
+### addModuleExport
 
-• **addModuleExport**? : *boolean | string*
+• `Optional` **addModuleExport**: boolean \| string
 
-*Inherited from [ControllerOptions](mmir_tooling.controlleroptions.md).[addModuleExport](mmir_tooling.controlleroptions.md#optional-addmoduleexport)*
+*Inherited from [ImplementationBuildEntry](mmir_tooling.implementationbuildentry.md).[addModuleExport](mmir_tooling.implementationbuildentry.md#addmoduleexport)*
 
 for automatically converting old-style implementations that are no CommonJS or AMD modules:
 if true, explicitly exports the implementation resource, i.e. adds something like
@@ -37,34 +41,34 @@ If string, the specified string will be used for the export.
 
 ___
 
-### `Optional` exclude
+### exclude
 
-• **exclude**? : *boolean*
+• `Optional` **exclude**: boolean
 
-*Inherited from [ControllerOptions](mmir_tooling.controlleroptions.md).[exclude](mmir_tooling.controlleroptions.md#optional-exclude)*
+*Inherited from [ImplementationBuildEntry](mmir_tooling.implementationbuildentry.md).[exclude](mmir_tooling.implementationbuildentry.md#exclude)*
 
 if `true`, the corresponding implementation will be excluded (when parsing `path`)
 
 ___
 
-### `Optional` file
+### file
 
-• **file**? : *string*
+• `Optional` **file**: string
 
 for explicitly specifying the implementation-file directly (e.g. instead or in addition of parsing `path`)
 
 ___
 
-###  name
+### name
 
-• **name**: *string*
+• `Optional` **name**: string
 
 the implementation's name (usually the ID with capitalized first letter)
 
 ___
 
-### `Optional` type
+### type
 
-• **type**? : *"controller" | "helper" | "model"*
+• `Optional` **type**: [ImplementationType](../modules/mmir_tooling.md#implementationtype)
 
 the implementation's type (should not be explicitly specified)
