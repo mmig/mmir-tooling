@@ -10,7 +10,7 @@ const appName = 'mmirinstall';
 
 export function main(){
 
-    var cli = meow(`
+    const cli = meow(`
         Usage
             ${appName} <target directory>
 
@@ -98,7 +98,7 @@ export function main(){
 
 }
 
-function handleError(err: Error, cli: meow.Options<meow.AnyFlags> & {input: string[], showHelp: ()=>void}){
+function handleError(err: Error, cli: meow.Result<meow.AnyFlags> & {input: string[], showHelp: ()=>void}){
     console.error(`
     An Error occurred for:
         ${appName} ${cli.input.join(' ')} -f ${cli.flags.force} -s ${cli.flags.src}
