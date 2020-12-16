@@ -249,6 +249,13 @@ verison of `mmir-lib`, i.e. `mmir-tooling X.Y.i` is compatible with `mmir-lib X.
 
 ### _Development_
 
+The `mmir-tooling` sources are located in
+```
+assets\**  # non-TypeScript resources, and "overwrite" resources
+src\**     # TypeScript sources
+```
+_(outher resources will be generated/overwritten when running `npm run build`)_
+
 For including new libraries to [mmir-lib][3] (or updating/modifying existing vendor/generated libraries),
 see [mmir-lib-dev][8]
 
