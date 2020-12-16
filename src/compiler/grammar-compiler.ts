@@ -110,7 +110,7 @@ function compile(grammarLoadOptions: GrammarCompilerOptions): Promise<Array<Erro
             }
 
             function doCompile(){
-                return new promise(function(resolve, reject){
+                return new promise<void | Error>(function(resolve, reject){
                     grammarGen.compile(content, g.file, grammarLoadOptions, function(err: Error, grammarCode: string, _map: any, meta: any): Promise<Array<Error|Error[]> | any[]> {
 
                         if(err){

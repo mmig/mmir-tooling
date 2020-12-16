@@ -78,7 +78,7 @@ function compile(loadOptions: StateCompilerOptions): Promise<Array<Error|Error[]
             log('###### start processing SCXML model '+sc.id);
 
             function doCompile(){
-                return new promise(function(resolve, reject){
+                return new promise<void | Error>(function(resolve, reject){
                     scxmlGen.compile(content, sc.file, loadOptions, async function(err: Error, scCode: string, _map: any, meta: any): Promise<Error | any> {
 
                         if(err){
