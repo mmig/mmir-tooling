@@ -49,7 +49,9 @@ var defaultResourcesConfig = {
         'env/grammar/grammarTemplate_reduced.tpl'
     ],
     //path mappings for copied files etc (i.e. will be included/copied to the specified relative file path/name)
-    resourcesPaths: {}
+    resourcesPaths: {},
+    //list packages definitions in require.js format: {name: <base-id>, location: <base-path>}
+    packages: []
 }
 
 function applyRemovePaths(paths: {[id: string]: string}, removePathsList: string[]): void {
@@ -89,6 +91,7 @@ function createResourcesConfig(removePathsList?: string[], customPaths?: {[id: s
 
     var resConfig = _.cloneDeep(defaultResourcesConfig);
     resConfig.paths = paths;
+    resConfig.packages = _.cloneDeep(mmirModuleBaseConfig.packages || []);
 
     return resConfig;
 }
