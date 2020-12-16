@@ -46,7 +46,9 @@ var defaultResourcesConfig = {
         'env/grammar/grammarTemplate_reduced.tpl'
     ],
     //path mappings for copied files etc (i.e. will be included/copied to the specified relative file path/name)
-    resourcesPaths: {}
+    resourcesPaths: {},
+    //list packages definitions in require.js format: {name: <base-id>, location: <base-path>}
+    packages: []
 };
 function applyRemovePaths(paths, removePathsList) {
     removePathsList.forEach(function (entry) {
@@ -81,6 +83,7 @@ function createResourcesConfig(removePathsList, customPaths) {
     }
     var resConfig = lodash_1.default.cloneDeep(defaultResourcesConfig);
     resConfig.paths = paths;
+    resConfig.packages = lodash_1.default.cloneDeep(mmirModuleBaseConfig.packages || []);
     return resConfig;
 }
 module.exports = createResourcesConfig;
