@@ -1,4 +1,10 @@
 
+/* ********************************************* */
+/* ** NOTE do not change directly:            ** */
+/* **      original source file is located at ** */
+/* **      /assets/index.d.ts                 ** */
+/* ********************************************* */
+
 /**
  * @packageDocumentation
  * @module mmir-tooling
@@ -1009,6 +1015,7 @@ export interface TTSPluginSpeechConfig {
 
 export interface ResourceConfig {
     paths: {[moduleId: string]: string};
+    packages?: {name: string, location: string}[];
 
     // paths for web worker entry points (i.e. new Worker(<path>)):
     workers: string[];
