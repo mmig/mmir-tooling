@@ -11,19 +11,45 @@
 The [mmir-tooling][1] repository holds files, resources etc. for
 building [mmir][2]-based applications.
 
+__Overview:__
+
+<!-- TOC depthFrom:3 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [API Documentation](#api-documentation)
+- [Prerequisites](#prerequisites)
+- [Basic Project Setup](#basic-project-setup)
+- [Installation](#installation)
+- [Webpack Build Integration](#webpack-build-integration)
+- [Cordova Build Integration](#cordova-build-integration)
+- ["Bare-bones" `mmir-lib` Integration](#bare-bones-mmir-lib-integration)
+- [Manual Build Script](#manual-build-script)
+- [Versioning Note](#versioning-note)
+- [_Development_](#development)
+
+<!-- /TOC -->
+
 ----
 
 ### API Documentation
 
 See generated [API documentation][9] (or more detailed [HTML][10] documentation) and details below.
 
-### Dependencies
+### Prerequisites
+
+ * [Node.js][11] (version 10.x or later)
+ * [mmir-lib][3]:  
+   ```bash
+   npm install mmir-lib
+   ```
+
+
+### Basic Project Setup
 
 See [Versioning Note](#versioning-note) below, for compatibility with `mmir-lib`
 versions.
 
 By default the build process will assume that the `mmir`-based application is
-located at `www/`:
+located at `www/` and follows the default structure of a `mmir`-based project:
 
     www/config/
               configuration.json
@@ -42,11 +68,8 @@ located at `www/`:
     ...
 
 If the `mmir` resources are located in different directories/files, they need
-to be specified in the build configuration.
-
-### Prerequisites
-
- * Node.js
+to be specified in the build configuration (see examples below for setting
+option `resourcesPath`).
 
 ### Installation
 
@@ -54,12 +77,12 @@ Install `mmir-tooling` via `npm`.
 
 From `npm` registry
 ```bash
-npm install mmir-tooling
+npm install -D mmir-tooling
 ```
 
 Or latest development version from _github_
 ```bash
-npm install git+https://github.com/mmig/mmir-tooling.git
+npm install -D git+https://github.com/mmig/mmir-tooling.git
 ```
 
 
@@ -269,3 +292,4 @@ see [mmir-lib-dev][8]
 [8]: https://github.com/mmig/mmir-lib-dev
 [9]: https://github.com/mmig/mmir-tooling/tree/master/docs/modules
 [10]: https://mmig.github.io/mmir/api-ts/modules/mmir_tooling.html
+[11]: https://nodejs.org
