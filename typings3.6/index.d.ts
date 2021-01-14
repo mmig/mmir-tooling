@@ -1,8 +1,13 @@
+/* ********************************************* */
+/* ** NOTE do not change directly:            ** */
+/* **      original source file is located at ** */
+/* **      /assets/index.d.ts                 ** */
+/* ********************************************* */
+/// <reference types="mmir-lib" />
 /**
  * @packageDocumentation
  * @module mmir-tooling
  */
-/// <reference types="mmir-lib" />
 /// <reference types="mmir-lib" />
 import { MediaManagerPluginEntry, GrammarEngineType } from 'mmir-lib'; //FIXME
 export * from './index-webpack';
@@ -972,6 +977,10 @@ export interface ResourceConfig {
     paths: {
         [moduleId: string]: string;
     };
+    packages?: {
+        name: string;
+        location: string;
+    }[];
     // paths for web worker entry points (i.e. new Worker(<path>)):
     workers: string[];
     //paths for "raw" files that will be included as-is (i.e. copied)

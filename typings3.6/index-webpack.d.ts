@@ -1,3 +1,8 @@
+/* ********************************************* */
+/* ** NOTE do not change directly:            ** */
+/* **      original source file is located at ** */
+/* **      /assets/index-webpack.d.ts         ** */
+/* ********************************************* */
 /**
  * @packageDocumentation
  * @module mmir-webpack
