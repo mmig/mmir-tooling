@@ -309,7 +309,7 @@ function addConfig(pluginConfig: PluginConfig | TTSPluginSpeechConfig, runtimeCo
                 normalizeMediaManagerPluginConfig(pList);
                 cEntry = getPluginEntryFrom(confEntry, pList);
                 if(cEntry){
-                    _.merge(cEntry, confEntry);
+                    _.mergeWith(cEntry, confEntry, mergeLists);
                 } else {
                     pConfig[e].push(confEntry);
                 }
@@ -323,6 +323,37 @@ function addConfig(pluginConfig: PluginConfig | TTSPluginSpeechConfig, runtimeCo
     }
 }
 
+/**
+ * merge with custom handling for lists/arrays:
+ *
+ * if both objects are lists, do append (non-duplicate) entries from source to target,
+ * otherwise use lodash.merge()
+ *
+ * @param  target [description]
+ * @param  source [description]
+ * @param  mergeLists [description]
+ * @return [description]
+ */
+function customMerge<TObject, TSource>(target: TObject, source: TSource): TObject & TSource {
+    const mergedLists = mergeLists(target, source);
+    if(mergedLists){
+        return mergedLists;
+    }
+    return _.mergeWith(target, source, mergeLists);
+}
+
+function mergeLists(objValue: any, srcValue: any): any {
+    if(Array.isArray(objValue) && Array.isArray(srcValue)){
+        const dupe = new Set(objValue);
+        for(const e of srcValue){
+            if(!dupe.has(e)){
+                objValue.push(e);
+            }
+        }
+        return objValue;
+    }
+}
+
 function addBuildConfig(_pluginConfig: PluginConfig | TTSPluginSpeechConfig, pluginBuildConfig: PluginExportBuildConfig[] | undefined, _runtimeConfig: RuntimeConfiguration, appConfig: AppConfig, pluginConfigInfo: PluginExportConfigInfo, pluginId: string){
 
     if(Array.isArray(pluginConfigInfo.buildConfigs) && pluginConfigInfo.buildConfigs.length > 0){
@@ -333,7 +364,7 @@ function addBuildConfig(_pluginConfig: PluginConfig | TTSPluginSpeechConfig, plu
         var bconfigList = pluginConfigInfo.buildConfigs;
         var bconfig = bconfigList[0];
         for(var i=1, size = bconfigList.length; i < size; ++i){
-            _.merge(bconfig, bconfigList[i]);
+            customMerge(bconfig, bconfigList[i]);
         }
         var usedPluginBuildConfigKeys = new Set<string>();
 
@@ -346,7 +377,7 @@ function addBuildConfig(_pluginConfig: PluginConfig | TTSPluginSpeechConfig, plu
 
             if(typeof appConfig[key] === 'undefined'){
                 if(pluginBuildConfig && typeof pluginBuildConfig[key] !== 'undefined'){
-                    _.merge(val, pluginBuildConfig[key]);
+                    customMerge(val, pluginBuildConfig[key]);
                     usedPluginBuildConfigKeys.add(key);
                 }
                 appConfig[key] = val;
@@ -354,15 +385,15 @@ function addBuildConfig(_pluginConfig: PluginConfig | TTSPluginSpeechConfig, plu
                 //if both build-configs are valid objects:
                 if(pluginBuildConfig && typeof pluginBuildConfig[key] !== 'undefined'){
                     //user-supplied plugin-specific build-config overrides general user-supplied build-config:
-                    _.merge(appConfig[key], pluginBuildConfig[key]);
+                    customMerge(appConfig[key], pluginBuildConfig[key]);
                     usedPluginBuildConfigKeys.add(key);
                 }
                 //... then merge appConfig's value into the plugin's build config
                 //  (i.e. user-supplied build-configuration overrides plugin-build-configuration when merging)
-                _.merge(val, appConfig[key]);
+                customMerge(val, appConfig[key]);
                 appConfig[key] = val;
             } else if(pluginBuildConfig && typeof pluginBuildConfig[key] !== 'undefined'){
-                _.merge(appConfig[key], pluginBuildConfig[key]);
+                customMerge(appConfig[key], pluginBuildConfig[key]);
                 usedPluginBuildConfigKeys.add(key);
             }
             //else: use value of appConfig[key] (i.e. user-supplied build-configuration overrides plugin-build-configuration)
@@ -385,7 +416,7 @@ function addBuildConfig(_pluginConfig: PluginConfig | TTSPluginSpeechConfig, plu
                     appConfig[key] = val;
                 } else if(appConfig[key] && typeof appConfig[key] === 'object' && val && typeof val === 'object'){
                     //if both build-configs are valid objects: plugin-specific user-supplied config is merged, but overrides general user-supplied build-config:
-                    _.merge(appConfig[key], val);
+                    customMerge(appConfig[key], val);
                 } else {
                     //otherwise: plugin-specific user-supplied config overrides general user-supplied build-config:
                     appConfig[key] = pluginBuildConfig[key];
@@ -408,7 +439,7 @@ function addBuildConfig(_pluginConfig: PluginConfig | TTSPluginSpeechConfig, plu
     // 	// 	normalizeMediaManagerPluginConfig(pList);
     // 	// 	cEntry = getPluginEntryFrom(confEntry, pList);
     // 	// 	if(cEntry){
-    // 	// 		_.merge(cEntry, confEntry);
+    // 	// 		customMerge(cEntry, confEntry);
     // 	// 	} else {
     // 	// 		pConfig[e].push(confEntry);
     // 	// 	}
