@@ -269,7 +269,7 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
                 normalizeMediaManagerPluginConfig(pList);
                 cEntry = getPluginEntryFrom(confEntry, pList);
                 if (cEntry) {
-                    lodash_1.default.merge(cEntry, confEntry);
+                    lodash_1.default.mergeWith(cEntry, confEntry, mergeLists);
                 }
                 else {
                     pConfig[e].push(confEntry);
@@ -283,6 +283,35 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
         //TODO add/apply configuration for core-dependency mmir-plugin-encoder-core ~> silence-detection, if specified
     }
 }
+/**
+ * merge with custom handling for lists/arrays:
+ *
+ * if both objects are lists, do append (non-duplicate) entries from source to target,
+ * otherwise use lodash.merge()
+ *
+ * @param  target [description]
+ * @param  source [description]
+ * @param  mergeLists [description]
+ * @return [description]
+ */
+function customMerge(target, source) {
+    const mergedLists = mergeLists(target, source);
+    if (mergedLists) {
+        return mergedLists;
+    }
+    return lodash_1.default.mergeWith(target, source, mergeLists);
+}
+function mergeLists(objValue, srcValue) {
+    if (Array.isArray(objValue) && Array.isArray(srcValue)) {
+        const dupe = new Set(objValue);
+        for (const e of srcValue) {
+            if (!dupe.has(e)) {
+                objValue.push(e);
+            }
+        }
+        return objValue;
+    }
+}
 function addBuildConfig(_pluginConfig, pluginBuildConfig, _runtimeConfig, appConfig, pluginConfigInfo, pluginId) {
     if (Array.isArray(pluginConfigInfo.buildConfigs) && pluginConfigInfo.buildConfigs.length > 0) {
         //NOTE if no pluginConfigInfo.buildConfig is specified, then the plugin does not support build-config settings, so pluginBuildConfig will also be ignored!
@@ -290,7 +319,7 @@ function addBuildConfig(_pluginConfig, pluginBuildConfig, _runtimeConfig, appCon
         var bconfigList = pluginConfigInfo.buildConfigs;
         var bconfig = bconfigList[0];
         for (var i = 1, size = bconfigList.length; i < size; ++i) {
-            lodash_1.default.merge(bconfig, bconfigList[i]);
+            customMerge(bconfig, bconfigList[i]);
         }
         var usedPluginBuildConfigKeys = new Set();
         Object.keys(bconfig).forEach(function (key) {
@@ -300,7 +329,7 @@ function addBuildConfig(_pluginConfig, pluginBuildConfig, _runtimeConfig, appCon
             }
             if (typeof appConfig[key] === 'undefined') {
                 if (pluginBuildConfig && typeof pluginBuildConfig[key] !== 'undefined') {
-                    lodash_1.default.merge(val, pluginBuildConfig[key]);
+                    customMerge(val, pluginBuildConfig[key]);
                     usedPluginBuildConfigKeys.add(key);
                 }
                 appConfig[key] = val;
@@ -309,16 +338,16 @@ function addBuildConfig(_pluginConfig, pluginBuildConfig, _runtimeConfig, appCon
                 //if both build-configs are valid objects:
                 if (pluginBuildConfig && typeof pluginBuildConfig[key] !== 'undefined') {
                     //user-supplied plugin-specific build-config overrides general user-supplied build-config:
-                    lodash_1.default.merge(appConfig[key], pluginBuildConfig[key]);
+                    customMerge(appConfig[key], pluginBuildConfig[key]);
                     usedPluginBuildConfigKeys.add(key);
                 }
                 //... then merge appConfig's value into the plugin's build config
                 //  (i.e. user-supplied build-configuration overrides plugin-build-configuration when merging)
-                lodash_1.default.merge(val, appConfig[key]);
+                customMerge(val, appConfig[key]);
                 appConfig[key] = val;
             }
             else if (pluginBuildConfig && typeof pluginBuildConfig[key] !== 'undefined') {
-                lodash_1.default.merge(appConfig[key], pluginBuildConfig[key]);
+                customMerge(appConfig[key], pluginBuildConfig[key]);
                 usedPluginBuildConfigKeys.add(key);
             }
             //else: use value of appConfig[key] (i.e. user-supplied build-configuration overrides plugin-build-configuration)
@@ -338,7 +367,7 @@ function addBuildConfig(_pluginConfig, pluginBuildConfig, _runtimeConfig, appCon
                 }
                 else if (appConfig[key] && typeof appConfig[key] === 'object' && val && typeof val === 'object') {
                     //if both build-configs are valid objects: plugin-specific user-supplied config is merged, but overrides general user-supplied build-config:
-                    lodash_1.default.merge(appConfig[key], val);
+                    customMerge(appConfig[key], val);
                 }
                 else {
                     //otherwise: plugin-specific user-supplied config overrides general user-supplied build-config:
@@ -362,7 +391,7 @@ function addBuildConfig(_pluginConfig, pluginBuildConfig, _runtimeConfig, appCon
     // 	// 	normalizeMediaManagerPluginConfig(pList);
     // 	// 	cEntry = getPluginEntryFrom(confEntry, pList);
     // 	// 	if(cEntry){
-    // 	// 		_.merge(cEntry, confEntry);
+    // 	// 		customMerge(cEntry, confEntry);
     // 	// 	} else {
     // 	// 		pConfig[e].push(confEntry);
     // 	// 	}
