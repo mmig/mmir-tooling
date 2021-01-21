@@ -978,11 +978,14 @@ export interface PluginExportConfigInfo {
   /** may (or may not) contain a default value for entry of field speechConfig */
   defaultSpeechValues?: {[speechConfigField: string]: any};
   /** optional configuration for the AppConfig / BuildAppConfig / WebpackAppConfig */
-  buildConfigs?: PluginExportBuildConfig[];
+  buildConfigs?: (PluginExportBuildConfig | PluginExportBuildConfigCreator)[];
 }
 
 /** configuration fields of AppConfig / BuildAppConfig / WebpackAppConfig  that a plugin can use to specify additional build configurations */
 export type PluginExportBuildConfig = {[appBuildConfigField: string]: any};
+
+/** creator-function for configuration fields of AppConfig / BuildAppConfig / WebpackAppConfig  that a plugin can use to specify additional build configurations */
+export type PluginExportBuildConfigCreator = (pluginConfig: PluginConfig & TTSPluginSpeechConfig, runtimeConfig: RuntimeConfiguration, pluginBuildConfigs: PluginExportBuildConfig[]) => PluginExportBuildConfig;
 
 /**
  * Additional configuration for speech output (TTS: Text To Speech) for mmir plugins:

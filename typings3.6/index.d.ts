@@ -8,7 +8,6 @@
  * @packageDocumentation
  * @module mmir-tooling
  */
-/// <reference types="mmir-lib" />
 import { MediaManagerPluginEntry, GrammarEngineType } from 'mmir-lib'; //FIXME
 export * from './index-webpack';
 /**
@@ -933,12 +932,14 @@ export interface PluginExportConfigInfo {
         [speechConfigField: string]: any;
     };
     /** optional configuration for the AppConfig / BuildAppConfig / WebpackAppConfig */
-    buildConfigs?: PluginExportBuildConfig[];
+    buildConfigs?: (PluginExportBuildConfig | PluginExportBuildConfigCreator)[];
 }
 /** configuration fields of AppConfig / BuildAppConfig / WebpackAppConfig  that a plugin can use to specify additional build configurations */
 export type PluginExportBuildConfig = {
     [appBuildConfigField: string]: any;
 };
+/** creator-function for configuration fields of AppConfig / BuildAppConfig / WebpackAppConfig  that a plugin can use to specify additional build configurations */
+export type PluginExportBuildConfigCreator = (pluginConfig: PluginConfig & TTSPluginSpeechConfig, runtimeConfig: RuntimeConfiguration, pluginBuildConfigs: PluginExportBuildConfig[]) => PluginExportBuildConfig;
 /**
  * Additional configuration for speech output (TTS: Text To Speech) for mmir plugins:
  * extend configuration specified in (language specific) `speech.json`.

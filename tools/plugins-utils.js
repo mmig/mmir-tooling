@@ -312,13 +312,22 @@ function mergeLists(objValue, srcValue) {
         return objValue;
     }
 }
-function addBuildConfig(_pluginConfig, pluginBuildConfig, _runtimeConfig, appConfig, pluginConfigInfo, pluginId) {
+function addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfig, pluginConfigInfo, pluginId) {
     if (Array.isArray(pluginConfigInfo.buildConfigs) && pluginConfigInfo.buildConfigs.length > 0) {
         //NOTE if no pluginConfigInfo.buildConfig is specified, then the plugin does not support build-config settings, so pluginBuildConfig will also be ignored!
-        // console.log('plugin-utils.addBuildConfig: applying plugin\'s build configuration ', pluginConfigInfo.buildConfigs)
+        // console.log('plugin-utils.addBuildConfig['+pluginId+']: applying plugin\'s build configuration ', pluginConfigInfo.buildConfigs);
+        // console.log('plugin-utils.addBuildConfig['+pluginId+']: runtimeConfig', runtimeConfig);
         var bconfigList = pluginConfigInfo.buildConfigs;
         var bconfig = bconfigList[0];
+        if (typeof bconfig === 'function') {
+            // if entry is a build-config creator function -> do create build-config now
+            bconfig = bconfig(pluginConfig, runtimeConfig, pluginBuildConfig);
+        }
         for (var i = 1, size = bconfigList.length; i < size; ++i) {
+            // if entry is a build-config creator function -> replace with created build-config
+            if (typeof bconfigList[i] === 'function') {
+                bconfigList[i] = bconfigList[i](pluginConfig, runtimeConfig, pluginBuildConfig);
+            }
             customMerge(bconfig, bconfigList[i]);
         }
         var usedPluginBuildConfigKeys = new Set();
