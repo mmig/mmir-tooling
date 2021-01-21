@@ -1,6 +1,6 @@
 
 import { MediaManagerPluginEntry, MediaPluginEnvType } from 'mmir-lib';
-import { PluginExportConfigInfo , RuntimeConfiguration, SettingsBuildEntry , SpeechConfigField , AppConfig , PluginExportInfo , DirectoriesInfo , ResourceConfig , PluginOptions , PluginConfig , TTSPluginSpeechConfig , PluginExportBuildConfig , PluginExportConfigInfoMultiple } from '../index.d';
+import { PluginExportConfigInfo , RuntimeConfiguration, SettingsBuildEntry , SpeechConfigField , AppConfig , PluginExportInfo , DirectoriesInfo , ResourceConfig , PluginOptions , PluginConfig , TTSPluginSpeechConfig , PluginExportBuildConfig , PluginExportConfigInfoMultiple , PluginExportBuildConfigCreator } from '../index.d';
 
 import path from 'path';
 import _ from 'lodash';
@@ -354,16 +354,25 @@ function mergeLists(objValue: any, srcValue: any): any {
     }
 }
 
-function addBuildConfig(_pluginConfig: PluginConfig | TTSPluginSpeechConfig, pluginBuildConfig: PluginExportBuildConfig[] | undefined, _runtimeConfig: RuntimeConfiguration, appConfig: AppConfig, pluginConfigInfo: PluginExportConfigInfo, pluginId: string){
+function addBuildConfig(pluginConfig: PluginConfig | TTSPluginSpeechConfig, pluginBuildConfig: PluginExportBuildConfig[] | undefined, runtimeConfig: RuntimeConfiguration, appConfig: AppConfig, pluginConfigInfo: PluginExportConfigInfo, pluginId: string){
 
     if(Array.isArray(pluginConfigInfo.buildConfigs) && pluginConfigInfo.buildConfigs.length > 0){
         //NOTE if no pluginConfigInfo.buildConfig is specified, then the plugin does not support build-config settings, so pluginBuildConfig will also be ignored!
 
-        // console.log('plugin-utils.addBuildConfig: applying plugin\'s build configuration ', pluginConfigInfo.buildConfigs)
+        // console.log('plugin-utils.addBuildConfig['+pluginId+']: applying plugin\'s build configuration ', pluginConfigInfo.buildConfigs);
+        // console.log('plugin-utils.addBuildConfig['+pluginId+']: runtimeConfig', runtimeConfig);
 
         var bconfigList = pluginConfigInfo.buildConfigs;
         var bconfig = bconfigList[0];
+        if(typeof bconfig === 'function'){
+            // if entry is a build-config creator function -> do create build-config now
+            bconfig = bconfig(pluginConfig, runtimeConfig, pluginBuildConfig);
+        }
         for(var i=1, size = bconfigList.length; i < size; ++i){
+            // if entry is a build-config creator function -> replace with created build-config
+            if(typeof bconfigList[i] === 'function'){
+                bconfigList[i] = (bconfigList[i] as PluginExportBuildConfigCreator)(pluginConfig, runtimeConfig, pluginBuildConfig);
+            }
             customMerge(bconfig, bconfigList[i]);
         }
         var usedPluginBuildConfigKeys = new Set<string>();
