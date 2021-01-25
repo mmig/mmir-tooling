@@ -899,12 +899,17 @@ export type PluginExportInfo = {
     /**
      * HELPER returns list of (mmir) build configurations (to be merged into the main mmir build configuration)
      *
+     * @param       {String} [pluginName] OPTIONAL if specified and multiple plugin-definitions are specified, only the build-configs for the specified plugin are include (note: filter does not apply recursively to dependencies)
      * @param       {Object} [buildConfigsMap] OPTIONAL a map for already included buildConfigs: {[buildConfig: BuildConfig]: Boolean}
      * @return      {Array<BuildConfig>} a list of (mmir) build configurations; may be empty
      */
-    getBuildConfig?: (buildConfigsMap?: {
+    getBuildConfig(buildConfigsMap?: {
         [buildConfig: string]: boolean;
-    }) => PluginExportBuildConfig[];
+    }): PluginExportBuildConfig[];
+    getBuildConfig(pluginName?: string): PluginExportBuildConfig[];
+    getBuildConfig(pluginName?: string, buildConfigsMap?: {
+        [buildConfig: string]: boolean;
+    }): PluginExportBuildConfig[];
 };
 export type PluginExportType = 'paths' | 'workers' | 'modules' | 'dependencies' | 'files';
 export type PluginExportModeEntry = {
@@ -939,7 +944,7 @@ export type PluginExportBuildConfig = {
     [appBuildConfigField: string]: any;
 };
 /** creator-function for configuration fields of AppConfig / BuildAppConfig / WebpackAppConfig  that a plugin can use to specify additional build configurations */
-export type PluginExportBuildConfigCreator = (pluginConfig: PluginConfig & TTSPluginSpeechConfig, runtimeConfig: RuntimeConfiguration, pluginBuildConfigs: PluginExportBuildConfig[]) => PluginExportBuildConfig;
+export type PluginExportBuildConfigCreator = (pluginConfig: PluginConfig & TTSPluginSpeechConfig, runtimeConfig: RuntimeConfiguration, pluginBuildConfigs: PluginExportBuildConfig[]) => PluginExportBuildConfig | (PluginExportBuildConfig | PluginExportBuildConfigCreator)[];
 /**
  * Additional configuration for speech output (TTS: Text To Speech) for mmir plugins:
  * extend configuration specified in (language specific) `speech.json`.
