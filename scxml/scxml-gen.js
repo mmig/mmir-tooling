@@ -114,4 +114,5 @@ function compile(content, scxmlFile, options, callback, _map, _meta) {
 ;
 module.exports = {
     compile: compile,
+    // fileVersion: stateEngineFactory.getFileVersion() //TODO impl. file-version for compiled SCXML models
 };

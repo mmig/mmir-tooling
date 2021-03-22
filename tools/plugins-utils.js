@@ -7,6 +7,7 @@ const lodash_1 = __importDefault(require("lodash"));
 const module_config_init_1 = __importDefault(require("../utils/module-config-init"));
 const settings_utils_1 = __importDefault(require("./settings-utils"));
 const filepath_utils_1 = __importDefault(require("../utils/filepath-utils"));
+const merge_utils_1 = require("../utils/merge-utils");
 const log_utils_1 = __importDefault(require("../utils/log-utils"));
 const log = log_utils_1.default.log;
 const warn = log_utils_1.default.warn;
@@ -269,7 +270,7 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
                 normalizeMediaManagerPluginConfig(pList);
                 cEntry = getPluginEntryFrom(confEntry, pList);
                 if (cEntry) {
-                    lodash_1.default.mergeWith(cEntry, confEntry, mergeLists);
+                    lodash_1.default.mergeWith(cEntry, confEntry, merge_utils_1.mergeLists);
                 }
                 else {
                     pConfig[e].push(confEntry);
@@ -281,35 +282,6 @@ function addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, plug
             }
         });
         //TODO add/apply configuration for core-dependency mmir-plugin-encoder-core ~> silence-detection, if specified
-    }
-}
-/**
- * merge with custom handling for lists/arrays:
- *
- * if both objects are lists, do append (non-duplicate) entries from source to target,
- * otherwise use lodash.merge()
- *
- * @param  target [description]
- * @param  source [description]
- * @param  mergeLists [description]
- * @return [description]
- */
-function customMerge(target, source) {
-    const mergedLists = mergeLists(target, source);
-    if (mergedLists) {
-        return mergedLists;
-    }
-    return lodash_1.default.mergeWith(target, source, mergeLists);
-}
-function mergeLists(objValue, srcValue) {
-    if (Array.isArray(objValue) && Array.isArray(srcValue)) {
-        const dupe = new Set(objValue);
-        for (const e of srcValue) {
-            if (!dupe.has(e)) {
-                objValue.push(e);
-            }
-        }
-        return objValue;
     }
 }
 /**
@@ -329,7 +301,7 @@ function mergeBuildConfigs(target, list, listOffset, pluginConfig, runtimeConfig
                 list[i] = mergeBuildConfigs(list[i][0], list[i], 1, pluginConfig, runtimeConfig, pluginBuildConfig);
             }
         }
-        customMerge(target, list[i]);
+        merge_utils_1.customMerge(target, list[i]);
     }
     return target;
 }
@@ -356,7 +328,7 @@ function addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfi
             }
             if (typeof appConfig[key] === 'undefined') {
                 if (pluginBuildConfig && typeof pluginBuildConfig[key] !== 'undefined') {
-                    customMerge(val, pluginBuildConfig[key]);
+                    merge_utils_1.customMerge(val, pluginBuildConfig[key]);
                     usedPluginBuildConfigKeys.add(key);
                 }
                 appConfig[key] = val;
@@ -365,16 +337,16 @@ function addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfi
                 //if both build-configs are valid objects:
                 if (pluginBuildConfig && typeof pluginBuildConfig[key] !== 'undefined') {
                     //user-supplied plugin-specific build-config overrides general user-supplied build-config:
-                    customMerge(appConfig[key], pluginBuildConfig[key]);
+                    merge_utils_1.customMerge(appConfig[key], pluginBuildConfig[key]);
                     usedPluginBuildConfigKeys.add(key);
                 }
                 //... then merge appConfig's value into the plugin's build config
                 //  (i.e. user-supplied build-configuration overrides plugin-build-configuration when merging)
-                customMerge(val, appConfig[key]);
+                merge_utils_1.customMerge(val, appConfig[key]);
                 appConfig[key] = val;
             }
             else if (pluginBuildConfig && typeof pluginBuildConfig[key] !== 'undefined') {
-                customMerge(appConfig[key], pluginBuildConfig[key]);
+                merge_utils_1.customMerge(appConfig[key], pluginBuildConfig[key]);
                 usedPluginBuildConfigKeys.add(key);
             }
             //else: use value of appConfig[key] (i.e. user-supplied build-configuration overrides plugin-build-configuration)
@@ -394,7 +366,7 @@ function addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfi
                 }
                 else if (appConfig[key] && typeof appConfig[key] === 'object' && val && typeof val === 'object') {
                     //if both build-configs are valid objects: plugin-specific user-supplied config is merged, but overrides general user-supplied build-config:
-                    customMerge(appConfig[key], val);
+                    merge_utils_1.customMerge(appConfig[key], val);
                 }
                 else {
                     //otherwise: plugin-specific user-supplied config overrides general user-supplied build-config:
@@ -430,6 +402,53 @@ function addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfi
 }
 function isPluginExportConfigInfoMultiple(pluginInfo) {
     return Array.isArray(pluginInfo.pluginName);
+}
+/**
+ * check if `plugin` is already contained in `pluginList`
+ *
+ * NOTE: uses deep comparision, i.e. entries with same id (plugin.id) are considered
+ *       deferent, if their (other) properties differ (even if the IDs match).
+ *
+ * @param  plugin the plugin
+ * @param  pluginList the list of plugins to check
+ * @param  deepComparison if `true`, makes deep comparision, instead of comparing the IDs
+ * @return `false` if `plugin` is NOT contained in `pluginList`, otherwise the duplicate entry from `pluginList`
+ */
+function constainsPlugin(plugin, pluginList, deepComparison) {
+    if (!pluginList) {
+        return false;
+    }
+    for (var j = pluginList.length - 1; j >= 0; --j) {
+        if (deepComparison ? lodash_1.default.isEqual(plugin, pluginList[j]) : plugin.id === pluginList[j].id) {
+            return pluginList[j];
+        }
+    }
+    return false;
+}
+function processDuplicates(pluginList, removeFromList) {
+    const map = new Map();
+    for (let i = pluginList.length - 1; i >= 0; --i) {
+        const plugin = pluginList[i];
+        let duplicates = map.get(plugin.id);
+        if (!duplicates) {
+            duplicates = [plugin];
+            map.set(plugin.id, duplicates);
+        }
+        else {
+            let hasDuplicate = constainsPlugin(plugin, duplicates, false);
+            if (!hasDuplicate) {
+                duplicates.push(plugin);
+            }
+            else if (removeFromList) {
+                pluginList.splice(i, 1);
+            }
+        }
+    }
+    return map;
+}
+function normalizePluginEntry(plugin) {
+    const id = typeof plugin === 'string' ? plugin : plugin.id;
+    return typeof plugin !== 'string' ? plugin : { id: id };
 }
 module.exports = {
     addPluginInfos: function (pluginSettings, appConfig, _directories, resourcesConfig, runtimeConfig, settings) {
@@ -472,9 +491,9 @@ module.exports = {
                     // backwards compatiblity when generated by mmir-plugin-exports < 2.3.0 (would not include build-configs of dependencies):
                     if (!buildConfigs || buildConfigs.length === 0) {
                         if (pluginConfigInfo.plugins[pluginName].buildConfigs)
-                            customMerge(buildConfigs, pluginConfigInfo.plugins[pluginName].buildConfigs);
+                            merge_utils_1.customMerge(buildConfigs, pluginConfigInfo.plugins[pluginName].buildConfigs);
                         if (pluginConfigInfo.buildConfigs)
-                            customMerge(buildConfigs, pluginConfigInfo.buildConfigs);
+                            merge_utils_1.customMerge(buildConfigs, pluginConfigInfo.buildConfigs);
                     }
                     addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfig, buildConfigs, pluginId);
                 });
@@ -483,7 +502,7 @@ module.exports = {
                 const buildConfigs = pluginInfo.getBuildConfig();
                 // backwards compatiblity when generated by mmir-plugin-exports < 2.3.0 (would not include build-configs of dependencies):
                 if ((!buildConfigs || buildConfigs.length === 0) && pluginConfigInfo.buildConfigs) {
-                    customMerge(buildConfigs, pluginConfigInfo.buildConfigs);
+                    merge_utils_1.customMerge(buildConfigs, pluginConfigInfo.buildConfigs);
                 }
                 addConfig(pluginConfig, runtimeConfig, settings, pluginConfigInfo, pluginId);
                 addBuildConfig(pluginConfig, pluginBuildConfig, runtimeConfig, appConfig, buildConfigs, pluginId);
@@ -493,5 +512,8 @@ module.exports = {
             warn('ERROR plugin-utils: invalid module-config.js for plugin ' + pluginId + ': missing field pluginName ', pluginConfigInfo);
         }
         log('plugin-utils: addPluginInfos() -> paths ', paths, ', workers ', workers, ', include modules ', includeModules, runtimeConfig); //DEBUG
-    }
+    },
+    processDuplicates: processDuplicates,
+    constainsPlugin: constainsPlugin,
+    normalizePluginEntry: normalizePluginEntry
 };

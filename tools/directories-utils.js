@@ -13,6 +13,11 @@ function createDirectoriesJson() {
         "/config/states": [],
         "/helpers": [],
         "/gen": ["directories.json"],
+        // "/gen/grammar": [],//["mmirf/grammar/en.js"]
+        // "/gen/view": []//,//["application", "calendar", "layouts"]
+        // "/gen/view/application": ["login.js"],
+        // "/gen/view/calendar": ["login.js"],
+        // "/gen/view/layouts": ["default.js"]
     };
 }
 ;

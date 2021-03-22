@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createBuildConfig = void 0;
 const process_1 = __importDefault(require("process"));
+const lodash_1 = __importDefault(require("lodash"));
 const module_config_init_1 = __importDefault(require("../utils/module-config-init"));
 const directories_utils_1 = __importDefault(require("../tools/directories-utils"));
 const resources_config_utils_1 = __importDefault(require("../tools/resources-config-utils"));
@@ -14,6 +15,7 @@ const scxml_utils_1 = __importDefault(require("../scxml/scxml-utils"));
 const impl_utils_1 = __importDefault(require("../impl/impl-utils"));
 const view_utils_1 = __importDefault(require("../view/view-utils"));
 const plugins_utils_1 = __importDefault(require("../tools/plugins-utils"));
+const merge_utils_1 = require("../utils/merge-utils");
 const log_utils_1 = __importDefault(require("../utils/log-utils"));
 const log = log_utils_1.default.log;
 const warn = log_utils_1.default.warn;
@@ -64,12 +66,51 @@ function createBuildConfig(mmirAppConfig, resourcesConfig) {
     /////////////////////////////////////////////////////////////////////////////////////
     var includePluginList = mmirAppConfig.includePlugins;
     if (includePluginList) {
+        includePluginList = includePluginList.map(plugin => plugins_utils_1.default.normalizePluginEntry(plugin));
         includePluginList.forEach(function (plugin) {
-            var id = typeof plugin === 'string' ? plugin : plugin.id;
-            var pluginSettings = typeof plugin !== 'string' ? plugin : { id: id };
-            log('adding mmir-plugin "' + id + '" ...'); //DEBUG
-            plugins_utils_1.default.addPluginInfos(pluginSettings, mmirAppConfig, directories, resourcesConfig, runtimeConfig, settings);
+            log('adding mmir-plugin "' + plugin.id + '" ...'); //DEBUG
+            plugins_utils_1.default.addPluginInfos(plugin, mmirAppConfig, directories, resourcesConfig, runtimeConfig, settings);
         });
+        // check if plugins did add plugin-entries to includePlugins:
+        let checkAdditionalPlugins = true;
+        while (checkAdditionalPlugins) {
+            const configPluginList = mmirAppConfig.includePlugins.map(plugin => plugins_utils_1.default.normalizePluginEntry(plugin));
+            const additionalPlugins = [];
+            if (!lodash_1.default.isEqual(configPluginList, includePluginList)) {
+                // -> plugin build config did add entries to the plugin list
+                const pluginMap = plugins_utils_1.default.processDuplicates(includePluginList);
+                configPluginList.forEach(plugin => {
+                    const existingPlugin = plugins_utils_1.default.constainsPlugin(plugin, pluginMap.get(plugin.id), false);
+                    if (!existingPlugin) {
+                        additionalPlugins.push(plugin);
+                    }
+                    else if (!lodash_1.default.isEqual(plugin, existingPlugin)) {
+                        //TODO check if plugin is "subset" of existingPlugin, and only proceed, if it is not (i.e. has some new/different properties)
+                        //first merge existing entry into new one (i.e. specified entries take precedence over generated one):
+                        merge_utils_1.customMerge(plugin, existingPlugin);
+                        //then merge into the existing entry (i.e. "update" existing entry)
+                        merge_utils_1.customMerge(existingPlugin, plugin);
+                        additionalPlugins.push(plugin);
+                    }
+                });
+            }
+            else {
+                checkAdditionalPlugins = false;
+            }
+            if (additionalPlugins.length > 0) {
+                // update includePluginList with new plugin list (for next loop, i.e. checking for added plugins)
+                includePluginList = configPluginList;
+                // do add new plugin entries:
+                additionalPlugins.forEach(function (plugin) {
+                    log('adding mmir-plugin "' + plugin.id + '" (added by plugin build configuration)...'); //DEBUG
+                    plugins_utils_1.default.addPluginInfos(plugin, mmirAppConfig, directories, resourcesConfig, runtimeConfig, settings);
+                });
+            }
+            else {
+                checkAdditionalPlugins = false;
+            }
+            includePluginList = configPluginList;
+        }
         // log('added mmir-plugins: ', resourcesConfig.workers, mmirAppConfig);//DEBUG
     }
     /////////////////////////////////////////////////////////////////////////////////////
