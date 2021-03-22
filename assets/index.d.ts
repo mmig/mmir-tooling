@@ -939,7 +939,8 @@ export type PluginExportInfo = {
     files: string[];
     dependencies: string[];
     modes?: {[pluginModeOption: string]: PluginExportModeEntry};
-    buildConfig?: PluginExportBuildConfig;
+    /** the (relative) module / file in the package that contains the build config */
+    buildConfig?: string;
     /**
      * HELPER returns all entries for field <code>type</code>, (recursively) including the
      *        corresponding field from dependencies
@@ -954,12 +955,12 @@ export type PluginExportInfo = {
      * HELPER returns list of (mmir) build configurations (to be merged into the main mmir build configuration)
      *
      * @param       {String} [pluginName] OPTIONAL if specified and multiple plugin-definitions are specified, only the build-configs for the specified plugin are include (note: filter does not apply recursively to dependencies)
-     * @param       {Object} [buildConfigsMap] OPTIONAL a map for already included buildConfigs: {[buildConfig: BuildConfig]: Boolean}
+     * @param       {Object} [buildConfigsMap] OPTIONAL a set or "duplicate map" for already included buildConfigs: {[buildConfig: BuildConfig]: Boolean}
      * @return      {Array<BuildConfig>} a list of (mmir) build configurations; may be empty
      */
-    getBuildConfig(buildConfigsMap?: {[buildConfig: string]: boolean}): PluginExportBuildConfig[];
+    getBuildConfig(buildConfigsMap?: Set<any> | {[buildConfig: string]: boolean} | Array<any>): PluginExportBuildConfig[];
     getBuildConfig(pluginName?: string): PluginExportBuildConfig[];
-    getBuildConfig(pluginName?: string, buildConfigsMap?: {[buildConfig: string]: boolean}): PluginExportBuildConfig[];
+    getBuildConfig(pluginName?: string, buildConfigsMap?: Set<any> | {[buildConfig: string]: boolean} | Array<any>): PluginExportBuildConfig[];
 
 };
 
