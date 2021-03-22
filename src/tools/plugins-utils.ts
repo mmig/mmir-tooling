@@ -8,6 +8,8 @@ import appConfigUtils from '../utils/module-config-init';
 import settingsUtils from './settings-utils';
 import fileUtils from '../utils/filepath-utils';
 
+import { customMerge , mergeLists } from '../utils/merge-utils';
+
 import logUtils from '../utils/log-utils';
 import { WebpackAppConfig } from '../index-webpack.d';
 const log = logUtils.log;
@@ -324,37 +326,6 @@ function addConfig(pluginConfig: PluginConfig | TTSPluginSpeechConfig, runtimeCo
 }
 
 /**
- * merge with custom handling for lists/arrays:
- *
- * if both objects are lists, do append (non-duplicate) entries from source to target,
- * otherwise use lodash.merge()
- *
- * @param  target [description]
- * @param  source [description]
- * @param  mergeLists [description]
- * @return [description]
- */
-function customMerge<TObject, TSource>(target: TObject, source: TSource): TObject & TSource {
-    const mergedLists = mergeLists(target, source);
-    if(mergedLists){
-        return mergedLists;
-    }
-    return _.mergeWith(target, source, mergeLists);
-}
-
-function mergeLists(objValue: any, srcValue: any): any {
-    if(Array.isArray(objValue) && Array.isArray(srcValue)){
-        const dupe = new Set(objValue);
-        for(const e of srcValue){
-            if(!dupe.has(e)){
-                objValue.push(e);
-            }
-        }
-        return objValue;
-    }
-}
-
-/**
  *
  * @param  target target for merging the build configs (INOUT parameter)
  * @param  list array of build configs
@@ -487,6 +458,54 @@ function isPluginExportConfigInfoMultiple(pluginInfo: PluginExportConfigInfoMult
     return Array.isArray(pluginInfo.pluginName);
 }
 
+/**
+ * check if `plugin` is already contained in `pluginList`
+ *
+ * NOTE: uses deep comparision, i.e. entries with same id (plugin.id) are considered
+ *       deferent, if their (other) properties differ (even if the IDs match).
+ *
+ * @param  plugin the plugin
+ * @param  pluginList the list of plugins to check
+ * @param  deepComparison if `true`, makes deep comparision, instead of comparing the IDs
+ * @return `false` if `plugin` is NOT contained in `pluginList`, otherwise the duplicate entry from `pluginList`
+ */
+function constainsPlugin(plugin: PluginOptions, pluginList: PluginOptions[] | null | undefined, deepComparison: boolean): false | PluginOptions {
+    if(!pluginList){
+        return false;
+    }
+    for(var j=pluginList.length-1; j >= 0; --j){
+        if(deepComparison? _.isEqual(plugin, pluginList[j]) : plugin.id === pluginList[j].id){
+            return pluginList[j];
+        }
+    }
+    return false;
+}
+
+function processDuplicates(pluginList: PluginOptions[], removeFromList?: boolean): Map<string, PluginOptions[]> {
+    const map = new Map<string, PluginOptions[]>();
+    for(let i=pluginList.length-1; i >= 0; --i){
+        const plugin = pluginList[i];
+        let duplicates: PluginOptions[] = map.get(plugin.id);
+        if(!duplicates){
+            duplicates = [plugin];
+            map.set(plugin.id, duplicates);
+        } else {
+            let hasDuplicate = constainsPlugin(plugin, duplicates, false);
+            if(!hasDuplicate){
+                duplicates.push(plugin);
+            } else if(removeFromList) {
+                pluginList.splice(i, 1);
+            }
+        }
+    }
+    return map;
+}
+
+function normalizePluginEntry(plugin: PluginOptions | string): PluginOptions {
+    const id = typeof plugin === 'string'? plugin : plugin.id;
+    return typeof plugin !== 'string'? plugin : {id: id};
+}
+
 export = {
     addPluginInfos: function(pluginSettings: PluginOptions, appConfig: WebpackAppConfig, _directories: DirectoriesInfo, resourcesConfig: ResourceConfig, runtimeConfig: RuntimeConfiguration, settings: SettingsBuildEntry[]){
 
@@ -572,5 +591,8 @@ export = {
         }
 
         log('plugin-utils: addPluginInfos() -> paths ', paths, ', workers ', workers, ', include modules ', includeModules, runtimeConfig);//DEBUG
-    }
+    },
+    processDuplicates: processDuplicates,
+    constainsPlugin: constainsPlugin,
+    normalizePluginEntry: normalizePluginEntry
 };
