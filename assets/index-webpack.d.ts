@@ -143,4 +143,18 @@ export interface WebpackAppConfig extends AppConfig {
      *
      */
     runtimeSettings?: {[settingsId: string]: any};
+
+
+    /**
+     * HACK:
+     * `webpack` version 4 does include a default rule for loading WASM files
+     * that will cause errors due to the fact, that it will try to load mmir-integrated WASM files again.
+     *
+     * Enabling this option will overwrite the `webpackConfig.module.defaultRules` option omitting the
+     * default rule for WASM files.
+     *
+     * If you do not need the default rules, this can be enabled as a quick-fix for dealing with
+     * errors due to loading WASM files.
+     */
+    fixWebpack4DefaultRulesForWASM?: boolean;
 }
