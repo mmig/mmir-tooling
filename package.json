@@ -1,6 +1,6 @@
 {
   "name": "mmir-tooling",
-  "version": "6.2.5",
+  "version": "7.0.0-beta1",
   "description": "Build tools for MMIR projects",
   "directories": {},
   "repository": {
