@@ -1,4 +1,4 @@
-**[mmir-tooling 6.2.0](../README.md)**
+**[mmir-tooling 7.0.0-beta1](../README.md)**
 
 > [Globals](../README.md) / [mmir-webpack](../modules/mmir_webpack.md) / WebpackAppConfig
 
@@ -44,6 +44,7 @@ var appConfig = {
 * [configuration](mmir_webpack.webpackappconfig.md#configuration)
 * [controllers](mmir_webpack.webpackappconfig.md#controllers)
 * [disableLogging](mmir_webpack.webpackappconfig.md#disablelogging)
+* [fixWebpack4DefaultRulesForWASM](mmir_webpack.webpackappconfig.md#fixwebpack4defaultrulesforwasm)
 * [grammars](mmir_webpack.webpackappconfig.md#grammars)
 * [helpers](mmir_webpack.webpackappconfig.md#helpers)
 * [includeModules](mmir_webpack.webpackappconfig.md#includemodules)
@@ -103,6 +104,22 @@ ___
 
 disable logging in mmir runtime:
 suppresses all logging-output by replacing mmirf/logger with an empty logger implementation
+
+___
+
+### fixWebpack4DefaultRulesForWASM
+
+• `Optional` **fixWebpack4DefaultRulesForWASM**: boolean
+
+HACK:
+`webpack` version 4 does include a default rule for loading WASM files
+that will cause errors due to the fact, that it will try to load mmir-integrated WASM files again.
+
+Enabling this option will overwrite the `webpackConfig.module.defaultRules` option omitting the
+default rule for WASM files.
+
+If you do not need the default rules, this can be enabled as a quick-fix for dealing with
+errors due to loading WASM files.
 
 ___
 

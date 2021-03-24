@@ -1,4 +1,4 @@
-**[mmir-tooling 6.2.0](../README.md)**
+**[mmir-tooling 7.0.0-beta1](../README.md)**
 
 > [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / ResourceConfig
 
@@ -13,6 +13,7 @@
 ### Properties
 
 * [fileResources](mmir_tooling.resourceconfig.md#fileresources)
+* [packages](mmir_tooling.resourceconfig.md#packages)
 * [paths](mmir_tooling.resourceconfig.md#paths)
 * [resourcesPaths](mmir_tooling.resourceconfig.md#resourcespaths)
 * [textResources](mmir_tooling.resourceconfig.md#textresources)
@@ -23,6 +24,12 @@
 ### fileResources
 
 •  **fileResources**: string[]
+
+___
+
+### packages
+
+• `Optional` **packages**: { location: string ; name: string  }[]
 
 ___
 

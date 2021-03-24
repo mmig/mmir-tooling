@@ -1,4 +1,4 @@
-**[mmir-tooling 6.2.0](../README.md)**
+**[mmir-tooling 7.0.0-beta1](../README.md)**
 
 > [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / DirectoriesInfo
 

@@ -1,4 +1,4 @@
-**[mmir-tooling 6.2.0](../README.md)**
+**[mmir-tooling 7.0.0-beta1](../README.md)**
 
 > [Globals](../README.md) / mmir-tooling
 
@@ -72,6 +72,7 @@
 * [ModulePaths](mmir_tooling.md#modulepaths)
 * [PluginConfig](mmir_tooling.md#pluginconfig)
 * [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig)
+* [PluginExportBuildConfigCreator](mmir_tooling.md#pluginexportbuildconfigcreator)
 * [PluginExportInfo](mmir_tooling.md#pluginexportinfo)
 * [PluginExportModeEntry](mmir_tooling.md#pluginexportmodeentry)
 * [PluginExportType](mmir_tooling.md#pluginexporttype)
@@ -202,24 +203,32 @@ configuration fields of AppConfig / BuildAppConfig / WebpackAppConfig  that a pl
 
 ___
 
+### PluginExportBuildConfigCreator
+
+Ƭ  **PluginExportBuildConfigCreator**: (pluginConfig: [PluginConfig](mmir_tooling.md#pluginconfig) & [TTSPluginSpeechConfig](../interfaces/mmir_tooling.ttspluginspeechconfig.md), runtimeConfig: [RuntimeConfiguration](../interfaces/mmir_tooling.runtimeconfiguration.md), pluginBuildConfigs: [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig)[]) => [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig) \| ([PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig) \| [PluginExportBuildConfigCreator](mmir_tooling.md#pluginexportbuildconfigcreator))[]
+
+creator-function for configuration fields of AppConfig / BuildAppConfig / WebpackAppConfig  that a plugin can use to specify additional build configurations
+
+___
+
 ### PluginExportInfo
 
-Ƭ  **PluginExportInfo**: { buildConfig?: [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig) ; dependencies: string[] ; files: string[] ; getBuildConfig?: (buildConfigsMap?: { [buildConfig:string]: boolean;  }) => [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig)[] ; id: string ; modes?: { [pluginModeOption:string]: [PluginExportModeEntry](mmir_tooling.md#pluginexportmodeentry);  } ; modules: string[] ; paths: { [moduleId:string]: string;  } ; workers: string[] ; getAll: (type: [PluginExportType](mmir_tooling.md#pluginexporttype), mode?: [PluginModeOption](mmir_tooling.md#pluginmodeoption) \| string, isResolve?: boolean) => string[] \| { [moduleId:string]: string;  } \| { [pluginModeOption:string]: [PluginExportModeEntry](mmir_tooling.md#pluginexportmodeentry);  }  }
+Ƭ  **PluginExportInfo**: { buildConfig?: string ; dependencies: string[] ; files: string[] ; id: string ; modes?: { [pluginModeOption:string]: [PluginExportModeEntry](mmir_tooling.md#pluginexportmodeentry);  } ; modules: string[] ; paths: { [moduleId:string]: string;  } ; workers: string[] ; getAll: (type: [PluginExportType](mmir_tooling.md#pluginexporttype), mode?: [PluginModeOption](mmir_tooling.md#pluginmodeoption) \| string, isResolve?: boolean) => string[] \| { [moduleId:string]: string;  } \| { [pluginModeOption:string]: [PluginExportModeEntry](mmir_tooling.md#pluginexportmodeentry);  } ; getBuildConfig: (buildConfigsMap?: Set<any\> \| { [buildConfig:string]: boolean;  } \| Array<any\>) => [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig)[](pluginName?: string) => [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig)[](pluginName?: string, buildConfigsMap?: Set<any\> \| { [buildConfig:string]: boolean;  } \| Array<any\>) => [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig)[]  }
 
 #### Type declaration:
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`buildConfig?` | [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig) | - |
+`buildConfig?` | string | the (relative) module / file in the package that contains the build config |
 `dependencies` | string[] | - |
 `files` | string[] | - |
-`getBuildConfig?` | (buildConfigsMap?: { [buildConfig:string]: boolean;  }) => [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig)[] | HELPER returns list of (mmir) build configurations (to be merged into the main mmir build configuration)  **`param`** OPTIONAL a map for already included buildConfigs: {[buildConfig: BuildConfig]: Boolean}  **`returns`** a list of (mmir) build configurations; may be empty  |
 `id` | string | - |
 `modes?` | { [pluginModeOption:string]: [PluginExportModeEntry](mmir_tooling.md#pluginexportmodeentry);  } | - |
 `modules` | string[] | - |
 `paths` | { [moduleId:string]: string;  } | - |
 `workers` | string[] | - |
 `getAll` | (type: [PluginExportType](mmir_tooling.md#pluginexporttype), mode?: [PluginModeOption](mmir_tooling.md#pluginmodeoption) \| string, isResolve?: boolean) => string[] \| { [moduleId:string]: string;  } \| { [pluginModeOption:string]: [PluginExportModeEntry](mmir_tooling.md#pluginexportmodeentry);  } | - |
+`getBuildConfig` | (buildConfigsMap?: Set<any\> \| { [buildConfig:string]: boolean;  } \| Array<any\>) => [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig)[](pluginName?: string) => [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig)[](pluginName?: string, buildConfigsMap?: Set<any\> \| { [buildConfig:string]: boolean;  } \| Array<any\>) => [PluginExportBuildConfig](mmir_tooling.md#pluginexportbuildconfig)[] | - |
 
 ___
 

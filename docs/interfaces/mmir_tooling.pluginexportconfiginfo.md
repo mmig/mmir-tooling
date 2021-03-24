@@ -1,4 +1,4 @@
-**[mmir-tooling 6.2.0](../README.md)**
+**[mmir-tooling 7.0.0-beta1](../README.md)**
 
 > [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / PluginExportConfigInfo
 
@@ -23,7 +23,7 @@
 
 ### buildConfigs
 
-• `Optional` **buildConfigs**: [PluginExportBuildConfig](../modules/mmir_tooling.md#pluginexportbuildconfig)[]
+• `Optional` **buildConfigs**: ([PluginExportBuildConfig](../modules/mmir_tooling.md#pluginexportbuildconfig) \| [PluginExportBuildConfigCreator](../modules/mmir_tooling.md#pluginexportbuildconfigcreator))[]
 
 optional configuration for the AppConfig / BuildAppConfig / WebpackAppConfig
 
