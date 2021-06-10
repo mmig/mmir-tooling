@@ -16,10 +16,10 @@ var VirtualModulePlugin;
 function initVirtualModulePlugin() {
     if (!VirtualModulePlugin) {
         try {
-            VirtualModulePlugin = require('virtual-module-webpack-plugin');
+            VirtualModulePlugin = require('webpack-virtual-modules');
         }
         catch (err) {
-            warn('view-utils: failed to initialize virtual-module-webpack-plugin ', err);
+            warn('view-utils: failed to initialize webpack-virtual-modules ', err);
         }
     }
     return !!VirtualModulePlugin;
@@ -239,6 +239,7 @@ module.exports = {
                 if (!appConfig.webpackPlugins) {
                     appConfig.webpackPlugins = [];
                 }
+                var virtualModules = {};
                 stubCtrlMap.forEach(function (ctrl, name) {
                     var id = ctrl.moduleName;
                     log('view-utils: adding view controller stub "' + name + '": ', id, ' -> ', ctrl); //DEBUG
@@ -246,8 +247,9 @@ module.exports = {
                     // appConfig.includeModules.push(id);
                     module_config_init_1.default.addIncludeModule(appConfig, id, id);
                     directories_utils_1.default.addCtrl(directories, ctrl.moduleName);
-                    appConfig.webpackPlugins.push(new VirtualModulePlugin(ctrl));
+                    virtualModules[ctrl.moduleName] = ctrl.contents;
                 });
+                appConfig.webpackPlugins.push(new VirtualModulePlugin(virtualModules));
             }
             else {
                 warn('view-utils: cannot add stub controllers, because of misssing package virtual-module-webpack-plugin');
