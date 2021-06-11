@@ -1,38 +1,7 @@
 
-import { AppConfig , BuildAppConfig } from '../index.d';
 import { WebpackAppConfig } from '../index-webpack.d';
 
 import path from 'path';
-import { isWebpackConfig } from '../tools/type-utils';
-
-/**
- * add/overwrite module alias (i.e. mapping module ID to file path)
- *
- * @param  {{paths?: {[moduleId: string]: string}}} mmirAppConfig the app-specific configuration: applies module-path-specifications from mmirAppConfig.paths
- * @param  {[{[moduleId: string]: string}]} alias the (default) mapping of module IDs to (absolute) paths
- */
-function addAliasFrom(mmirAppConfig: AppConfig | BuildAppConfig | WebpackAppConfig, alias: {[moduleId: string]: string}): void {
-
-    if(isWebpackConfig(mmirAppConfig)){
-        // log('adding/overwriting paths with app paths: ', mmirAppConfig.paths);
-        // Object.assign(alias, mmirAppConfig.paths);
-        const appRoot = mmirAppConfig.rootPath || process.cwd();
-        let p: string;
-        for (let n in mmirAppConfig.paths) {
-            p = mmirAppConfig.paths[n];
-            alias[n] = path.isAbsolute(p)? p : path.join(appRoot, p);
-            // aliasList.push(n);
-        }
-        // log('set paths to -> ', alias);
-    }
-
-    //DISABLED redirection must be handled by NormalModuleReplacementPlugin, because loadFile is not directly require'ed, but vie package (sub) path 'mmirf/util'
-    // //add "proxy" for mmirf/util/loadFile, so that inlined resouces get returned directly:
-    // alias['mmirf/util/loadFile'] = path.resolve('./runtime/webpack-loadFile.js');
-    // var origLoadFile = path.resolve(alias['mmirf/util'], 'loadFile.js');
-    // alias['mmirf/util/loadFile__raw'] = origLoadFile;
-
-}
 
 function contains(list: any[], entry: any): boolean {
     return list.findIndex(function(item){
@@ -107,7 +76,6 @@ export = {
     //         }
     //     }
     // },
-    addAliasFrom: addAliasFrom,
 
     /** add alias (i.e. "lookup information" for module ID -> file) for module */
     registerModuleId: registerModuleId,
