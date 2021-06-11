@@ -173,6 +173,13 @@ export type ModuleId = string;//TODO explicitly specify MMIR module IDs
 export type ModulePaths = {[moduleId: string]: string};
 
 /**
+ * specifies a package that contains modules ()
+ * if the path is not absolute, it will be resolved against the mmir-lib path, if it starts with "mmirf/",
+ * otherwise against the rootPath.
+ */
+export type ModulePackage = {name: string, location: string};
+
+/**
  * @example
  * ```
  * var grammarOptions = {
@@ -1022,8 +1029,8 @@ export interface TTSPluginSpeechConfig {
 }
 
 export interface ResourceConfig {
-    paths: {[moduleId: string]: string};
-    packages?: {name: string, location: string}[];
+    paths: ModulePaths;
+    packages?: ModulePackage[];
 
     // paths for web worker entry points (i.e. new Worker(<path>)):
     workers: string[];

@@ -7,7 +7,7 @@
  * @packageDocumentation
  * @module mmir-webpack
  */
-import { AppConfig, ModulePaths, ModuleId, ModuleConfigOptions, SettingsOptions, RuntimeConfiguration, PluginOptions, ControllerOptions, HelperOptions, ModelOptions } from './index.d';
+import { AppConfig, ModulePaths, ModulePackage, ModuleId, ModuleConfigOptions, PluginOptions, ControllerOptions, HelperOptions, ModelOptions } from './index.d';
 /**
  * @example
  * ```
@@ -38,6 +38,12 @@ import { AppConfig, ModulePaths, ModuleId, ModuleConfigOptions, SettingsOptions,
 export interface WebpackAppConfig extends AppConfig {
     /** specifying additional (or replacing) module paths */
     paths?: ModulePaths;
+    /**
+     * specifying additional module-packages, i.e. base-directories that contain module files
+     *
+     * for more details, see requirejs documentation about configuration for packages
+     */
+    packages?: ModulePackage[];
     /**
      * disable logging in mmir runtime:
      * suppresses all logging-output by replacing mmirf/logger with an empty logger implementation
@@ -118,6 +124,19 @@ export interface WebpackAppConfig extends AppConfig {
     models?: ModelOptions | boolean;
     /** configuration for webpack plugins (for internal use) */
     webpackPlugins?: any[];
+    /**
+     * configuration for supressing webpack warnings
+     *
+     * NOTE: supported since webpack v5 (will be ignored otherwise)
+     *
+     * see webpack documentation for further details:
+     * Configuration -> Other Options -> ignoreWarnings
+     */
+    webpackIgnoreWarnings?: (RegExp | ((webpackError: any, compilation: any) => boolean) | {
+        module?: RegExp;
+        file?: RegExp;
+        message?: RegExp;
+    })[];
     /**
      * (for internal use: will be filled/set by compiler)
      *

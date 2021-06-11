@@ -3,32 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 const path_1 = __importDefault(require("path"));
-const type_utils_1 = require("../tools/type-utils");
-/**
- * add/overwrite module alias (i.e. mapping module ID to file path)
- *
- * @param  {{paths?: {[moduleId: string]: string}}} mmirAppConfig the app-specific configuration: applies module-path-specifications from mmirAppConfig.paths
- * @param  {[{[moduleId: string]: string}]} alias the (default) mapping of module IDs to (absolute) paths
- */
-function addAliasFrom(mmirAppConfig, alias) {
-    if (type_utils_1.isWebpackConfig(mmirAppConfig)) {
-        // log('adding/overwriting paths with app paths: ', mmirAppConfig.paths);
-        // Object.assign(alias, mmirAppConfig.paths);
-        const appRoot = mmirAppConfig.rootPath || process.cwd();
-        let p;
-        for (let n in mmirAppConfig.paths) {
-            p = mmirAppConfig.paths[n];
-            alias[n] = path_1.default.isAbsolute(p) ? p : path_1.default.join(appRoot, p);
-            // aliasList.push(n);
-        }
-        // log('set paths to -> ', alias);
-    }
-    //DISABLED redirection must be handled by NormalModuleReplacementPlugin, because loadFile is not directly require'ed, but vie package (sub) path 'mmirf/util'
-    // //add "proxy" for mmirf/util/loadFile, so that inlined resouces get returned directly:
-    // alias['mmirf/util/loadFile'] = path.resolve('./runtime/webpack-loadFile.js');
-    // var origLoadFile = path.resolve(alias['mmirf/util'], 'loadFile.js');
-    // alias['mmirf/util/loadFile__raw'] = origLoadFile;
-}
 function contains(list, entry) {
     return list.findIndex(function (item) {
         return item === entry;
@@ -87,7 +61,6 @@ module.exports = {
     //         }
     //     }
     // },
-    addAliasFrom: addAliasFrom,
     /** add alias (i.e. "lookup information" for module ID -> file) for module */
     registerModuleId: registerModuleId,
     /** add alias (i.e. "lookup information") for module AND include module in main script */
