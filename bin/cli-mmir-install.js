@@ -10,7 +10,7 @@ const path_1 = __importDefault(require("path"));
 const install_mmir_lib_1 = __importDefault(require("../utils/install-mmir-lib"));
 const appName = 'mmirinstall';
 function main() {
-    const cli = meow_1.default(`
+    const cli = (0, meow_1.default)(`
         Usage
             ${appName} <target directory>
 

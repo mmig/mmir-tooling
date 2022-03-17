@@ -26,7 +26,7 @@ function init(opt, helpText) {
     if (opt) {
         lodash_1.default.merge(options, opt);
     }
-    var cli = meow_1.default(help, options);
+    var cli = (0, meow_1.default)(help, options);
     if (cli.flags.verbose) {
         process.env.verbose = true.toString();
     }

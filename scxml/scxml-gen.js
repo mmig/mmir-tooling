@@ -9,7 +9,7 @@ function isScxmlError(err) {
 }
 //FIXME do fix datamodel declaration in generated scxml model FIXES @scion-scxml/scxml@4.3.25
 //TODO remove when not neccessary any more
-scxml_fix_datamodel_declaration_1.fixRawCompileInjectDataModule(scxml_1.default);
+(0, scxml_fix_datamodel_declaration_1.fixRawCompileInjectDataModule)(scxml_1.default);
 // import logUtils from '../utils/log-utils';
 // const log = logUtils.log;
 const MODULE_CODE_PREFIX = 'var ScxmlModel = ';

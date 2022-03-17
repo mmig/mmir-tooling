@@ -87,9 +87,9 @@ function createBuildConfig(mmirAppConfig, resourcesConfig) {
                     else if (!lodash_1.default.isEqual(plugin, existingPlugin)) {
                         //TODO check if plugin is "subset" of existingPlugin, and only proceed, if it is not (i.e. has some new/different properties)
                         //first merge existing entry into new one (i.e. specified entries take precedence over generated one):
-                        merge_utils_1.customMerge(plugin, existingPlugin);
+                        (0, merge_utils_1.customMerge)(plugin, existingPlugin);
                         //then merge into the existing entry (i.e. "update" existing entry)
-                        merge_utils_1.customMerge(existingPlugin, plugin);
+                        (0, merge_utils_1.customMerge)(existingPlugin, plugin);
                         additionalPlugins.push(plugin);
                     }
                 });

@@ -32,7 +32,7 @@ const createFileTestFunc = function (absolutePaths, debugStr) {
     };
 };
 const isDirectory = function (path) {
-    return fs_1.lstatSync(path).isDirectory();
+    return (0, fs_1.lstatSync)(path).isDirectory();
 };
 module.exports = {
     normalizePath: normalizePath,

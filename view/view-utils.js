@@ -211,7 +211,7 @@ module.exports = {
         var stubCtrlMap = new Map();
         views.forEach(function (v) {
             var aliasId = toAliasId(v);
-            if (type_utils_1.isWebpackConfig(appConfig)) {
+            if ((0, type_utils_1.isWebpackConfig)(appConfig)) {
                 module_config_init_1.default.addIncludeModule(appConfig, aliasId, toAliasPath(v));
             }
             directories_utils_1.default.addView(directories, aliasId);
@@ -222,7 +222,7 @@ module.exports = {
         });
         //FIXME set simpleViewEngine TODO support setting engine via appConfig
         resources.paths['mmirf/simpleViewEngine'] = 'env/view/simpleViewEngine';
-        if (!type_utils_1.isWebpackConfig(appConfig)) {
+        if (!(0, type_utils_1.isWebpackConfig)(appConfig)) {
             return;
         }
         // include dependencies for loading & rendering views:

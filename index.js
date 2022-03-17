@@ -92,8 +92,8 @@ function compileResources(mmirAppConfig) {
     // checkBuildOptions(mmirAppConfig, ['settings', 'configuration']);
     // checkBuildOptions(mmirAppConfig, ['settings', 'grammar']);
     // checkBuildOptions(mmirAppConfig, ['settings', 'speech']);
-    const resourcesConfig = create_resources_config_1.default();
-    const buildConfig = create_build_config_1.createBuildConfig(mmirAppConfig, resourcesConfig);
+    const resourcesConfig = (0, create_resources_config_1.default)();
+    const buildConfig = (0, create_build_config_1.createBuildConfig)(mmirAppConfig, resourcesConfig);
     const appRootDir = mmirAppConfig.rootPath;
     // const moduleRules = [];
     const tasks = [];
@@ -135,7 +135,7 @@ function getErrors(taskResults) {
         return [taskResults];
     }
     if (Array.isArray(taskResults)) {
-        return array_flatten_1.flatten(taskResults).filter(function (err) { return !!err; });
+        return (0, array_flatten_1.flatten)(taskResults).filter(function (err) { return !!err; });
     }
     return taskResults ? [taskResults] : [];
 }
